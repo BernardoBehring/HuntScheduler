@@ -1,0 +1,114 @@
+I want you to design and implement a full-stack application that manages hunt schedules (“planilhas de hunt”) for multiple Tibia servers. The system will have two types of users: admins and regular users. Follow the requirements below and implement the backend, frontend, and database structure accordingly.
+
+Core Requirements
+1. Server and Respawn Management (Admin Only)
+
+An admin can manage one or multiple Tibia servers.
+
+Each server must allow:
+
+Registering and editing respawns.
+
+Registering and editing time slots for each respawn.
+
+Admins should be able to update, delete, and review all entries they have permission for.
+
+2. User Hunt Requests
+
+A user can submit a hunt request to a server they play on.
+
+A request must contain:
+
+Up to three preferred time slot options.
+
+The desired respawn/hunt area.
+
+The user’s party (PT) composition: list of character names and roles.
+
+Requests must go into a queue.
+
+3. Admin Review of Requests
+
+Admins must be able to:
+
+View all pending requests.
+
+Approve or reject each request.
+
+Provide comments when rejecting.
+
+When accepting one request all the other with the same slot and hunt should appear to show the other PT and if it's accepted these ones should be rejected with a message saying that it's rejected because of this one.
+
+The request list must be sorted by priority, following a priority rule configurable in code (e.g., score, request time, previous approvals, etc.).
+
+4. Scoring System
+
+Each PT member gains points for participating in hunts or helping the team.
+
+Points must be:
+
+Auditable (every score change must have a justification log).
+
+Linked to a specific user account.
+
+User's can provide print screens to add points and this should be accepted by the admin.
+
+Admins must be able to:
+
+Add points.
+
+Remove points.
+
+View history logs.
+
+5. Additional Features
+
+Authentication system token-based.
+
+Role-based permissions.
+
+Dashboard for admins and players.
+
+Responsive UI.
+
+Technical Requirements
+
+Backend: Python (FastAPI)
+
+Frontend: React, Next.js
+
+Database: PostgreSQL
+
+Include:
+
+Complete database schema.
+
+GraphQL API.
+
+Example endpoints.
+
+Data validation.
+
+Error handling.
+
+Authorization middleware.
+
+Simple UI mockups or component structure.
+
+Deliverables
+
+Provide:
+
+A full project architecture.
+
+Database schema (tables/collections, fields, and relationships).
+
+API definitions (routes, payloads, examples).
+
+Core backend logic.
+
+Suggested frontend structure and components.
+
+Example admin and user flows.
+
+Anything else needed to make the app functional end-to-end.
