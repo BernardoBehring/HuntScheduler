@@ -22,12 +22,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Users, Sword, Plus, AlertCircle } from "lucide-react";
+import { CalendarIcon, Clock, Users, Sword, Plus, AlertCircle, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function HuntSchedule() {
   const { servers, respawns, slots, requests, addRequest, currentUser, periods } = useStore();
   const [selectedServer, setSelectedServer] = useState(servers[0]?.id);
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Find active period or select the first one
   const activePeriod = periods.find(p => p.isActive) || periods[0];
@@ -36,7 +37,10 @@ export function HuntSchedule() {
   const currentPeriod = periods.find(p => p.id === selectedPeriodId);
   
   // Filter data
-  const activeRespawns = respawns.filter(r => r.serverId === selectedServer);
+  const activeRespawns = respawns.filter(r => 
+    r.serverId === selectedServer && 
+    r.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   
   const getRequestForSlot = (respawnId: string, slotId: string) => {
     if (!currentPeriod) return undefined;
@@ -78,8 +82,18 @@ export function HuntSchedule() {
           </Select>
         </div>
 
+        <div className="relative w-full md:w-auto">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search respawn..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 w-full md:w-[200px] bg-background/50 border-primary/20"
+          />
+        </div>
+
         {currentPeriod && (
-           <Badge variant="outline" className="ml-auto border-primary/30 text-primary bg-primary/5">
+           <Badge variant="outline" className="ml-auto border-primary/30 text-primary bg-primary/5 hidden lg:flex">
              <CalendarIcon className="w-3 h-3 mr-2" />
              {format(new Date(currentPeriod.startDate), "MMM d, yyyy")} — {format(new Date(currentPeriod.endDate), "MMM d, yyyy")}
            </Badge>
