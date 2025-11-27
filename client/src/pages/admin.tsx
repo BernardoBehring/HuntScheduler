@@ -6,17 +6,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Check, X, Plus, Trash2 } from "lucide-react";
+import { Check, X, Plus, Trash2, Calendar } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { Label } from "@/components/ui/label";
 
 export default function Admin() {
-  const { requests, users, updateRequestStatus, addPoints, servers, respawns } = useStore();
+  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
 
   // Derived data
   const pendingRequests = requests.filter(r => r.status === 'pending').sort((a, b) => b.createdAt - a.createdAt);
   const processedRequests = requests.filter(r => r.status !== 'pending').sort((a, b) => b.createdAt - a.createdAt);
+
+  // New Period State
+  const [newPeriodName, setNewPeriodName] = useState("");
+  const [newPeriodStart, setNewPeriodStart] = useState("");
+  const [newPeriodEnd, setNewPeriodEnd] = useState("");
 
   const handleReview = (id: string, status: Status, reason?: string) => {
     updateRequestStatus(id, status, reason);
@@ -32,6 +39,20 @@ export default function Admin() {
     toast({ title: "Points Updated", description: `Added ${amount} points to user.` });
   };
 
+  const handleCreatePeriod = () => {
+    if (!newPeriodName || !newPeriodStart || !newPeriodEnd) return;
+    addPeriod({
+      name: newPeriodName,
+      startDate: newPeriodStart,
+      endDate: newPeriodEnd,
+      isActive: true
+    });
+    toast({ title: "Period Created", description: "New hunt rotation period added." });
+    setNewPeriodName("");
+    setNewPeriodStart("");
+    setNewPeriodEnd("");
+  };
+
   return (
     <Layout>
       <div className="flex items-center justify-between mb-6">
@@ -44,6 +65,7 @@ export default function Admin() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-card/50 border border-border/50 p-1">
           <TabsTrigger value="requests" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Requests Review</TabsTrigger>
+          <TabsTrigger value="periods" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Periods & Rotations</TabsTrigger>
           <TabsTrigger value="respawns" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Respawns & Slots</TabsTrigger>
           <TabsTrigger value="users" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Users & Points</TabsTrigger>
         </TabsList>
@@ -71,7 +93,11 @@ export default function Admin() {
                               {respawns.find(r => r.id === req.respawnId)?.name}
                             </p>
                           </div>
-                          <Badge variant="outline">{req.date}</Badge>
+                          <div className="text-right">
+                            <Badge variant="outline" className="mb-1">
+                              {periods.find(p => p.id === req.periodId)?.name || 'Unknown Period'}
+                            </Badge>
+                          </div>
                         </div>
                         
                         <div className="text-xs bg-muted/30 p-2 rounded text-muted-foreground">
@@ -116,6 +142,62 @@ export default function Admin() {
                 </ScrollArea>
               </CardContent>
             </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="periods">
+          <div className="grid gap-6 md:grid-cols-2">
+             <Card className="bg-card/30 border-border/50">
+               <CardHeader>
+                 <CardTitle>Create New Period</CardTitle>
+                 <CardDescription>Define a new hunt rotation schedule</CardDescription>
+               </CardHeader>
+               <CardContent className="space-y-4">
+                 <div className="space-y-2">
+                   <Label>Period Name</Label>
+                   <Input placeholder="e.g. Week 50 - Christmas Special" value={newPeriodName} onChange={(e) => setNewPeriodName(e.target.value)} />
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                   <div className="space-y-2">
+                     <Label>Start Date</Label>
+                     <Input type="date" value={newPeriodStart} onChange={(e) => setNewPeriodStart(e.target.value)} />
+                   </div>
+                   <div className="space-y-2">
+                     <Label>End Date</Label>
+                     <Input type="date" value={newPeriodEnd} onChange={(e) => setNewPeriodEnd(e.target.value)} />
+                   </div>
+                 </div>
+                 <Button onClick={handleCreatePeriod} className="w-full mt-4">Create Period</Button>
+               </CardContent>
+             </Card>
+
+             <Card className="bg-card/30 border-border/50">
+               <CardHeader>
+                 <CardTitle>Active Periods</CardTitle>
+               </CardHeader>
+               <CardContent>
+                 <ScrollArea className="h-[300px]">
+                   <div className="space-y-3">
+                     {periods.map(p => (
+                       <div key={p.id} className="flex items-center justify-between p-3 rounded border border-border/40 bg-muted/10">
+                         <div>
+                           <p className="font-medium flex items-center gap-2">
+                             {p.name}
+                             {p.isActive && <Badge className="text-[10px] bg-primary/20 text-primary hover:bg-primary/20">Active</Badge>}
+                           </p>
+                           <p className="text-xs text-muted-foreground">
+                             {format(new Date(p.startDate), "MMM d")} - {format(new Date(p.endDate), "MMM d, yyyy")}
+                           </p>
+                         </div>
+                         <Button size="sm" variant="ghost" onClick={() => togglePeriod(p.id)}>
+                           {p.isActive ? "Deactivate" : "Activate"}
+                         </Button>
+                       </div>
+                     ))}
+                   </div>
+                 </ScrollArea>
+               </CardContent>
+             </Card>
           </div>
         </TabsContent>
 

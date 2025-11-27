@@ -3,8 +3,7 @@ import { useStore } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trophy, Clock, AlertCircle, Swords, Upload, Plus } from "lucide-react";
-import { format } from "date-fns";
+import { Trophy, Clock, AlertCircle, Swords, Upload } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -14,7 +13,7 @@ import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
-  const { currentUser, requests, respawns, slots } = useStore();
+  const { currentUser, requests, respawns, slots, periods } = useStore();
   const [isClaimOpen, setIsClaimOpen] = useState(false);
   
   const myRequests = requests
@@ -26,6 +25,7 @@ export default function Dashboard() {
     const s = slots.find(sl => sl.id === id);
     return s ? `${s.startTime} - ${s.endTime}` : 'Unknown';
   };
+  const getPeriodName = (id: string) => periods.find(p => p.id === id)?.name || 'Unknown Period';
 
   const handleClaimPoints = () => {
     setIsClaimOpen(false);
@@ -138,7 +138,7 @@ export default function Dashboard() {
                     <h4 className="font-semibold text-foreground flex items-center gap-2">
                       {getRespawnName(req.respawnId)}
                       <Badge variant="outline" className="text-[10px] h-5 border-border/50 text-muted-foreground">
-                        {req.date}
+                        {getPeriodName(req.periodId)}
                       </Badge>
                     </h4>
                     <div className="text-sm text-muted-foreground flex items-center gap-4">

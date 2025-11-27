@@ -31,13 +31,21 @@ export interface Slot {
   endTime: string;   // "16:00"
 }
 
+export interface SchedulePeriod {
+  id: string;
+  name: string;
+  startDate: string; // "2024-11-27"
+  endDate: string;   // "2024-12-10"
+  isActive: boolean;
+}
+
 export interface Request {
   id: string;
   userId: string;
   serverId: string;
   respawnId: string;
   slotId: string;
-  date: string; // ISO date string
+  periodId: string; // Replaced 'date' with 'periodId'
   status: Status;
   partyMembers: string[]; // List of character names
   rejectionReason?: string;
@@ -70,23 +78,28 @@ const MOCK_SLOTS: Slot[] = [
   { id: 'sl3', startTime: '22:00', endTime: '00:00' },
 ];
 
+const MOCK_PERIODS: SchedulePeriod[] = [
+  { id: 'p1', name: 'Week 48 - Nov Rotation', startDate: '2024-11-27', endDate: '2024-12-04', isActive: true },
+  { id: 'p2', name: 'Week 49 - Dec Rotation', startDate: '2024-12-04', endDate: '2024-12-11', isActive: false },
+];
+
 const MOCK_REQUESTS: Request[] = [
   { 
     id: 'req1', userId: '2', serverId: 's1', respawnId: 'r1', slotId: 'sl1', 
-    date: new Date().toISOString().split('T')[0], status: 'approved', 
+    periodId: 'p1', status: 'approved', 
     partyMembers: ['HunterElite', 'DruidHealer', 'SorcBlaster', 'KnightTank'],
     createdAt: Date.now() - 100000
   },
   { 
     id: 'req2', userId: '3', serverId: 's1', respawnId: 'r1', slotId: 'sl1', 
-    date: new Date().toISOString().split('T')[0], status: 'rejected', 
+    periodId: 'p1', status: 'rejected', 
     rejectionReason: 'Slot already taken by higher priority team',
     partyMembers: ['PaladinMaster', 'RandomDruid'],
     createdAt: Date.now() - 50000
   },
   { 
     id: 'req3', userId: '2', serverId: 's1', respawnId: 'r2', slotId: 'sl2', 
-    date: new Date().toISOString().split('T')[0], status: 'pending', 
+    periodId: 'p1', status: 'pending', 
     partyMembers: ['HunterElite', 'DruidHealer'],
     createdAt: Date.now()
   },
@@ -99,6 +112,7 @@ interface AppState {
   servers: Server[];
   respawns: Respawn[];
   slots: Slot[];
+  periods: SchedulePeriod[];
   requests: Request[];
   
   login: (userId: string) => void;
@@ -106,6 +120,8 @@ interface AppState {
   addRequest: (req: Omit<Request, 'id' | 'status' | 'createdAt'>) => void;
   updateRequestStatus: (id: string, status: Status, reason?: string) => void;
   addPoints: (userId: string, amount: number) => void;
+  addPeriod: (period: Omit<SchedulePeriod, 'id'>) => void;
+  togglePeriod: (id: string) => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -114,6 +130,7 @@ export const useStore = create<AppState>((set) => ({
   servers: MOCK_SERVERS,
   respawns: MOCK_RESPAWNS,
   slots: MOCK_SLOTS,
+  periods: MOCK_PERIODS,
   requests: MOCK_REQUESTS,
 
   login: (userId) => set((state) => ({ 
@@ -135,14 +152,14 @@ export const useStore = create<AppState>((set) => ({
     const targetRequest = state.requests.find(r => r.id === id);
     if (!targetRequest) return state;
 
-    // If approving, check for conflicts (same server, respawn, slot, date)
+    // If approving, check for conflicts (same server, respawn, slot, period)
     if (status === 'approved') {
       const conflicts = state.requests.filter(r => 
         r.id !== id &&
         r.serverId === targetRequest.serverId &&
         r.respawnId === targetRequest.respawnId &&
         r.slotId === targetRequest.slotId &&
-        r.date === targetRequest.date &&
+        r.periodId === targetRequest.periodId &&
         r.status === 'pending'
       );
 
@@ -167,6 +184,16 @@ export const useStore = create<AppState>((set) => ({
   addPoints: (userId, amount) => set((state) => ({
     users: state.users.map(u => 
       u.id === userId ? { ...u, points: u.points + amount } : u
+    )
+  })),
+
+  addPeriod: (period) => set((state) => ({
+    periods: [...state.periods, { ...period, id: Math.random().toString(36).substr(2, 9) }]
+  })),
+
+  togglePeriod: (id) => set((state) => ({
+    periods: state.periods.map(p => 
+      p.id === id ? { ...p, isActive: !p.isActive } : p
     )
   }))
 }));

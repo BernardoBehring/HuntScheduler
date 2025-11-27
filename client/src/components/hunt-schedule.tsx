@@ -1,4 +1,4 @@
-import { useStore } from "@/lib/mockData";
+import { useStore, SchedulePeriod } from "@/lib/mockData";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,26 +21,29 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Users, Sword, Plus } from "lucide-react";
+import { CalendarIcon, Clock, Users, Sword, Plus, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function HuntSchedule() {
-  const { servers, respawns, slots, requests, addRequest, currentUser } = useStore();
+  const { servers, respawns, slots, requests, addRequest, currentUser, periods } = useStore();
   const [selectedServer, setSelectedServer] = useState(servers[0]?.id);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  
+  // Find active period or select the first one
+  const activePeriod = periods.find(p => p.isActive) || periods[0];
+  const [selectedPeriodId, setSelectedPeriodId] = useState<string>(activePeriod?.id);
+
+  const currentPeriod = periods.find(p => p.id === selectedPeriodId);
   
   // Filter data
   const activeRespawns = respawns.filter(r => r.serverId === selectedServer);
-  const dateStr = format(selectedDate, "yyyy-MM-dd");
   
   const getRequestForSlot = (respawnId: string, slotId: string) => {
+    if (!currentPeriod) return undefined;
     return requests.find(r => 
       r.respawnId === respawnId && 
       r.slotId === slotId && 
-      r.date === dateStr &&
+      r.periodId === currentPeriod.id &&
       r.status !== 'rejected'
     );
   };
@@ -49,7 +52,7 @@ export function HuntSchedule() {
     <div className="space-y-6">
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-card/50 p-4 rounded-lg border border-border/50 backdrop-blur-sm">
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center w-full md:w-auto">
           <Select value={selectedServer} onValueChange={setSelectedServer}>
             <SelectTrigger className="w-[200px] border-primary/20 bg-background/50">
               <SelectValue placeholder="Select Server" />
@@ -61,27 +64,26 @@ export function HuntSchedule() {
             </SelectContent>
           </Select>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(
-                "w-[240px] justify-start text-left font-normal border-primary/20 bg-background/50",
-                !selectedDate && "text-muted-foreground"
-              )}>
-                <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
-                {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => date && setSelectedDate(date)}
-                initialFocus
-                className="bg-card border border-border"
-              />
-            </PopoverContent>
-          </Popover>
+          <Select value={selectedPeriodId} onValueChange={setSelectedPeriodId}>
+             <SelectTrigger className="w-[260px] border-primary/20 bg-background/50">
+               <SelectValue placeholder="Select Period" />
+             </SelectTrigger>
+             <SelectContent>
+               {periods.map(p => (
+                 <SelectItem key={p.id} value={p.id}>
+                   {p.name} ({format(new Date(p.startDate), "MMM d")} - {format(new Date(p.endDate), "MMM d")})
+                 </SelectItem>
+               ))}
+             </SelectContent>
+          </Select>
         </div>
+
+        {currentPeriod && (
+           <Badge variant="outline" className="ml-auto border-primary/30 text-primary bg-primary/5">
+             <CalendarIcon className="w-3 h-3 mr-2" />
+             {format(new Date(currentPeriod.startDate), "MMM d, yyyy")} — {format(new Date(currentPeriod.endDate), "MMM d, yyyy")}
+           </Badge>
+        )}
       </div>
 
       {/* Schedule Grid */}
@@ -135,12 +137,14 @@ export function HuntSchedule() {
                             <span className="opacity-70">User #{request.userId}</span>
                           </div>
                         ) : (
-                          <RequestDialog 
-                            server={selectedServer!} 
-                            respawn={respawn} 
-                            slot={slot} 
-                            date={dateStr}
-                          />
+                          currentPeriod ? (
+                            <RequestDialog 
+                              server={selectedServer!} 
+                              respawn={respawn} 
+                              slot={slot} 
+                              period={currentPeriod}
+                            />
+                          ) : <span className="text-muted-foreground text-xs">No Active Period</span>
                         )}
                       </td>
                     );
@@ -155,7 +159,7 @@ export function HuntSchedule() {
   );
 }
 
-function RequestDialog({ server, respawn, slot, date }: { server: string, respawn: any, slot: any, date: string }) {
+function RequestDialog({ server, respawn, slot, period }: { server: string, respawn: any, slot: any, period: SchedulePeriod }) {
   const { addRequest, currentUser } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [party, setParty] = useState(['', '', '', '']);
@@ -166,7 +170,7 @@ function RequestDialog({ server, respawn, slot, date }: { server: string, respaw
       serverId: server,
       respawnId: respawn.id,
       slotId: slot.id,
-      date: date,
+      periodId: period.id,
       partyMembers: party.filter(p => p.trim() !== '')
     });
     setIsOpen(false);
@@ -191,9 +195,20 @@ function RequestDialog({ server, respawn, slot, date }: { server: string, respaw
           <DialogTitle className="font-display text-primary">Request Hunt</DialogTitle>
           <DialogDescription>
             {respawn.name} • {slot.startTime} - {slot.endTime}
+            <br/>
+            <span className="text-xs text-primary mt-1 block font-semibold">
+              Period: {period.name} ({format(new Date(period.startDate), "MMM d")} - {format(new Date(period.endDate), "MMM d")})
+            </span>
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          <div className="bg-muted/20 p-3 rounded-md border border-border/50 flex items-start gap-2">
+             <AlertCircle className="h-4 w-4 text-primary mt-0.5" />
+             <p className="text-xs text-muted-foreground">
+               You are requesting this slot for the entire duration of the selected period. Ensure your team can commit to this schedule.
+             </p>
+          </div>
+
           <div className="space-y-2">
             <Label>Party Leader</Label>
             <Input value={currentUser?.username} disabled className="bg-muted/50" />
@@ -216,7 +231,7 @@ function RequestDialog({ server, respawn, slot, date }: { server: string, respaw
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleSubmit} className="bg-primary text-primary-foreground hover:bg-primary/90">
-            Submit Request
+            Confirm Request
           </Button>
         </DialogFooter>
       </DialogContent>
