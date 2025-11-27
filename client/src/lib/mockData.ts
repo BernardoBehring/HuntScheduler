@@ -123,6 +123,8 @@ interface AppState {
   addPeriod: (period: Omit<SchedulePeriod, 'id'>) => void;
   togglePeriod: (id: string) => void;
   addRespawn: (respawn: Omit<Respawn, 'id'>) => void;
+  updateRespawn: (id: string, respawn: Partial<Omit<Respawn, 'id'>>) => void;
+  deleteRespawn: (id: string) => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -200,5 +202,13 @@ export const useStore = create<AppState>((set) => ({
 
   addRespawn: (respawn) => set((state) => ({
     respawns: [...state.respawns, { ...respawn, id: Math.random().toString(36).substr(2, 9) }]
+  })),
+
+  updateRespawn: (id, respawn) => set((state) => ({
+    respawns: state.respawns.map(r => r.id === id ? { ...r, ...respawn } : r)
+  })),
+
+  deleteRespawn: (id) => set((state) => ({
+    respawns: state.respawns.filter(r => r.id !== id)
   }))
 }));

@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Admin() {
-  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn } = useStore();
+  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
 
   // Derived data
@@ -27,8 +27,11 @@ export default function Admin() {
   const [newPeriodStart, setNewPeriodStart] = useState("");
   const [newPeriodEnd, setNewPeriodEnd] = useState("");
 
-  // New Respawn State
+  // Respawn State
   const [isAddRespawnOpen, setIsAddRespawnOpen] = useState(false);
+  const [isEditRespawnOpen, setIsEditRespawnOpen] = useState(false);
+  const [editingRespawnId, setEditingRespawnId] = useState<string | null>(null);
+  
   const [newRespawnName, setNewRespawnName] = useState("");
   const [newRespawnServer, setNewRespawnServer] = useState(servers[0]?.id || "");
   const [newRespawnDifficulty, setNewRespawnDifficulty] = useState<Respawn['difficulty']>("medium");
@@ -62,6 +65,23 @@ export default function Admin() {
     setNewPeriodEnd("");
   };
 
+  const openAddRespawnDialog = () => {
+    setNewRespawnName("");
+    setNewRespawnServer(servers[0]?.id || "");
+    setNewRespawnDifficulty("medium");
+    setNewRespawnMaxPlayers("4");
+    setIsAddRespawnOpen(true);
+  };
+
+  const openEditRespawnDialog = (respawn: Respawn) => {
+    setEditingRespawnId(respawn.id);
+    setNewRespawnName(respawn.name);
+    setNewRespawnServer(respawn.serverId);
+    setNewRespawnDifficulty(respawn.difficulty);
+    setNewRespawnMaxPlayers(respawn.maxPlayers.toString());
+    setIsEditRespawnOpen(true);
+  };
+
   const handleAddRespawn = () => {
     if (!newRespawnName || !newRespawnServer) return;
     addRespawn({
@@ -71,8 +91,27 @@ export default function Admin() {
       maxPlayers: parseInt(newRespawnMaxPlayers) || 4
     });
     toast({ title: "Respawn Added", description: "New respawn area has been created." });
-    setNewRespawnName("");
     setIsAddRespawnOpen(false);
+  };
+
+  const handleUpdateRespawn = () => {
+    if (!editingRespawnId || !newRespawnName || !newRespawnServer) return;
+    updateRespawn(editingRespawnId, {
+      name: newRespawnName,
+      serverId: newRespawnServer,
+      difficulty: newRespawnDifficulty,
+      maxPlayers: parseInt(newRespawnMaxPlayers) || 4
+    });
+    toast({ title: "Respawn Updated", description: "Respawn area details updated." });
+    setIsEditRespawnOpen(false);
+    setEditingRespawnId(null);
+  };
+
+  const handleDeleteRespawn = (id: string) => {
+    if (confirm("Are you sure you want to delete this respawn?")) {
+      deleteRespawn(id);
+      toast({ title: "Respawn Deleted", description: "Respawn area has been removed." });
+    }
   };
 
   return (
@@ -270,7 +309,7 @@ export default function Admin() {
               
               <Dialog open={isAddRespawnOpen} onOpenChange={setIsAddRespawnOpen}>
                 <DialogTrigger asChild>
-                  <Button><Plus className="h-4 w-4 mr-2" /> Add Respawn</Button>
+                  <Button onClick={openAddRespawnDialog}><Plus className="h-4 w-4 mr-2" /> Add Respawn</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
@@ -321,6 +360,57 @@ export default function Admin() {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+
+              <Dialog open={isEditRespawnOpen} onOpenChange={setIsEditRespawnOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Respawn</DialogTitle>
+                    <DialogDescription>Update details for this hunting area.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                      <Label>Respawn Name</Label>
+                      <Input placeholder="e.g. Library - Ice" value={newRespawnName} onChange={(e) => setNewRespawnName(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Server</Label>
+                      <Select value={newRespawnServer} onValueChange={setNewRespawnServer}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Server" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {servers.map(s => (
+                            <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                        <Label>Difficulty</Label>
+                        <Select value={newRespawnDifficulty} onValueChange={(v) => setNewRespawnDifficulty(v as any)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="easy">Easy</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="hard">Hard</SelectItem>
+                            <SelectItem value="nightmare">Nightmare</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Max Players</Label>
+                        <Input type="number" min="1" max="10" value={newRespawnMaxPlayers} onChange={(e) => setNewRespawnMaxPlayers(e.target.value)} />
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleUpdateRespawn}>Save Changes</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
@@ -331,8 +421,8 @@ export default function Admin() {
                        <p className="text-xs text-muted-foreground">Max Players: {r.maxPlayers} • Difficulty: {r.difficulty}</p>
                      </div>
                      <div className="flex gap-2">
-                       <Button size="sm" variant="ghost">Edit</Button>
-                       <Button size="sm" variant="ghost" className="text-destructive"><Trash2 className="h-4 w-4"/></Button>
+                       <Button size="sm" variant="ghost" onClick={() => openEditRespawnDialog(r)}>Edit</Button>
+                       <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleDeleteRespawn(r.id)}><Trash2 className="h-4 w-4"/></Button>
                      </div>
                    </div>
                  ))}
