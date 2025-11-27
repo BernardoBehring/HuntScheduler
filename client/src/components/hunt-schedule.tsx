@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Users, Sword } from "lucide-react";
+import { CalendarIcon, Clock, Users, Sword, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function HuntSchedule() {
@@ -176,12 +176,12 @@ function RequestDialog({ server, respawn, slot, date }: { server: string, respaw
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
-          variant="ghost" 
+          variant="outline" 
           size="sm" 
-          className="w-full h-full min-h-[60px] border border-dashed border-border/40 hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary"
+          className="w-full h-full min-h-[45px] border-dashed border-primary/30 hover:border-primary hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all group"
         >
-          <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider">
-            <Sword className="h-3 w-3" />
+          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider group-hover:scale-105 transition-transform">
+            <Plus className="h-3 w-3" />
             Request
           </span>
         </Button>
