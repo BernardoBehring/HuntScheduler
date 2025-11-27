@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -21,6 +22,12 @@ function ProtectedRoute({ component: Component, adminOnly = false }: { component
 }
 
 function Router() {
+  const loadFromApi = useStore((state) => state.loadFromApi);
+
+  useEffect(() => {
+    loadFromApi();
+  }, [loadFromApi]);
+
   return (
     <Switch>
       <Route path="/login" component={Login} />

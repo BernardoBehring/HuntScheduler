@@ -44,8 +44,8 @@ public class AppDbContext : DbContext
         );
 
         modelBuilder.Entity<SchedulePeriod>().HasData(
-            new SchedulePeriod { Id = 1, Name = "Week 48 - Nov Rotation", StartDate = new DateTime(2024, 11, 27), EndDate = new DateTime(2024, 12, 4), IsActive = true },
-            new SchedulePeriod { Id = 2, Name = "Week 49 - Dec Rotation", StartDate = new DateTime(2024, 12, 4), EndDate = new DateTime(2024, 12, 11), IsActive = false }
+            new SchedulePeriod { Id = 1, Name = "Week 48 - Nov Rotation", StartDate = new DateTime(2024, 11, 27, 0, 0, 0, DateTimeKind.Utc), EndDate = new DateTime(2024, 12, 4, 0, 0, 0, DateTimeKind.Utc), IsActive = true },
+            new SchedulePeriod { Id = 2, Name = "Week 49 - Dec Rotation", StartDate = new DateTime(2024, 12, 4, 0, 0, 0, DateTimeKind.Utc), EndDate = new DateTime(2024, 12, 11, 0, 0, 0, DateTimeKind.Utc), IsActive = false }
         );
     }
 }

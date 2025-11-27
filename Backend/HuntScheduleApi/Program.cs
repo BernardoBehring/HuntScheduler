@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using HuntScheduleApi.Data;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +13,26 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
-if (string.IsNullOrEmpty(connectionString))
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (string.IsNullOrEmpty(databaseUrl))
 {
     throw new InvalidOperationException("DATABASE_URL environment variable is not set.");
 }
+
+string connectionString;
+var databaseUri = new Uri(databaseUrl);
+var userInfo = databaseUri.UserInfo.Split(':');
+
+var npgsqlBuilder = new NpgsqlConnectionStringBuilder
+{
+    Host = databaseUri.Host,
+    Port = databaseUri.Port > 0 ? databaseUri.Port : 5432,
+    Username = userInfo[0],
+    Password = userInfo.Length > 1 ? userInfo[1] : "",
+    Database = databaseUri.LocalPath.TrimStart('/').Split('?')[0],
+    SslMode = SslMode.Require
+};
+connectionString = npgsqlBuilder.ToString();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));

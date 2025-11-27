@@ -243,10 +243,10 @@ export default function Admin() {
                      {periods.map(p => (
                        <div key={p.id} className="flex items-center justify-between p-3 rounded border border-border/40 bg-muted/10">
                          <div>
-                           <p className="font-medium flex items-center gap-2">
+                           <span className="font-medium flex items-center gap-2">
                              {p.name}
                              {p.isActive && <Badge className="text-[10px] bg-primary/20 text-primary hover:bg-primary/20">Active</Badge>}
-                           </p>
+                           </span>
                            <p className="text-xs text-muted-foreground">
                              {format(new Date(p.startDate), "MMM d")} - {format(new Date(p.endDate), "MMM d, yyyy")}
                            </p>
