@@ -1,5 +1,5 @@
 import { Layout } from "@/components/layout";
-import { useStore, Status } from "@/lib/mockData";
+import { useStore, Status, Respawn } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,9 +11,11 @@ import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Admin() {
-  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod } = useStore();
+  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
 
   // Derived data
@@ -24,6 +26,13 @@ export default function Admin() {
   const [newPeriodName, setNewPeriodName] = useState("");
   const [newPeriodStart, setNewPeriodStart] = useState("");
   const [newPeriodEnd, setNewPeriodEnd] = useState("");
+
+  // New Respawn State
+  const [isAddRespawnOpen, setIsAddRespawnOpen] = useState(false);
+  const [newRespawnName, setNewRespawnName] = useState("");
+  const [newRespawnServer, setNewRespawnServer] = useState(servers[0]?.id || "");
+  const [newRespawnDifficulty, setNewRespawnDifficulty] = useState<Respawn['difficulty']>("medium");
+  const [newRespawnMaxPlayers, setNewRespawnMaxPlayers] = useState("4");
 
   const handleReview = (id: string, status: Status, reason?: string) => {
     updateRequestStatus(id, status, reason);
@@ -53,6 +62,19 @@ export default function Admin() {
     setNewPeriodEnd("");
   };
 
+  const handleAddRespawn = () => {
+    if (!newRespawnName || !newRespawnServer) return;
+    addRespawn({
+      name: newRespawnName,
+      serverId: newRespawnServer,
+      difficulty: newRespawnDifficulty,
+      maxPlayers: parseInt(newRespawnMaxPlayers) || 4
+    });
+    toast({ title: "Respawn Added", description: "New respawn area has been created." });
+    setNewRespawnName("");
+    setIsAddRespawnOpen(false);
+  };
+
   return (
     <Layout>
       <div className="flex items-center justify-between mb-6">
@@ -70,6 +92,7 @@ export default function Admin() {
           <TabsTrigger value="users" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Users & Points</TabsTrigger>
         </TabsList>
 
+        {/* ... (Requests, Periods, Users tabs content remain unchanged) ... */}
         <TabsContent value="requests" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             {/* Pending Column */}
@@ -244,7 +267,60 @@ export default function Admin() {
                 <CardTitle>Server Configuration</CardTitle>
                 <CardDescription>Manage respawn areas and global settings</CardDescription>
               </div>
-              <Button><Plus className="h-4 w-4 mr-2" /> Add Respawn</Button>
+              
+              <Dialog open={isAddRespawnOpen} onOpenChange={setIsAddRespawnOpen}>
+                <DialogTrigger asChild>
+                  <Button><Plus className="h-4 w-4 mr-2" /> Add Respawn</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Respawn</DialogTitle>
+                    <DialogDescription>Create a new hunting area for players to book.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                      <Label>Respawn Name</Label>
+                      <Input placeholder="e.g. Library - Ice" value={newRespawnName} onChange={(e) => setNewRespawnName(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Server</Label>
+                      <Select value={newRespawnServer} onValueChange={setNewRespawnServer}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Server" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {servers.map(s => (
+                            <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                        <Label>Difficulty</Label>
+                        <Select value={newRespawnDifficulty} onValueChange={(v) => setNewRespawnDifficulty(v as any)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="easy">Easy</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="hard">Hard</SelectItem>
+                            <SelectItem value="nightmare">Nightmare</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Max Players</Label>
+                        <Input type="number" min="1" max="10" value={newRespawnMaxPlayers} onChange={(e) => setNewRespawnMaxPlayers(e.target.value)} />
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleAddRespawn}>Create Respawn</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">

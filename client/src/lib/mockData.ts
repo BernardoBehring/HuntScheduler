@@ -122,6 +122,7 @@ interface AppState {
   addPoints: (userId: string, amount: number) => void;
   addPeriod: (period: Omit<SchedulePeriod, 'id'>) => void;
   togglePeriod: (id: string) => void;
+  addRespawn: (respawn: Omit<Respawn, 'id'>) => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -195,5 +196,9 @@ export const useStore = create<AppState>((set) => ({
     periods: state.periods.map(p => 
       p.id === id ? { ...p, isActive: !p.isActive } : p
     )
+  })),
+
+  addRespawn: (respawn) => set((state) => ({
+    respawns: [...state.respawns, { ...respawn, id: Math.random().toString(36).substr(2, 9) }]
   }))
 }));
