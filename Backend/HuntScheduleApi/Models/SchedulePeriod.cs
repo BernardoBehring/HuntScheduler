@@ -1,0 +1,21 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace HuntScheduleApi.Models;
+
+public class SchedulePeriod
+{
+    [Key]
+    public int Id { get; set; }
+
+    [Required]
+    [MaxLength(150)]
+    public string Name { get; set; } = string.Empty;
+
+    [Required]
+    public DateTime StartDate { get; set; }
+
+    [Required]
+    public DateTime EndDate { get; set; }
+
+    public bool IsActive { get; set; } = true;
+}
