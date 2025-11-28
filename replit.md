@@ -4,36 +4,63 @@ A full-stack Tibia MMO hunt schedule management application featuring period-bas
 
 ## Architecture Overview
 
-### Backend (C# ASP.NET Core)
-Located in `Backend/HuntScheduleApi/`:
+### Three-Layer Architecture
+The backend follows a clean three-layer architecture with separated concerns:
 
+```
+HuntSchedule.sln
+├── HuntScheduleApi/          (API Layer - Controllers)
+├── HuntSchedule.Services/    (Business Logic Layer)
+└── HuntSchedule.Persistence/ (Data Access Layer)
+```
+
+**Dependency Chain**: API → Services → Persistence
+
+### API Layer (`Backend/HuntScheduleApi/`)
 - **Framework**: ASP.NET Core 8.0 Web API
-- **ORM**: Entity Framework Core with PostgreSQL (Npgsql)
-- **Pattern**: Code First with seeded data
+- **Controllers**: Thin controllers that inject and use services
+- **No direct DbContext access** - all data operations go through services
+- **DTOs**: Uses DTOs from Services layer for request/response
 
-### Models
+### Services Layer (`Backend/HuntSchedule.Services/`)
+- **Business Logic**: All business rules implemented here
+- **Interfaces**: `Interfaces/` folder contains service contracts
+- **Implementations**: `Implementations/` folder contains service logic
+- **External**: TibiaData API validator for character validation
+- **DTOs**: Request/response DTOs for API operations
+- **Results**: ServiceResult pattern for operation outcomes
+
+### Persistence Layer (`Backend/HuntSchedule.Persistence/`)
+- **ORM**: Entity Framework Core with PostgreSQL (Npgsql)
+- **Entities**: Domain models in `Entities/` folder
+- **Context**: AppDbContext with configurations and seed data
+- **Repository Pattern**: Generic base repository + specific repositories
+- **Unit of Work Pattern**: Transaction management across repositories
+
+### Entity Models
+Located in `Backend/HuntSchedule.Persistence/Entities/`:
 - `User` - Guild members with roleId (FK) and points
 - `Role` - Lookup table for user roles (admin/user)
-- `Character` - Player characters linked to users (optional) and servers (name, serverId, vocation, level, isMain, isExternal)
+- `Character` - Player characters linked to users (optional) and servers
 - `Server` - Game servers (Antica, Wintera, etc.)
 - `Respawn` - Hunt locations with difficultyId (FK) and max players
 - `Slot` - Time slots for hunting sessions (with serverId FK)
 - `SchedulePeriod` - Weekly rotation periods (with serverId FK)
 - `Request` - Hunt booking requests with statusId (FK) tracking
-- `RequestPartyMember` - Join table linking Request to Character (party members for hunts)
-- `RequestStatus` - Lookup table for status values (pending/approved/rejected/cancelled)
-- `Difficulty` - Lookup table for difficulty levels (easy/medium/hard/nightmare)
+- `RequestPartyMember` - Join table linking Request to Character
+- `RequestStatus` - Lookup table for status values
+- `Difficulty` - Lookup table for difficulty levels
 
 ### TibiaData Character Validation
-- All character operations are validated against the TibiaData API (https://api.tibiadata.com/v4/character/{name})
-- Character creation: Name must exist on Tibia.com, vocation/level are synced from API
+- Located in `Backend/HuntSchedule.Services/External/`
+- All character operations validated against TibiaData API
+- Character creation: Name must exist on Tibia.com, vocation/level synced
 - Character update: Re-validates if name or server changes
-- Party members can be existing guild characters or external characters not registered in the system
-- Validated external characters are stored with isExternal=true and externalVerifiedAt timestamp
-- Server must match between the character's actual world and the selected server
+- External characters stored with isExternal=true and externalVerifiedAt
+- Server must match character's actual world
 
 ### API Endpoints
-All endpoints are prefixed with `/api`:
+All endpoints prefixed with `/api`:
 
 - `/api/users` - User management and points
 - `/api/roles` - Role lookup table (admin/user)
@@ -43,6 +70,8 @@ All endpoints are prefixed with `/api`:
 - `/api/slots` - Time slot configuration
 - `/api/periods` - Schedule period management
 - `/api/requests` - Hunt request booking and approval
+- `/api/statuses` - Request status lookup
+- `/api/difficulties` - Difficulty level lookup
 
 ### Frontend (React + TypeScript)
 Located in `client/src/`:
@@ -79,14 +108,30 @@ Required secrets:
 ## Database Schema
 
 The application uses PostgreSQL with the following tables:
-- Users
-- Servers
-- Respawns
-- Slots
-- SchedulePeriods
-- Requests
+- Users, Roles
+- Characters, Servers
+- Respawns, Difficulties
+- Slots, SchedulePeriods
+- Requests, RequestPartyMembers, RequestStatuses
 
 Seed data is automatically created on first run.
+
+## Design Patterns
+
+### Repository Pattern
+- Generic `IRepository<T>` base interface
+- Specific repositories for complex queries (e.g., `ICharacterRepository`, `IRequestRepository`)
+- Repositories handle data access abstraction
+
+### Unit of Work Pattern
+- `IUnitOfWork` manages all repositories
+- Transaction support via `BeginTransactionAsync()`
+- Single `SaveChangesAsync()` for atomic operations
+
+### Service Layer Pattern
+- Services contain all business logic
+- Controllers are thin wrappers that call services
+- `ServiceResult<T>` for returning operation outcomes
 
 ## Design System
 
@@ -103,3 +148,6 @@ Seed data is automatically created on first run.
 - Dark Fantasy aesthetic theme
 - Period-based scheduling (weekly rotations)
 - Role-based access control (admin/user)
+- Clean architecture with separated layers
+- One class per file convention
+- Business logic in services, not controllers
