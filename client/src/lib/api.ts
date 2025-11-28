@@ -13,23 +13,43 @@ export interface Server {
   region: string;
 }
 
+export interface RequestStatus {
+  id: number;
+  name: string;
+  description?: string;
+  color?: string;
+}
+
+export interface Difficulty {
+  id: number;
+  name: string;
+  description?: string;
+  color?: string;
+  sortOrder: number;
+}
+
 export interface Respawn {
   id: number;
   serverId: number;
   server?: Server;
   name: string;
-  difficulty: 'easy' | 'medium' | 'hard' | 'nightmare';
+  difficultyId: number;
+  difficulty?: Difficulty;
   maxPlayers: number;
 }
 
 export interface Slot {
   id: number;
+  serverId: number;
+  server?: Server;
   startTime: string;
   endTime: string;
 }
 
 export interface SchedulePeriod {
   id: number;
+  serverId: number;
+  server?: Server;
   name: string;
   startDate: string;
   endDate: string;
@@ -48,7 +68,8 @@ export interface Request {
   slot?: Slot;
   periodId: number;
   period?: SchedulePeriod;
-  status: 'pending' | 'approved' | 'rejected';
+  statusId: number;
+  status?: RequestStatus;
   partyMembers: string[];
   rejectionReason?: string;
   createdAt: string;
@@ -104,18 +125,32 @@ export const api = {
       fetch(`${API_BASE}/servers/${id}`, { method: 'DELETE' }).then(r => handleResponse(r)),
   },
 
+  statuses: {
+    getAll: (): Promise<RequestStatus[]> =>
+      fetch(`${API_BASE}/statuses`).then(r => handleResponse(r)),
+    get: (id: number): Promise<RequestStatus> =>
+      fetch(`${API_BASE}/statuses/${id}`).then(r => handleResponse(r)),
+  },
+
+  difficulties: {
+    getAll: (): Promise<Difficulty[]> =>
+      fetch(`${API_BASE}/difficulties`).then(r => handleResponse(r)),
+    get: (id: number): Promise<Difficulty> =>
+      fetch(`${API_BASE}/difficulties/${id}`).then(r => handleResponse(r)),
+  },
+
   respawns: {
     getAll: (): Promise<Respawn[]> =>
       fetch(`${API_BASE}/respawns`).then(r => handleResponse(r)),
     get: (id: number): Promise<Respawn> =>
       fetch(`${API_BASE}/respawns/${id}`).then(r => handleResponse(r)),
-    create: (respawn: Omit<Respawn, 'id'>): Promise<Respawn> =>
+    create: (respawn: Omit<Respawn, 'id' | 'server' | 'difficulty'>): Promise<Respawn> =>
       fetch(`${API_BASE}/respawns`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(respawn),
       }).then(r => handleResponse(r)),
-    update: (id: number, respawn: Respawn): Promise<void> =>
+    update: (id: number, respawn: Omit<Respawn, 'server' | 'difficulty'>): Promise<void> =>
       fetch(`${API_BASE}/respawns/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -130,7 +165,7 @@ export const api = {
       fetch(`${API_BASE}/slots`).then(r => handleResponse(r)),
     get: (id: number): Promise<Slot> =>
       fetch(`${API_BASE}/slots/${id}`).then(r => handleResponse(r)),
-    create: (slot: Omit<Slot, 'id'>): Promise<Slot> =>
+    create: (slot: Omit<Slot, 'id' | 'server'>): Promise<Slot> =>
       fetch(`${API_BASE}/slots`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -145,7 +180,7 @@ export const api = {
       fetch(`${API_BASE}/periods`).then(r => handleResponse(r)),
     get: (id: number): Promise<SchedulePeriod> =>
       fetch(`${API_BASE}/periods/${id}`).then(r => handleResponse(r)),
-    create: (period: Omit<SchedulePeriod, 'id'>): Promise<SchedulePeriod> =>
+    create: (period: Omit<SchedulePeriod, 'id' | 'server'>): Promise<SchedulePeriod> =>
       fetch(`${API_BASE}/periods`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -162,17 +197,17 @@ export const api = {
       fetch(`${API_BASE}/requests`).then(r => handleResponse(r)),
     get: (id: number): Promise<Request> =>
       fetch(`${API_BASE}/requests/${id}`).then(r => handleResponse(r)),
-    create: (request: Omit<Request, 'id' | 'status' | 'createdAt'>): Promise<Request> =>
+    create: (request: Omit<Request, 'id' | 'statusId' | 'status' | 'createdAt' | 'user' | 'server' | 'respawn' | 'slot' | 'period'>): Promise<Request> =>
       fetch(`${API_BASE}/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
       }).then(r => handleResponse(r)),
-    updateStatus: (id: number, status: string, reason?: string): Promise<void> =>
+    updateStatus: (id: number, statusId: number, reason?: string): Promise<void> =>
       fetch(`${API_BASE}/requests/${id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, reason }),
+        body: JSON.stringify({ statusId, reason }),
       }).then(r => handleResponse(r)),
     delete: (id: number): Promise<void> =>
       fetch(`${API_BASE}/requests/${id}`, { method: 'DELETE' }).then(r => handleResponse(r)),

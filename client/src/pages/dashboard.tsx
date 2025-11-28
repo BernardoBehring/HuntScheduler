@@ -164,7 +164,7 @@ export default function Dashboard() {
                     req.status === 'rejected' ? "bg-destructive/20 text-destructive hover:bg-destructive/30 border-destructive/20" :
                     "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/20"
                   }>
-                    {req.status.toUpperCase()}
+                    {(req.status || 'pending').toUpperCase()}
                   </Badge>
                 </div>
               ))}

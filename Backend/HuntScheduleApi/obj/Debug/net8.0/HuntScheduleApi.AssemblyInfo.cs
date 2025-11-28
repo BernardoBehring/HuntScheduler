@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HuntScheduleApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f57de02ad30330ca1e22278c82a5bb4adee8745")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f762078cc3a5420df41ad4236f186ad7c6482d09")]
 [assembly: System.Reflection.AssemblyProductAttribute("HuntScheduleApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HuntScheduleApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

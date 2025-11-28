@@ -1,5 +1,5 @@
 import { Layout } from "@/components/layout";
-import { useStore, Status, Respawn } from "@/lib/mockData";
+import { useStore, Respawn } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,15 +34,18 @@ export default function Admin() {
   
   const [newRespawnName, setNewRespawnName] = useState("");
   const [newRespawnServer, setNewRespawnServer] = useState(servers[0]?.id || "");
-  const [newRespawnDifficulty, setNewRespawnDifficulty] = useState<Respawn['difficulty']>("medium");
+  const [newRespawnDifficulty, setNewRespawnDifficulty] = useState("2");
   const [newRespawnMaxPlayers, setNewRespawnMaxPlayers] = useState("4");
+  
+  const [newPeriodServer, setNewPeriodServer] = useState(servers[0]?.id || "");
 
-  const handleReview = (id: string, status: Status, reason?: string) => {
-    updateRequestStatus(id, status, reason);
+  const handleReview = (id: string, statusId: string, reason?: string) => {
+    updateRequestStatus(id, statusId, reason);
+    const statusName = statusId === '2' ? 'approved' : 'rejected';
     toast({
-      title: `Request ${status}`,
-      description: `The hunt request has been ${status}.`,
-      variant: status === 'approved' ? 'default' : 'destructive',
+      title: `Request ${statusName}`,
+      description: `The hunt request has been ${statusName}.`,
+      variant: statusId === '2' ? 'default' : 'destructive',
     });
   };
 
@@ -52,8 +55,9 @@ export default function Admin() {
   };
 
   const handleCreatePeriod = () => {
-    if (!newPeriodName || !newPeriodStart || !newPeriodEnd) return;
+    if (!newPeriodName || !newPeriodStart || !newPeriodEnd || !newPeriodServer) return;
     addPeriod({
+      serverId: newPeriodServer,
       name: newPeriodName,
       startDate: newPeriodStart,
       endDate: newPeriodEnd,
@@ -68,7 +72,7 @@ export default function Admin() {
   const openAddRespawnDialog = () => {
     setNewRespawnName("");
     setNewRespawnServer(servers[0]?.id || "");
-    setNewRespawnDifficulty("medium");
+    setNewRespawnDifficulty("2");
     setNewRespawnMaxPlayers("4");
     setIsAddRespawnOpen(true);
   };
@@ -77,7 +81,7 @@ export default function Admin() {
     setEditingRespawnId(respawn.id);
     setNewRespawnName(respawn.name);
     setNewRespawnServer(respawn.serverId);
-    setNewRespawnDifficulty(respawn.difficulty);
+    setNewRespawnDifficulty(respawn.difficultyId);
     setNewRespawnMaxPlayers(respawn.maxPlayers.toString());
     setIsEditRespawnOpen(true);
   };
@@ -87,7 +91,7 @@ export default function Admin() {
     addRespawn({
       name: newRespawnName,
       serverId: newRespawnServer,
-      difficulty: newRespawnDifficulty,
+      difficultyId: newRespawnDifficulty,
       maxPlayers: parseInt(newRespawnMaxPlayers) || 4
     });
     toast({ title: "Respawn Added", description: "New respawn area has been created." });
@@ -99,7 +103,7 @@ export default function Admin() {
     updateRespawn(editingRespawnId, {
       name: newRespawnName,
       serverId: newRespawnServer,
-      difficulty: newRespawnDifficulty,
+      difficultyId: newRespawnDifficulty,
       maxPlayers: parseInt(newRespawnMaxPlayers) || 4
     });
     toast({ title: "Respawn Updated", description: "Respawn area details updated." });
@@ -167,10 +171,10 @@ export default function Admin() {
                         </div>
 
                         <div className="flex gap-2 pt-2">
-                          <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleReview(req.id, 'approved')}>
+                          <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleReview(req.id, '2')}>
                             <Check className="h-4 w-4 mr-1" /> Approve
                           </Button>
-                          <Button size="sm" variant="destructive" className="flex-1" onClick={() => handleReview(req.id, 'rejected', 'Admin declined')}>
+                          <Button size="sm" variant="destructive" className="flex-1" onClick={() => handleReview(req.id, '3', 'Admin declined')}>
                             <X className="h-4 w-4 mr-1" /> Reject
                           </Button>
                         </div>
@@ -218,6 +222,19 @@ export default function Admin() {
                  <div className="space-y-2">
                    <Label>Period Name</Label>
                    <Input placeholder="e.g. Week 50 - Christmas Special" value={newPeriodName} onChange={(e) => setNewPeriodName(e.target.value)} />
+                 </div>
+                 <div className="space-y-2">
+                   <Label>Server</Label>
+                   <Select value={newPeriodServer} onValueChange={setNewPeriodServer}>
+                     <SelectTrigger>
+                       <SelectValue placeholder="Select Server" />
+                     </SelectTrigger>
+                     <SelectContent>
+                       {servers.map(s => (
+                         <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                       ))}
+                     </SelectContent>
+                   </Select>
                  </div>
                  <div className="grid grid-cols-2 gap-4">
                    <div className="space-y-2">
@@ -337,15 +354,15 @@ export default function Admin() {
                     <div className="grid grid-cols-2 gap-4">
                        <div className="space-y-2">
                         <Label>Difficulty</Label>
-                        <Select value={newRespawnDifficulty} onValueChange={(v) => setNewRespawnDifficulty(v as any)}>
+                        <Select value={newRespawnDifficulty} onValueChange={setNewRespawnDifficulty}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="easy">Easy</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="hard">Hard</SelectItem>
-                            <SelectItem value="nightmare">Nightmare</SelectItem>
+                            <SelectItem value="1">Easy</SelectItem>
+                            <SelectItem value="2">Medium</SelectItem>
+                            <SelectItem value="3">Hard</SelectItem>
+                            <SelectItem value="4">Nightmare</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -388,15 +405,15 @@ export default function Admin() {
                     <div className="grid grid-cols-2 gap-4">
                        <div className="space-y-2">
                         <Label>Difficulty</Label>
-                        <Select value={newRespawnDifficulty} onValueChange={(v) => setNewRespawnDifficulty(v as any)}>
+                        <Select value={newRespawnDifficulty} onValueChange={setNewRespawnDifficulty}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="easy">Easy</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="hard">Hard</SelectItem>
-                            <SelectItem value="nightmare">Nightmare</SelectItem>
+                            <SelectItem value="1">Easy</SelectItem>
+                            <SelectItem value="2">Medium</SelectItem>
+                            <SelectItem value="3">Hard</SelectItem>
+                            <SelectItem value="4">Nightmare</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
