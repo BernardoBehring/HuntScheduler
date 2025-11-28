@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HuntScheduleApi.Models;
 
@@ -12,10 +13,14 @@ public class User
     public string Username { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(20)]
-    public string Role { get; set; } = "user";
+    public int RoleId { get; set; }
+    
+    [ForeignKey("RoleId")]
+    public Role? Role { get; set; }
 
     public int Points { get; set; } = 0;
 
     public ICollection<Request> Requests { get; set; } = new List<Request>();
+    
+    public ICollection<Character> Characters { get; set; } = new List<Character>();
 }
