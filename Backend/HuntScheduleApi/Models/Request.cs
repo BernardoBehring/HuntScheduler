@@ -44,7 +44,7 @@ public class Request
     [ForeignKey("StatusId")]
     public RequestStatus? Status { get; set; }
 
-    public string[] PartyMembers { get; set; } = Array.Empty<string>();
+    public ICollection<RequestPartyMember> PartyMembers { get; set; } = new List<RequestPartyMember>();
 
     [MaxLength(500)]
     public string? RejectionReason { get; set; }

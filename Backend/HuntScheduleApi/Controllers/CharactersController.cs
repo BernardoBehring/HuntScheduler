@@ -46,13 +46,16 @@ public class CharactersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Character>> CreateCharacter(Character character)
     {
-        var user = await _context.Users.FindAsync(character.UserId);
-        if (user == null) return BadRequest("User not found");
+        if (character.UserId.HasValue)
+        {
+            var user = await _context.Users.FindAsync(character.UserId.Value);
+            if (user == null) return BadRequest("User not found");
+        }
 
         var server = await _context.Servers.FindAsync(character.ServerId);
         if (server == null) return BadRequest("Server not found");
 
-        if (character.IsMain)
+        if (character.IsMain && character.UserId.HasValue)
         {
             var existingMain = await _context.Characters
                 .Where(c => c.UserId == character.UserId && c.IsMain)
@@ -73,13 +76,16 @@ public class CharactersController : ControllerBase
     {
         if (id != character.Id) return BadRequest();
 
-        var user = await _context.Users.FindAsync(character.UserId);
-        if (user == null) return BadRequest("User not found");
+        if (character.UserId.HasValue)
+        {
+            var user = await _context.Users.FindAsync(character.UserId.Value);
+            if (user == null) return BadRequest("User not found");
+        }
 
         var server = await _context.Servers.FindAsync(character.ServerId);
         if (server == null) return BadRequest("Server not found");
 
-        if (character.IsMain)
+        if (character.IsMain && character.UserId.HasValue)
         {
             var existingMain = await _context.Characters
                 .Where(c => c.UserId == character.UserId && c.IsMain && c.Id != id)

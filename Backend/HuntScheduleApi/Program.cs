@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using HuntScheduleApi.Data;
+using HuntScheduleApi.Services;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient<ITibiaCharacterValidator, TibiaDataValidator>();
 
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (string.IsNullOrEmpty(databaseUrl))

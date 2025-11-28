@@ -15,12 +15,23 @@ public class AppDbContext : DbContext
     public DbSet<Slot> Slots { get; set; }
     public DbSet<SchedulePeriod> SchedulePeriods { get; set; }
     public DbSet<Request> Requests { get; set; }
+    public DbSet<RequestPartyMember> RequestPartyMembers { get; set; }
     public DbSet<RequestStatus> RequestStatuses { get; set; }
     public DbSet<Difficulty> Difficulties { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<RequestPartyMember>()
+            .HasIndex(rpm => new { rpm.RequestId, rpm.CharacterId })
+            .IsUnique();
+
+        modelBuilder.Entity<Character>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.Characters)
+            .HasForeignKey(c => c.UserId)
+            .IsRequired(false);
 
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, Name = "admin", Description = "Guild administrator with full access" },
