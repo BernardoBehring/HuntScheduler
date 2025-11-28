@@ -62,6 +62,12 @@ Located in `Backend/HuntSchedule.Persistence/Entities/`:
 ### API Endpoints
 All endpoints prefixed with `/api`:
 
+**Authentication:**
+- `POST /api/auth/login` - Username/password login with BCrypt verification
+- `POST /api/auth/logout` - Session destruction
+- `GET /api/auth/me` - Get current authenticated user
+
+**Resources:**
 - `/api/users` - User management and points
 - `/api/roles` - Role lookup table (admin/user)
 - `/api/characters` - Character management (CRUD, set-main)
@@ -72,6 +78,14 @@ All endpoints prefixed with `/api`:
 - `/api/requests` - Hunt request booking and approval
 - `/api/statuses` - Request status lookup
 - `/api/difficulties` - Difficulty level lookup
+
+### Authentication
+- **Password Hashing**: BCrypt.Net-Next with salt rounds
+- **Session Management**: ASP.NET Core session middleware with distributed memory cache
+- **Password Security**: Passwords stored as BCrypt hashes, never returned in API responses
+- **Demo Credentials**: 
+  - Admin: `admin` / `admin123`
+  - Player: `player1` / `player123`
 
 ### Frontend (React + TypeScript)
 Located in `client/src/`:
