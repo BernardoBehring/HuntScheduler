@@ -5,19 +5,15 @@ namespace HuntSchedule.Tests.Helpers;
 
 public static class TestDbContextFactory
 {
-    public static AppDbContext CreateInMemoryContext(string databaseName)
+    public static AppDbContext CreateInMemoryContext(string? databaseName = null)
     {
+        var dbName = databaseName ?? Guid.NewGuid().ToString();
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: databaseName)
+            .UseInMemoryDatabase(databaseName: dbName)
+            .EnableSensitiveDataLogging()
             .Options;
 
         var context = new AppDbContext(options);
-        context.Database.EnsureCreated();
         return context;
-    }
-
-    public static AppDbContext CreateInMemoryContext()
-    {
-        return CreateInMemoryContext(Guid.NewGuid().ToString());
     }
 }

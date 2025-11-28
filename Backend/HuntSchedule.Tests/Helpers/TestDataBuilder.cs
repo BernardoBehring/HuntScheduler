@@ -4,23 +4,22 @@ namespace HuntSchedule.Tests.Helpers;
 
 public static class TestDataBuilder
 {
-    public static Role CreateRole(int id = 1, string name = "user")
+    public static Role CreateRole(string name = "user")
     {
-        return new Role { Id = id, Name = name };
+        return new Role { Name = name };
     }
 
-    public static User CreateUser(int id = 1, string name = "TestUser", int roleId = 1, int points = 0)
+    public static User CreateUser(string username = "TestUser", int roleId = 1, int points = 0)
     {
-        return new User { Id = id, Name = name, RoleId = roleId, Points = points };
+        return new User { Username = username, RoleId = roleId, Points = points };
     }
 
-    public static Server CreateServer(int id = 1, string name = "Antica")
+    public static Server CreateServer(string name = "Antica", string region = "EU")
     {
-        return new Server { Id = id, Name = name };
+        return new Server { Name = name, Region = region };
     }
 
     public static Character CreateCharacter(
-        int id = 1,
         string name = "TestCharacter",
         int serverId = 1,
         int? userId = null,
@@ -31,7 +30,6 @@ public static class TestDataBuilder
     {
         return new Character
         {
-            Id = id,
             Name = name,
             ServerId = serverId,
             UserId = userId,
@@ -42,13 +40,12 @@ public static class TestDataBuilder
         };
     }
 
-    public static Difficulty CreateDifficulty(int id = 1, string name = "Medium", int sortOrder = 2)
+    public static Difficulty CreateDifficulty(string name = "Medium", int sortOrder = 2)
     {
-        return new Difficulty { Id = id, Name = name, SortOrder = sortOrder };
+        return new Difficulty { Name = name, SortOrder = sortOrder };
     }
 
     public static Respawn CreateRespawn(
-        int id = 1,
         string name = "Test Respawn",
         int serverId = 1,
         int difficultyId = 1,
@@ -56,7 +53,6 @@ public static class TestDataBuilder
     {
         return new Respawn
         {
-            Id = id,
             Name = name,
             ServerId = serverId,
             DifficultyId = difficultyId,
@@ -65,24 +61,19 @@ public static class TestDataBuilder
     }
 
     public static Slot CreateSlot(
-        int id = 1,
-        string name = "Morning",
         int serverId = 1,
-        TimeSpan? startTime = null,
-        TimeSpan? endTime = null)
+        string startTime = "08:00",
+        string endTime = "12:00")
     {
         return new Slot
         {
-            Id = id,
-            Name = name,
             ServerId = serverId,
-            StartTime = startTime ?? new TimeSpan(8, 0, 0),
-            EndTime = endTime ?? new TimeSpan(12, 0, 0)
+            StartTime = startTime,
+            EndTime = endTime
         };
     }
 
     public static SchedulePeriod CreatePeriod(
-        int id = 1,
         string name = "Week 1",
         int serverId = 1,
         DateTime? startDate = null,
@@ -92,7 +83,6 @@ public static class TestDataBuilder
         var start = startDate ?? DateTime.UtcNow;
         return new SchedulePeriod
         {
-            Id = id,
             Name = name,
             ServerId = serverId,
             StartDate = start,
@@ -101,13 +91,12 @@ public static class TestDataBuilder
         };
     }
 
-    public static RequestStatus CreateRequestStatus(int id = 1, string name = "pending")
+    public static RequestStatus CreateRequestStatus(string name = "pending")
     {
-        return new RequestStatus { Id = id, Name = name };
+        return new RequestStatus { Name = name };
     }
 
     public static Request CreateRequest(
-        int id = 1,
         int userId = 1,
         int serverId = 1,
         int respawnId = 1,
@@ -117,7 +106,6 @@ public static class TestDataBuilder
     {
         return new Request
         {
-            Id = id,
             UserId = userId,
             ServerId = serverId,
             RespawnId = respawnId,
