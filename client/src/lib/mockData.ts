@@ -10,8 +10,8 @@ export interface Role {
 export interface Character {
   id: string;
   userId: string;
+  serverId: string;
   name: string;
-  world?: string;
   vocation?: string;
   level: number;
   isMain: boolean;
@@ -92,12 +92,12 @@ const MOCK_ROLES: Role[] = [
 ];
 
 const MOCK_CHARACTERS: Character[] = [
-  { id: '1', userId: '1', name: 'Admin Knight', world: 'Antica', vocation: 'Elite Knight', level: 500, isMain: true },
-  { id: '2', userId: '2', name: 'Hunter Elite', world: 'Antica', vocation: 'Royal Paladin', level: 450, isMain: true },
-  { id: '3', userId: '2', name: 'Hunter Alt', world: 'Antica', vocation: 'Master Sorcerer', level: 320, isMain: false },
-  { id: '4', userId: '3', name: 'Paladin Master', world: 'Antica', vocation: 'Royal Paladin', level: 380, isMain: true },
-  { id: '5', userId: '4', name: 'Druid Healer', world: 'Antica', vocation: 'Elder Druid', level: 420, isMain: true },
-  { id: '6', userId: '4', name: 'Druid Backup', world: 'Wintera', vocation: 'Elder Druid', level: 280, isMain: false },
+  { id: '1', userId: '1', serverId: 's1', name: 'Admin Knight', vocation: 'Elite Knight', level: 500, isMain: true },
+  { id: '2', userId: '2', serverId: 's1', name: 'Hunter Elite', vocation: 'Royal Paladin', level: 450, isMain: true },
+  { id: '3', userId: '2', serverId: 's1', name: 'Hunter Alt', vocation: 'Master Sorcerer', level: 320, isMain: false },
+  { id: '4', userId: '3', serverId: 's1', name: 'Paladin Master', vocation: 'Royal Paladin', level: 380, isMain: true },
+  { id: '5', userId: '4', serverId: 's1', name: 'Druid Healer', vocation: 'Elder Druid', level: 420, isMain: true },
+  { id: '6', userId: '4', serverId: 's2', name: 'Druid Backup', vocation: 'Elder Druid', level: 280, isMain: false },
 ];
 
 const MOCK_STATUSES: RequestStatus[] = [
@@ -542,8 +542,8 @@ export const useStore = create<AppState>((set, get) => ({
       try {
         await api.characters.create({
           userId: parseInt(character.userId),
+          serverId: parseInt(character.serverId),
           name: character.name,
-          world: character.world,
           vocation: character.vocation,
           level: character.level,
           isMain: character.isMain,
@@ -577,8 +577,8 @@ export const useStore = create<AppState>((set, get) => ({
           await api.characters.update(parseInt(id), {
             id: parseInt(id),
             userId: parseInt(character.userId || existing.userId),
+            serverId: parseInt(character.serverId || existing.serverId),
             name: character.name || existing.name,
-            world: character.world || existing.world,
             vocation: character.vocation || existing.vocation,
             level: character.level ?? existing.level,
             isMain: character.isMain ?? existing.isMain,

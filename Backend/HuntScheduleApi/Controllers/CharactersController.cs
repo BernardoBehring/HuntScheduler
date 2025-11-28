@@ -19,13 +19,17 @@ public class CharactersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Character>>> GetCharacters()
     {
-        return await _context.Characters.ToListAsync();
+        return await _context.Characters
+            .Include(c => c.Server)
+            .ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Character>> GetCharacter(int id)
     {
-        var character = await _context.Characters.FindAsync(id);
+        var character = await _context.Characters
+            .Include(c => c.Server)
+            .FirstOrDefaultAsync(c => c.Id == id);
         if (character == null) return NotFound();
         return character;
     }
@@ -34,6 +38,7 @@ public class CharactersController : ControllerBase
     public async Task<ActionResult<IEnumerable<Character>>> GetCharactersByUser(int userId)
     {
         return await _context.Characters
+            .Include(c => c.Server)
             .Where(c => c.UserId == userId)
             .ToListAsync();
     }
@@ -43,6 +48,9 @@ public class CharactersController : ControllerBase
     {
         var user = await _context.Users.FindAsync(character.UserId);
         if (user == null) return BadRequest("User not found");
+
+        var server = await _context.Servers.FindAsync(character.ServerId);
+        if (server == null) return BadRequest("Server not found");
 
         if (character.IsMain)
         {

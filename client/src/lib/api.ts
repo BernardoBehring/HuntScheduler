@@ -9,8 +9,9 @@ export interface Role {
 export interface Character {
   id: number;
   userId: number;
+  serverId: number;
+  server?: Server;
   name: string;
-  world?: string;
   vocation?: string;
   level: number;
   isMain: boolean;
