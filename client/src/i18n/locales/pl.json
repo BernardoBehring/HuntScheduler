@@ -160,5 +160,20 @@
     "pageNotFound": "404 Nie znaleziono strony",
     "pageNotFoundDesc": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
     "goHome": "Idź do Panelu"
+  },
+  "error": {
+    "user_not_found": "Użytkownik nie znaleziony",
+    "server_not_found": "Serwer nie znaleziony",
+    "character_not_found": "Postać nie znaleziona",
+    "request_not_found": "Wniosek nie znaleziony",
+    "role_not_found": "Rola nie znaleziona",
+    "respawn_not_found": "Respawn nie znaleziony",
+    "slot_not_found": "Slot nie znaleziony",
+    "period_not_found": "Okres nie znaleziony",
+    "id_mismatch": "Niezgodność ID",
+    "character_not_found_on_tibia": "Postać '{{name}}' nie znaleziona na Tibia.com",
+    "character_server_not_configured": "Postać '{{name}}' jest na serwerze '{{world}}', który nie jest skonfigurowany w naszym systemie",
+    "character_server_mismatch": "Postać '{{name}}' jest na serwerze '{{actualServer}}', ale wybrałeś '{{selectedServer}}'",
+    "conflict_with_approved_request": "Konflikt z zatwierdzonym wnioskiem #{{id}}"
   }
 }
