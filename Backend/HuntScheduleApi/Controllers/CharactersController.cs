@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HuntScheduleApi.Data;
 using HuntScheduleApi.Models;
+using HuntScheduleApi.Services;
 
 namespace HuntScheduleApi.Controllers;
 
@@ -10,10 +11,12 @@ namespace HuntScheduleApi.Controllers;
 public class CharactersController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly ITibiaCharacterValidator _tibiaValidator;
 
-    public CharactersController(AppDbContext context)
+    public CharactersController(AppDbContext context, ITibiaCharacterValidator tibiaValidator)
     {
         _context = context;
+        _tibiaValidator = tibiaValidator;
     }
 
     [HttpGet]
@@ -55,6 +58,29 @@ public class CharactersController : ControllerBase
         var server = await _context.Servers.FindAsync(character.ServerId);
         if (server == null) return BadRequest("Server not found");
 
+        var tibiaResult = await _tibiaValidator.ValidateCharacterAsync(character.Name);
+        if (tibiaResult == null || !tibiaResult.Exists)
+        {
+            return BadRequest($"Character '{character.Name}' not found on Tibia.com");
+        }
+
+        var tibiaServer = await _context.Servers
+            .FirstOrDefaultAsync(s => s.Name.ToLower() == tibiaResult.World.ToLower());
+        
+        if (tibiaServer == null)
+        {
+            return BadRequest($"Character '{character.Name}' is on server '{tibiaResult.World}' which is not configured in our system");
+        }
+
+        if (tibiaServer.Id != character.ServerId)
+        {
+            return BadRequest($"Character '{character.Name}' is on server '{tibiaResult.World}', but you selected '{server.Name}'");
+        }
+
+        character.Name = tibiaResult.Name;
+        character.Vocation = tibiaResult.Vocation;
+        character.Level = tibiaResult.Level;
+
         if (character.IsMain && character.UserId.HasValue)
         {
             var existingMain = await _context.Characters
@@ -76,6 +102,9 @@ public class CharactersController : ControllerBase
     {
         if (id != character.Id) return BadRequest();
 
+        var existingCharacter = await _context.Characters.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        if (existingCharacter == null) return NotFound();
+
         if (character.UserId.HasValue)
         {
             var user = await _context.Users.FindAsync(character.UserId.Value);
@@ -84,6 +113,35 @@ public class CharactersController : ControllerBase
 
         var server = await _context.Servers.FindAsync(character.ServerId);
         if (server == null) return BadRequest("Server not found");
+
+        bool nameChanged = !string.Equals(existingCharacter.Name, character.Name, StringComparison.OrdinalIgnoreCase);
+        bool serverChanged = existingCharacter.ServerId != character.ServerId;
+        
+        if (nameChanged || serverChanged)
+        {
+            var tibiaResult = await _tibiaValidator.ValidateCharacterAsync(character.Name);
+            if (tibiaResult == null || !tibiaResult.Exists)
+            {
+                return BadRequest($"Character '{character.Name}' not found on Tibia.com");
+            }
+
+            var tibiaServer = await _context.Servers
+                .FirstOrDefaultAsync(s => s.Name.ToLower() == tibiaResult.World.ToLower());
+            
+            if (tibiaServer == null)
+            {
+                return BadRequest($"Character '{character.Name}' is on server '{tibiaResult.World}' which is not configured in our system");
+            }
+
+            if (tibiaServer.Id != character.ServerId)
+            {
+                return BadRequest($"Character '{character.Name}' is on server '{tibiaResult.World}', but you selected '{server.Name}'");
+            }
+
+            character.Name = tibiaResult.Name;
+            character.Vocation = tibiaResult.Vocation;
+            character.Level = tibiaResult.Level;
+        }
 
         if (character.IsMain && character.UserId.HasValue)
         {
