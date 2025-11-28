@@ -86,6 +86,15 @@ export default function Admin() {
     return t(`difficulty.${difficultyMap[difficultyId] || 'medium'}`);
   };
 
+  const getCharacterName = (userId: string, serverId: string) => {
+    const character = characters.find(c => c.userId === userId && c.serverId === serverId && c.isMain);
+    if (character) return character.name;
+    const anyCharacter = characters.find(c => c.userId === userId && c.serverId === serverId);
+    if (anyCharacter) return anyCharacter.name;
+    const user = users.find(u => u.id === userId);
+    return user?.username || `User #${userId}`;
+  };
+
   const handleReview = (id: string, statusId: string, reason?: string) => {
     updateRequestStatus(id, statusId, reason);
     const statusKey = statusId === '2' ? 'approved' : 'rejected';
@@ -215,7 +224,7 @@ export default function Admin() {
                       <div key={req.id} className="p-4 rounded-lg border border-border/50 bg-card/50 space-y-3 hover:border-primary/30 transition-all" data-testid={`pending-request-${req.id}`}>
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-bold text-primary">User #{req.userId}</p>
+                            <p className="font-bold text-primary">{getCharacterName(req.userId, req.serverId)}</p>
                             <p className="text-sm text-muted-foreground">
                               {respawns.find(r => r.id === req.respawnId)?.name}
                             </p>

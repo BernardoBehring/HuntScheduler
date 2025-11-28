@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 export function HuntSchedule() {
-  const { servers, respawns, slots, requests, addRequest, currentUser, periods, getDifficultyName } = useStore();
+  const { servers, respawns, slots, requests, addRequest, currentUser, periods, getDifficultyName, characters, users } = useStore();
   const [selectedServer, setSelectedServer] = useState(servers[0]?.id);
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
@@ -36,6 +36,15 @@ export function HuntSchedule() {
   const [selectedPeriodId, setSelectedPeriodId] = useState<string>(activePeriod?.id);
 
   const currentPeriod = periods.find(p => p.id === selectedPeriodId);
+
+  const getCharacterName = (userId: string, serverId: string) => {
+    const character = characters.find(c => c.userId === userId && c.serverId === serverId && c.isMain);
+    if (character) return character.name;
+    const anyCharacter = characters.find(c => c.userId === userId && c.serverId === serverId);
+    if (anyCharacter) return anyCharacter.name;
+    const user = users.find(u => u.id === userId);
+    return user?.username || `User #${userId}`;
+  };
   
   const activeRespawns = respawns.filter(r => 
     r.serverId === selectedServer && 
@@ -161,7 +170,7 @@ export function HuntSchedule() {
                               : "bg-primary/10 border-primary/30 text-primary"
                           )}>
                             <span className="font-bold">{request.statusId === '2' ? t('status.booked') : t('status.pending').toUpperCase()}</span>
-                            <span className="opacity-70">{t('common.user')} #{request.userId}</span>
+                            <span className="opacity-70">{getCharacterName(request.userId, request.serverId)}</span>
                           </div>
                         ) : (
                           currentPeriod ? (
