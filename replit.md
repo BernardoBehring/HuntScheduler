@@ -9,14 +9,14 @@ The backend follows a clean three-layer architecture with separated concerns:
 
 ```
 HuntSchedule.sln
-├── HuntScheduleApi/          (API Layer - Controllers)
+├── HuntSchedule.Api/         (API Layer - Controllers)
 ├── HuntSchedule.Services/    (Business Logic Layer)
 └── HuntSchedule.Persistence/ (Data Access Layer)
 ```
 
 **Dependency Chain**: API → Services → Persistence
 
-### API Layer (`Backend/HuntScheduleApi/`)
+### API Layer (`Backend/HuntSchedule.Api/`)
 - **Framework**: ASP.NET Core 8.0 Web API
 - **Controllers**: Thin controllers that inject and use services
 - **No direct DbContext access** - all data operations go through services
