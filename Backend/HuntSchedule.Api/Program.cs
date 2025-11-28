@@ -17,6 +17,14 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(24);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
 builder.Services.AddHttpClient<ITibiaCharacterValidator, TibiaDataValidator>();
 
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
@@ -56,6 +64,7 @@ builder.Services.AddScoped<IRespawnService, RespawnService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IRequestStatusService, RequestStatusService>();
 builder.Services.AddScoped<IDifficultyService, DifficultyService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddCors(options =>
 {
@@ -82,6 +91,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+app.UseSession();
 app.UseRequestLocalization(options =>
 {
     var supportedCultures = new[] { "en", "pt", "es", "de", "pl" };

@@ -39,10 +39,10 @@ public class AppDbContext : DbContext
         );
 
         modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "AdminUser", RoleId = 1, Points = 1000 },
-            new User { Id = 2, Username = "HunterElite", RoleId = 2, Points = 150 },
-            new User { Id = 3, Username = "PaladinMaster", RoleId = 2, Points = 80 },
-            new User { Id = 4, Username = "DruidHealer", RoleId = 2, Points = 200 }
+            new User { Id = 1, Username = "admin", Password = "$2a$10$Cv7rh/xFNRFI63vVLQmoMeXpEp8Ad/4wRHrICd0pjyzBEIKM46jWu", RoleId = 1, Points = 1000 },
+            new User { Id = 2, Username = "player1", Password = "$2a$10$Fp7CXpuuZsq/AgOUu99SKu8M7qxuNZPARQC935RtE6xJn5BlqWzUe", RoleId = 2, Points = 150 },
+            new User { Id = 3, Username = "player2", Password = "$2a$10$Fp7CXpuuZsq/AgOUu99SKu8M7qxuNZPARQC935RtE6xJn5BlqWzUe", RoleId = 2, Points = 80 },
+            new User { Id = 4, Username = "player3", Password = "$2a$10$Fp7CXpuuZsq/AgOUu99SKu8M7qxuNZPARQC935RtE6xJn5BlqWzUe", RoleId = 2, Points = 200 }
         );
 
         modelBuilder.Entity<Character>().HasData(

@@ -132,3 +132,4 @@
 /home/runner/workspace/Backend/HuntSchedule.Tests/bin/Debug/net8.0/pl/HuntSchedule.Services.resources.dll
 /home/runner/workspace/Backend/HuntSchedule.Tests/bin/Debug/net8.0/es/HuntSchedule.Services.resources.dll
 /home/runner/workspace/Backend/HuntSchedule.Tests/bin/Debug/net8.0/de/HuntSchedule.Services.resources.dll
+/home/runner/workspace/Backend/HuntSchedule.Tests/bin/Debug/net8.0/BCrypt.Net-Next.dll

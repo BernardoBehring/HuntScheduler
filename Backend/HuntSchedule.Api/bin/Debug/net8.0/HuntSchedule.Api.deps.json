@@ -18,6 +18,14 @@
           "HuntSchedule.Api.dll": {}
         }
       },
+      "BCrypt.Net-Next/4.0.3": {
+        "runtime": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "assemblyVersion": "4.0.3.0",
+            "fileVersion": "4.0.3.0"
+          }
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "runtime": {
           "lib/net6.0/Humanizer.dll": {
@@ -630,6 +638,7 @@
       },
       "HuntSchedule.Services/1.0.0": {
         "dependencies": {
+          "BCrypt.Net-Next": "4.0.3",
           "HuntSchedule.Persistence": "1.0.0",
           "Microsoft.Extensions.Caching.Memory": "8.0.1",
           "Microsoft.Extensions.Http": "8.0.0",
@@ -637,6 +646,20 @@
         },
         "runtime": {
           "HuntSchedule.Services.dll": {}
+        },
+        "resources": {
+          "pt/HuntSchedule.Services.resources.dll": {
+            "locale": "pt"
+          },
+          "pl/HuntSchedule.Services.resources.dll": {
+            "locale": "pl"
+          },
+          "es/HuntSchedule.Services.resources.dll": {
+            "locale": "es"
+          },
+          "de/HuntSchedule.Services.resources.dll": {
+            "locale": "de"
+          }
         }
       }
     }
@@ -646,6 +669,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "BCrypt.Net-Next/4.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
+      "path": "bcrypt.net-next/4.0.3",
+      "hashPath": "bcrypt.net-next.4.0.3.nupkg.sha512"
     },
     "Humanizer.Core/2.14.1": {
       "type": "package",

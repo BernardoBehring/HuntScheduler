@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v8.0": {
       "HuntSchedule.Services/1.0.0": {
         "dependencies": {
+          "BCrypt.Net-Next": "4.0.3",
           "HuntSchedule.Persistence": "1.0.0",
           "Microsoft.Extensions.Caching.Memory": "8.0.0",
           "Microsoft.Extensions.Http": "8.0.0",
@@ -15,6 +16,28 @@
         },
         "runtime": {
           "HuntSchedule.Services.dll": {}
+        },
+        "resources": {
+          "de/HuntSchedule.Services.resources.dll": {
+            "locale": "de"
+          },
+          "es/HuntSchedule.Services.resources.dll": {
+            "locale": "es"
+          },
+          "pl/HuntSchedule.Services.resources.dll": {
+            "locale": "pl"
+          },
+          "pt/HuntSchedule.Services.resources.dll": {
+            "locale": "pt"
+          }
+        }
+      },
+      "BCrypt.Net-Next/4.0.3": {
+        "runtime": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "assemblyVersion": "4.0.3.0",
+            "fileVersion": "4.0.3.0"
+          }
         }
       },
       "Microsoft.EntityFrameworkCore/8.0.0": {
@@ -274,6 +297,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "BCrypt.Net-Next/4.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
+      "path": "bcrypt.net-next/4.0.3",
+      "hashPath": "bcrypt.net-next.4.0.3.nupkg.sha512"
     },
     "Microsoft.EntityFrameworkCore/8.0.0": {
       "type": "package",

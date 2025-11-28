@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "6C4HT7ZhD6c=",
+  "dgSpecHash": "XyuTnhCS84A=",
   "success": true,
   "projectFilePath": "/home/runner/workspace/Backend/HuntSchedule.Services/HuntSchedule.Services.csproj",
   "expectedPackageFiles": [
+    "/home/runner/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512",
     "/home/runner/.nuget/packages/microsoft.entityframeworkcore/8.0.0/microsoft.entityframeworkcore.8.0.0.nupkg.sha512",
     "/home/runner/.nuget/packages/microsoft.entityframeworkcore.abstractions/8.0.0/microsoft.entityframeworkcore.abstractions.8.0.0.nupkg.sha512",
     "/home/runner/.nuget/packages/microsoft.entityframeworkcore.analyzers/8.0.0/microsoft.entityframeworkcore.analyzers.8.0.0.nupkg.sha512",

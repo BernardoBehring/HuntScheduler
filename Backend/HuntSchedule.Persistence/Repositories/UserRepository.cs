@@ -25,4 +25,13 @@ public class UserRepository : Repository<User>, IUserRepository
                 .ThenInclude(c => c.Server)
             .ToListAsync();
     }
+
+    public async Task<User?> GetByUsernameAsync(string username)
+    {
+        return await _dbSet
+            .Include(u => u.Role)
+            .Include(u => u.Characters)
+                .ThenInclude(c => c.Server)
+            .FirstOrDefaultAsync(u => u.Username == username);
+    }
 }

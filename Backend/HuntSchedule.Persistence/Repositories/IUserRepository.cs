@@ -6,4 +6,5 @@ public interface IUserRepository : IRepository<User>
 {
     Task<User?> GetByIdWithCharactersAsync(int id);
     Task<IEnumerable<User>> GetAllWithRolesAsync();
+    Task<User?> GetByUsernameAsync(string username);
 }

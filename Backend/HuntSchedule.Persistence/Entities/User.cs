@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace HuntSchedule.Persistence.Entities;
 
@@ -11,6 +12,11 @@ public class User
     [Required]
     [MaxLength(100)]
     public string Username { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(255)]
+    [JsonIgnore]
+    public string Password { get; set; } = string.Empty;
 
     [Required]
     public int RoleId { get; set; }

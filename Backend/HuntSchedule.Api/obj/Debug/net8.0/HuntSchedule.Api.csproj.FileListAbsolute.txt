@@ -115,3 +115,8 @@
 /home/runner/workspace/Backend/HuntSchedule.Api/obj/Debug/net8.0/HuntSchedule.Api.pdb
 /home/runner/workspace/Backend/HuntSchedule.Api/obj/Debug/net8.0/HuntSchedule.Api.genruntimeconfig.cache
 /home/runner/workspace/Backend/HuntSchedule.Api/obj/Debug/net8.0/ref/HuntSchedule.Api.dll
+/home/runner/workspace/Backend/HuntSchedule.Api/bin/Debug/net8.0/BCrypt.Net-Next.dll
+/home/runner/workspace/Backend/HuntSchedule.Api/bin/Debug/net8.0/pt/HuntSchedule.Services.resources.dll
+/home/runner/workspace/Backend/HuntSchedule.Api/bin/Debug/net8.0/pl/HuntSchedule.Services.resources.dll
+/home/runner/workspace/Backend/HuntSchedule.Api/bin/Debug/net8.0/es/HuntSchedule.Services.resources.dll
+/home/runner/workspace/Backend/HuntSchedule.Api/bin/Debug/net8.0/de/HuntSchedule.Services.resources.dll
