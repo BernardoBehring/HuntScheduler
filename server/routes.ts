@@ -24,10 +24,10 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
-  if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
-    throw new Error('SESSION_SECRET must be set in production environment');
-  }
-  const sessionSecret = process.env.SESSION_SECRET || 'dev-session-secret-not-for-production';
+  const sessionSecret = process.env.SESSION_SECRET || 
+    (process.env.NODE_ENV === 'production' 
+      ? require('crypto').randomBytes(32).toString('hex')
+      : 'dev-session-secret-not-for-production');
 
   app.use(session({
     secret: sessionSecret,

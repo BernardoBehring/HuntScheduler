@@ -4,8 +4,30 @@ import { eq, and, desc } from "drizzle-orm";
 import * as schema from "@shared/schema";
 import bcrypt from "bcryptjs";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
-export const db = drizzle(pool, { schema });
+let pool: Pool | null = null;
+let dbInstance: ReturnType<typeof drizzle<typeof schema>> | null = null;
+
+function getDb() {
+  if (!dbInstance) {
+    if (!process.env.DATABASE_URL) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+    pool = new Pool({ 
+      connectionString: process.env.DATABASE_URL,
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    });
+    dbInstance = drizzle(pool, { schema });
+  }
+  return dbInstance;
+}
+
+export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
+  get(_, prop) {
+    return (getDb() as any)[prop];
+  }
+});
 
 export interface IStorage {
   getUser(id: number): Promise<schema.User | undefined>;
