@@ -8,13 +8,23 @@ export interface Role {
 
 export interface Character {
   id: number;
-  userId: number;
+  userId?: number;
   serverId: number;
   server?: Server;
   name: string;
   vocation?: string;
   level: number;
   isMain: boolean;
+  isExternal?: boolean;
+  externalVerifiedAt?: string;
+}
+
+export interface RequestPartyMember {
+  id: number;
+  requestId: number;
+  characterId: number;
+  character?: Character;
+  roleInParty?: string;
 }
 
 export interface User {
@@ -89,9 +99,18 @@ export interface Request {
   period?: SchedulePeriod;
   statusId: number;
   status?: RequestStatus;
-  partyMembers: string[];
+  partyMembers: RequestPartyMember[];
   rejectionReason?: string;
   createdAt: string;
+}
+
+export interface CreateRequestDto {
+  userId: number;
+  serverId: number;
+  respawnId: number;
+  slotId: number;
+  periodId: number;
+  partyMembers: { characterId?: number; characterName?: string; roleInParty?: string }[];
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
@@ -216,7 +235,7 @@ export const api = {
       fetch(`${API_BASE}/requests`).then(r => handleResponse(r)),
     get: (id: number): Promise<Request> =>
       fetch(`${API_BASE}/requests/${id}`).then(r => handleResponse(r)),
-    create: (request: Omit<Request, 'id' | 'statusId' | 'status' | 'createdAt' | 'user' | 'server' | 'respawn' | 'slot' | 'period'>): Promise<Request> =>
+    create: (request: CreateRequestDto): Promise<Request> =>
       fetch(`${API_BASE}/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

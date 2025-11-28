@@ -9,12 +9,22 @@ export interface Role {
 
 export interface Character {
   id: string;
-  userId: string;
+  userId?: string;
   serverId: string;
   name: string;
   vocation?: string;
   level: number;
   isMain: boolean;
+  isExternal?: boolean;
+  externalVerifiedAt?: string;
+}
+
+export interface RequestPartyMember {
+  id: string;
+  requestId: string;
+  characterId: string;
+  character?: Character;
+  roleInParty?: string;
 }
 
 export interface User {
@@ -81,7 +91,7 @@ export interface Request {
   periodId: string;
   statusId: string;
   status?: string;
-  partyMembers: string[];
+  partyMembers: RequestPartyMember[];
   rejectionReason?: string;
   createdAt: number;
 }
@@ -151,20 +161,28 @@ const MOCK_REQUESTS: Request[] = [
   { 
     id: 'req1', userId: '2', serverId: 's1', respawnId: 'r1', slotId: 'sl1', 
     periodId: 'p1', statusId: '2', status: 'approved',
-    partyMembers: ['HunterElite', 'DruidHealer', 'SorcBlaster', 'KnightTank'],
+    partyMembers: [
+      { id: 'pm1', requestId: 'req1', characterId: '2', character: MOCK_CHARACTERS[1], roleInParty: 'blocker' },
+      { id: 'pm2', requestId: 'req1', characterId: '5', character: MOCK_CHARACTERS[4], roleInParty: 'healer' },
+    ],
     createdAt: Date.now() - 100000
   },
   { 
     id: 'req2', userId: '3', serverId: 's1', respawnId: 'r1', slotId: 'sl1', 
     periodId: 'p1', statusId: '3', status: 'rejected',
     rejectionReason: 'Slot already taken by higher priority team',
-    partyMembers: ['PaladinMaster', 'RandomDruid'],
+    partyMembers: [
+      { id: 'pm3', requestId: 'req2', characterId: '4', character: MOCK_CHARACTERS[3], roleInParty: 'shooter' },
+    ],
     createdAt: Date.now() - 50000
   },
   { 
     id: 'req3', userId: '2', serverId: 's1', respawnId: 'r2', slotId: 'sl2', 
     periodId: 'p1', statusId: '1', status: 'pending',
-    partyMembers: ['HunterElite', 'DruidHealer'],
+    partyMembers: [
+      { id: 'pm4', requestId: 'req3', characterId: '2', character: MOCK_CHARACTERS[1], roleInParty: 'blocker' },
+      { id: 'pm5', requestId: 'req3', characterId: '5', character: MOCK_CHARACTERS[4], roleInParty: 'healer' },
+    ],
     createdAt: Date.now()
   },
 ];
@@ -295,6 +313,18 @@ export const useStore = create<AppState>((set, get) => ({
           periodId: String(r.periodId),
           statusId: String(r.statusId),
           status: r.status?.name,
+          partyMembers: r.partyMembers.map((pm: any) => ({
+            id: String(pm.id),
+            requestId: String(pm.requestId),
+            characterId: String(pm.characterId),
+            roleInParty: pm.roleInParty,
+            character: pm.character ? {
+              ...pm.character,
+              id: String(pm.character.id),
+              userId: pm.character.userId ? String(pm.character.userId) : undefined,
+              serverId: String(pm.character.serverId)
+            } : undefined
+          })),
           createdAt: new Date(r.createdAt).getTime(),
         })),
         currentUser: users.length > 0 ? { 
@@ -328,13 +358,18 @@ export const useStore = create<AppState>((set, get) => ({
     const state = get();
     if (state.useApi) {
       try {
+        const apiPartyMembers = req.partyMembers.map(pm => ({
+          characterId: pm.characterId ? parseInt(pm.characterId) : undefined,
+          characterName: pm.character?.name,
+          roleInParty: pm.roleInParty
+        }));
         const newRequest = await api.requests.create({
           userId: parseInt(req.userId),
           serverId: parseInt(req.serverId),
           respawnId: parseInt(req.respawnId),
           slotId: parseInt(req.slotId),
           periodId: parseInt(req.periodId),
-          partyMembers: req.partyMembers,
+          partyMembers: apiPartyMembers,
         });
         set((state) => ({
           requests: [...state.requests, {
@@ -347,6 +382,18 @@ export const useStore = create<AppState>((set, get) => ({
             periodId: String(newRequest.periodId),
             statusId: String(newRequest.statusId),
             status: newRequest.status?.name,
+            partyMembers: newRequest.partyMembers.map((pm: any) => ({
+              id: String(pm.id),
+              requestId: String(pm.requestId),
+              characterId: String(pm.characterId),
+              roleInParty: pm.roleInParty,
+              character: pm.character ? {
+                ...pm.character,
+                id: String(pm.character.id),
+                userId: pm.character.userId ? String(pm.character.userId) : undefined,
+                serverId: String(pm.character.serverId)
+              } : undefined
+            })),
             createdAt: new Date(newRequest.createdAt).getTime(),
           }]
         }));
@@ -548,7 +595,7 @@ export const useStore = create<AppState>((set, get) => ({
     if (state.useApi) {
       try {
         await api.characters.create({
-          userId: parseInt(character.userId),
+          userId: character.userId ? parseInt(character.userId) : undefined,
           serverId: parseInt(character.serverId),
           name: character.name,
           vocation: character.vocation,
@@ -581,9 +628,10 @@ export const useStore = create<AppState>((set, get) => ({
       try {
         const existing = state.characters.find(c => c.id === id);
         if (existing) {
+          const userIdStr = character.userId || existing.userId;
           await api.characters.update(parseInt(id), {
             id: parseInt(id),
-            userId: parseInt(character.userId || existing.userId),
+            userId: userIdStr ? parseInt(userIdStr) : undefined,
             serverId: parseInt(character.serverId || existing.serverId),
             name: character.name || existing.name,
             vocation: character.vocation || existing.vocation,

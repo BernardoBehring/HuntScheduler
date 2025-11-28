@@ -80,86 +80,110 @@ public class RequestsController : ControllerBase
         if (server == null) return BadRequest("Server not found");
 
         var pendingStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "pending");
+
+        using var transaction = await _context.Database.BeginTransactionAsync();
         
-        var request = new Request
+        try
         {
-            UserId = dto.UserId,
-            ServerId = dto.ServerId,
-            RespawnId = dto.RespawnId,
-            SlotId = dto.SlotId,
-            PeriodId = dto.PeriodId,
-            StatusId = pendingStatus?.Id ?? 1,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.Requests.Add(request);
-        await _context.SaveChangesAsync();
-
-        foreach (var pm in dto.PartyMembers)
-        {
-            Character? character = null;
-
-            if (pm.CharacterId.HasValue)
+            var resolvedPartyMembers = new List<(Character character, string? role)>();
+            
+            foreach (var pm in dto.PartyMembers)
             {
-                character = await _context.Characters.FindAsync(pm.CharacterId.Value);
-                if (character == null) return BadRequest($"Character with ID {pm.CharacterId} not found");
-            }
-            else if (!string.IsNullOrEmpty(pm.CharacterName))
-            {
-                character = await _context.Characters
-                    .FirstOrDefaultAsync(c => c.Name.ToLower() == pm.CharacterName.ToLower() && c.ServerId == dto.ServerId);
+                Character? character = null;
 
-                if (character == null)
+                if (pm.CharacterId.HasValue)
                 {
-                    var tibiaResult = await _tibiaValidator.ValidateCharacterAsync(pm.CharacterName);
-                    
-                    if (tibiaResult == null || !tibiaResult.Exists)
+                    character = await _context.Characters.FindAsync(pm.CharacterId.Value);
+                    if (character == null)
                     {
-                        return BadRequest($"Character '{pm.CharacterName}' not found on Tibia.com");
+                        await transaction.RollbackAsync();
+                        return BadRequest($"Character with ID {pm.CharacterId} not found");
                     }
+                }
+                else if (!string.IsNullOrEmpty(pm.CharacterName))
+                {
+                    character = await _context.Characters
+                        .FirstOrDefaultAsync(c => c.Name.ToLower() == pm.CharacterName.ToLower() && c.ServerId == dto.ServerId);
 
-                    var tibiaServer = await _context.Servers
-                        .FirstOrDefaultAsync(s => s.Name.ToLower() == tibiaResult.World.ToLower());
-
-                    if (tibiaServer == null)
+                    if (character == null)
                     {
-                        return BadRequest($"Character '{pm.CharacterName}' is on server '{tibiaResult.World}' which is not configured in our system");
+                        var tibiaResult = await _tibiaValidator.ValidateCharacterAsync(pm.CharacterName);
+                        
+                        if (tibiaResult == null || !tibiaResult.Exists)
+                        {
+                            await transaction.RollbackAsync();
+                            return BadRequest($"Character '{pm.CharacterName}' not found on Tibia.com");
+                        }
+
+                        var tibiaServer = await _context.Servers
+                            .FirstOrDefaultAsync(s => s.Name.ToLower() == tibiaResult.World.ToLower());
+
+                        if (tibiaServer == null)
+                        {
+                            await transaction.RollbackAsync();
+                            return BadRequest($"Character '{pm.CharacterName}' is on server '{tibiaResult.World}' which is not configured in our system");
+                        }
+
+                        if (tibiaServer.Id != dto.ServerId)
+                        {
+                            await transaction.RollbackAsync();
+                            return BadRequest($"Character '{pm.CharacterName}' is on server '{tibiaResult.World}', but this request is for server '{server.Name}'");
+                        }
+
+                        character = new Character
+                        {
+                            Name = tibiaResult.Name,
+                            ServerId = tibiaServer.Id,
+                            Vocation = tibiaResult.Vocation,
+                            Level = tibiaResult.Level,
+                            IsExternal = true,
+                            ExternalVerifiedAt = DateTime.UtcNow
+                        };
+                        _context.Characters.Add(character);
                     }
+                }
 
-                    if (tibiaServer.Id != dto.ServerId)
-                    {
-                        return BadRequest($"Character '{pm.CharacterName}' is on server '{tibiaResult.World}', but this request is for server '{server.Name}'");
-                    }
-
-                    character = new Character
-                    {
-                        Name = tibiaResult.Name,
-                        ServerId = tibiaServer.Id,
-                        Vocation = tibiaResult.Vocation,
-                        Level = tibiaResult.Level,
-                        IsExternal = true,
-                        ExternalVerifiedAt = DateTime.UtcNow
-                    };
-                    _context.Characters.Add(character);
-                    await _context.SaveChangesAsync();
+                if (character != null)
+                {
+                    resolvedPartyMembers.Add((character, pm.RoleInParty));
                 }
             }
 
-            if (character != null)
+            var request = new Request
+            {
+                UserId = dto.UserId,
+                ServerId = dto.ServerId,
+                RespawnId = dto.RespawnId,
+                SlotId = dto.SlotId,
+                PeriodId = dto.PeriodId,
+                StatusId = pendingStatus?.Id ?? 1,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Requests.Add(request);
+            await _context.SaveChangesAsync();
+
+            foreach (var (character, role) in resolvedPartyMembers)
             {
                 var partyMember = new RequestPartyMember
                 {
                     RequestId = request.Id,
                     CharacterId = character.Id,
-                    RoleInParty = pm.RoleInParty
+                    RoleInParty = role
                 };
                 _context.RequestPartyMembers.Add(partyMember);
             }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return CreatedAtAction(nameof(GetRequest), new { id = request.Id }, request);
         }
-
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetRequest), new { id = request.Id }, request);
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public class StatusUpdateDto

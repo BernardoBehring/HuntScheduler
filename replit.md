@@ -14,14 +14,21 @@ Located in `Backend/HuntScheduleApi/`:
 ### Models
 - `User` - Guild members with roleId (FK) and points
 - `Role` - Lookup table for user roles (admin/user)
-- `Character` - Player characters linked to users and servers (name, serverId, vocation, level, isMain)
+- `Character` - Player characters linked to users (optional) and servers (name, serverId, vocation, level, isMain, isExternal)
 - `Server` - Game servers (Antica, Wintera, etc.)
 - `Respawn` - Hunt locations with difficultyId (FK) and max players
 - `Slot` - Time slots for hunting sessions (with serverId FK)
 - `SchedulePeriod` - Weekly rotation periods (with serverId FK)
 - `Request` - Hunt booking requests with statusId (FK) tracking
+- `RequestPartyMember` - Join table linking Request to Character (party members for hunts)
 - `RequestStatus` - Lookup table for status values (pending/approved/rejected/cancelled)
 - `Difficulty` - Lookup table for difficulty levels (easy/medium/hard/nightmare)
+
+### External Character Validation
+- Party members can be existing guild characters or external characters not registered in the system
+- External characters are validated against the TibiaData API (https://api.tibiadata.com/v4/character/{name})
+- Validated external characters are stored with isExternal=true and externalVerifiedAt timestamp
+- Server must match between the hunt request and the character's world
 
 ### API Endpoints
 All endpoints are prefixed with `/api`:
