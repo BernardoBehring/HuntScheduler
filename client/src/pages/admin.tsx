@@ -15,12 +15,12 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Admin() {
-  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn } = useStore();
+  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, getStatusName, getDifficultyName } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
 
-  // Derived data
-  const pendingRequests = requests.filter(r => r.status === 'pending').sort((a, b) => b.createdAt - a.createdAt);
-  const processedRequests = requests.filter(r => r.status !== 'pending').sort((a, b) => b.createdAt - a.createdAt);
+  // Derived data - filter by statusId (pending = '1')
+  const pendingRequests = requests.filter(r => r.statusId === '1').sort((a, b) => b.createdAt - a.createdAt);
+  const processedRequests = requests.filter(r => r.statusId !== '1').sort((a, b) => b.createdAt - a.createdAt);
 
   // New Period State
   const [newPeriodName, setNewPeriodName] = useState("");
@@ -193,17 +193,20 @@ export default function Admin() {
               <CardContent className="flex-1 p-0 overflow-hidden">
                 <ScrollArea className="h-full p-6 pt-0">
                   <div className="space-y-4 opacity-70">
-                    {processedRequests.map(req => (
-                      <div key={req.id} className="p-3 rounded border border-border/30 flex justify-between items-center">
-                        <div>
-                          <p className="text-sm font-medium">Request #{req.id.slice(0,4)}</p>
-                          <p className="text-xs text-muted-foreground">{req.status}</p>
+                    {processedRequests.map(req => {
+                      const statusName = getStatusName(req.statusId);
+                      return (
+                        <div key={req.id} className="p-3 rounded border border-border/30 flex justify-between items-center">
+                          <div>
+                            <p className="text-sm font-medium">Request #{req.id.slice(0,4)}</p>
+                            <p className="text-xs text-muted-foreground">{statusName}</p>
+                          </div>
+                          <Badge variant={req.statusId === '2' ? 'default' : 'destructive'}>
+                            {statusName}
+                          </Badge>
                         </div>
-                        <Badge variant={req.status === 'approved' ? 'default' : 'destructive'}>
-                          {req.status}
-                        </Badge>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </ScrollArea>
               </CardContent>
@@ -435,7 +438,7 @@ export default function Admin() {
                    <div key={r.id} className="flex items-center justify-between p-3 border border-border/40 rounded bg-muted/10">
                      <div>
                        <p className="font-medium">{r.name}</p>
-                       <p className="text-xs text-muted-foreground">Max Players: {r.maxPlayers} • Difficulty: {r.difficulty}</p>
+                       <p className="text-xs text-muted-foreground">Max Players: {r.maxPlayers} • Difficulty: {getDifficultyName(r.difficultyId)}</p>
                      </div>
                      <div className="flex gap-2">
                        <Button size="sm" variant="ghost" onClick={() => openEditRespawnDialog(r)}>Edit</Button>

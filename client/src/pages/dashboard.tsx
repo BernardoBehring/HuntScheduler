@@ -13,7 +13,7 @@ import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
-  const { currentUser, requests, respawns, slots, periods } = useStore();
+  const { currentUser, requests, respawns, slots, periods, getStatusName } = useStore();
   const [isClaimOpen, setIsClaimOpen] = useState(false);
   
   const myRequests = requests
@@ -95,7 +95,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {myRequests.filter(r => r.status === 'pending').length}
+              {myRequests.filter(r => r.statusId === '1').length}
             </div>
             <p className="text-xs text-muted-foreground mt-1">Pending approval</p>
           </CardContent>
@@ -108,7 +108,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {myRequests.filter(r => r.status === 'approved').length}
+              {myRequests.filter(r => r.statusId === '2').length}
             </div>
             <p className="text-xs text-muted-foreground mt-1">Approved sessions</p>
           </CardContent>
@@ -132,42 +132,45 @@ export default function Dashboard() {
                   </Link>
                 </div>
               )}
-              {myRequests.map(req => (
-                <div key={req.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 rounded-lg border border-border/40 bg-card/40 hover:bg-card/60 transition-colors gap-4">
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-foreground flex items-center gap-2">
-                      {getRespawnName(req.respawnId)}
-                      <Badge variant="outline" className="text-[10px] h-5 border-border/50 text-muted-foreground">
-                        {getPeriodName(req.periodId)}
-                      </Badge>
-                    </h4>
-                    <div className="text-sm text-muted-foreground flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {getSlotTime(req.slotId)}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Swords className="h-3 w-3" />
-                        {req.partyMembers.length + 1} Members
-                      </span>
+              {myRequests.map(req => {
+                const statusName = getStatusName(req.statusId);
+                return (
+                  <div key={req.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 rounded-lg border border-border/40 bg-card/40 hover:bg-card/60 transition-colors gap-4">
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-foreground flex items-center gap-2">
+                        {getRespawnName(req.respawnId)}
+                        <Badge variant="outline" className="text-[10px] h-5 border-border/50 text-muted-foreground">
+                          {getPeriodName(req.periodId)}
+                        </Badge>
+                      </h4>
+                      <div className="text-sm text-muted-foreground flex items-center gap-4">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {getSlotTime(req.slotId)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Swords className="h-3 w-3" />
+                          {req.partyMembers.length + 1} Members
+                        </span>
+                      </div>
+                      {req.statusId === '3' && req.rejectionReason && (
+                        <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {req.rejectionReason}
+                        </p>
+                      )}
                     </div>
-                    {req.status === 'rejected' && req.rejectionReason && (
-                      <p className="text-xs text-destructive flex items-center gap-1 mt-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {req.rejectionReason}
-                      </p>
-                    )}
+                    
+                    <Badge className={
+                      req.statusId === '2' ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/20" :
+                      req.statusId === '3' ? "bg-destructive/20 text-destructive hover:bg-destructive/30 border-destructive/20" :
+                      "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/20"
+                    }>
+                      {statusName.toUpperCase()}
+                    </Badge>
                   </div>
-                  
-                  <Badge className={
-                    req.status === 'approved' ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/20" :
-                    req.status === 'rejected' ? "bg-destructive/20 text-destructive hover:bg-destructive/30 border-destructive/20" :
-                    "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/20"
-                  }>
-                    {(req.status || 'pending').toUpperCase()}
-                  </Badge>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </ScrollArea>
         </CardContent>

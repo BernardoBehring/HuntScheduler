@@ -26,7 +26,7 @@ import { CalendarIcon, Clock, Users, Sword, Plus, AlertCircle, Search } from "lu
 import { cn } from "@/lib/utils";
 
 export function HuntSchedule() {
-  const { servers, respawns, slots, requests, addRequest, currentUser, periods } = useStore();
+  const { servers, respawns, slots, requests, addRequest, currentUser, periods, getDifficultyName } = useStore();
   const [selectedServer, setSelectedServer] = useState(servers[0]?.id);
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -42,13 +42,14 @@ export function HuntSchedule() {
     r.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
+  // statusId: '1' = pending, '2' = approved, '3' = rejected
   const getRequestForSlot = (respawnId: string, slotId: string) => {
     if (!currentPeriod) return undefined;
     return requests.find(r => 
       r.respawnId === respawnId && 
       r.slotId === slotId && 
       r.periodId === currentPeriod.id &&
-      r.status !== 'rejected'
+      r.statusId !== '3'
     );
   };
 
@@ -128,11 +129,11 @@ export function HuntSchedule() {
                         <span className="mx-1">•</span>
                         <span className={cn(
                           "px-1.5 py-0.5 rounded text-[10px] border",
-                          respawn.difficulty === 'easy' ? "border-green-500/30 text-green-400 bg-green-500/10" :
-                          respawn.difficulty === 'medium' ? "border-yellow-500/30 text-yellow-400 bg-yellow-500/10" :
-                          respawn.difficulty === 'hard' ? "border-orange-500/30 text-orange-400 bg-orange-500/10" :
+                          respawn.difficultyId === '1' ? "border-green-500/30 text-green-400 bg-green-500/10" :
+                          respawn.difficultyId === '2' ? "border-yellow-500/30 text-yellow-400 bg-yellow-500/10" :
+                          respawn.difficultyId === '3' ? "border-orange-500/30 text-orange-400 bg-orange-500/10" :
                           "border-red-500/30 text-red-400 bg-red-500/10"
-                        )}>{respawn.difficulty}</span>
+                        )}>{getDifficultyName(respawn.difficultyId)}</span>
                       </span>
                     </div>
                   </td>
@@ -143,11 +144,11 @@ export function HuntSchedule() {
                         {request ? (
                           <div className={cn(
                             "p-3 rounded-md border flex flex-col gap-1 text-xs items-center shadow-sm",
-                            request.status === 'approved' 
+                            request.statusId === '2' 
                               ? "bg-green-500/10 border-green-500/30 text-green-300" 
                               : "bg-primary/10 border-primary/30 text-primary"
                           )}>
-                            <span className="font-bold">{request.status === 'approved' ? 'BOOKED' : 'PENDING'}</span>
+                            <span className="font-bold">{request.statusId === '2' ? 'BOOKED' : 'PENDING'}</span>
                             <span className="opacity-70">User #{request.userId}</span>
                           </div>
                         ) : (
