@@ -16,9 +16,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "react-i18next";
 
 export default function Admin() {
-  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, getStatusName, getDifficultyName, getRoleName } = useStore();
+  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, getStatusName, getDifficultyName, getRoleName, characters } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
   const { t } = useTranslation();
+
+  const [requestFilterServer, setRequestFilterServer] = useState<string>("all");
+  const [periodFilterServer, setPeriodFilterServer] = useState<string>("all");
+  const [userFilterServer, setUserFilterServer] = useState<string>("all");
+
+  const filteredPendingRequests = (requestFilterServer === "all" 
+    ? requests.filter(r => r.statusId === '1')
+    : requests.filter(r => r.statusId === '1' && r.serverId === requestFilterServer)
+  ).sort((a, b) => b.createdAt - a.createdAt);
+
+  const filteredProcessedRequests = (requestFilterServer === "all"
+    ? requests.filter(r => r.statusId !== '1')
+    : requests.filter(r => r.statusId !== '1' && r.serverId === requestFilterServer)
+  ).sort((a, b) => b.createdAt - a.createdAt);
+
+  const filteredPeriods = periodFilterServer === "all"
+    ? periods
+    : periods.filter(p => p.serverId === periodFilterServer);
+
+  const filteredUsers = userFilterServer === "all"
+    ? users
+    : users.filter(u => characters.some(c => c.userId === u.id && c.serverId === userFilterServer));
 
   const pendingRequests = requests.filter(r => r.statusId === '1').sort((a, b) => b.createdAt - a.createdAt);
   const processedRequests = requests.filter(r => r.statusId !== '1').sort((a, b) => b.createdAt - a.createdAt);
@@ -164,19 +186,32 @@ export default function Admin() {
         </TabsList>
 
         <TabsContent value="requests" className="space-y-6">
+          <div className="flex justify-end mb-4">
+            <Select value={requestFilterServer} onValueChange={setRequestFilterServer}>
+              <SelectTrigger className="w-[180px]" data-testid="select-filter-requests-server">
+                <SelectValue placeholder={t('common.allServers')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.allServers')}</SelectItem>
+                {servers.map(s => (
+                  <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="bg-card/30 border-border/50 h-[600px] flex flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   {t('admin.requests.pendingApproval')}
-                  <Badge variant="secondary">{pendingRequests.length}</Badge>
+                  <Badge variant="secondary">{filteredPendingRequests.length}</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex-1 p-0 overflow-hidden">
                 <ScrollArea className="h-full p-6 pt-0">
                   <div className="space-y-4">
-                    {pendingRequests.length === 0 && <p className="text-muted-foreground text-center py-10">{t('admin.requests.noPending')}</p>}
-                    {pendingRequests.map(req => (
+                    {filteredPendingRequests.length === 0 && <p className="text-muted-foreground text-center py-10">{t('admin.requests.noPending')}</p>}
+                    {filteredPendingRequests.map(req => (
                       <div key={req.id} className="p-4 rounded-lg border border-border/50 bg-card/50 space-y-3 hover:border-primary/30 transition-all" data-testid={`pending-request-${req.id}`}>
                         <div className="flex justify-between items-start">
                           <div>
@@ -218,7 +253,7 @@ export default function Admin() {
               <CardContent className="flex-1 p-0 overflow-hidden">
                 <ScrollArea className="h-full p-6 pt-0">
                   <div className="space-y-4 opacity-70">
-                    {processedRequests.map(req => {
+                    {filteredProcessedRequests.map(req => {
                       const statusName = getTranslatedStatus(req.statusId);
                       return (
                         <div key={req.id} className="p-3 rounded border border-border/30 flex justify-between items-center">
@@ -240,6 +275,19 @@ export default function Admin() {
         </TabsContent>
 
         <TabsContent value="periods">
+          <div className="flex justify-end mb-4">
+            <Select value={periodFilterServer} onValueChange={setPeriodFilterServer}>
+              <SelectTrigger className="w-[180px]" data-testid="select-filter-periods-server">
+                <SelectValue placeholder={t('common.allServers')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.allServers')}</SelectItem>
+                {servers.map(s => (
+                  <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="grid gap-6 md:grid-cols-2">
              <Card className="bg-card/30 border-border/50">
                <CardHeader>
@@ -285,7 +333,7 @@ export default function Admin() {
                <CardContent>
                  <ScrollArea className="h-[300px]">
                    <div className="space-y-3">
-                     {periods.map(p => (
+                     {filteredPeriods.map(p => (
                        <div key={p.id} className="flex items-center justify-between p-3 rounded border border-border/40 bg-muted/10" data-testid={`period-item-${p.id}`}>
                          <div>
                            <span className="font-medium flex items-center gap-2">
@@ -309,6 +357,19 @@ export default function Admin() {
         </TabsContent>
 
         <TabsContent value="users">
+          <div className="flex justify-end mb-4">
+            <Select value={userFilterServer} onValueChange={setUserFilterServer}>
+              <SelectTrigger className="w-[180px]" data-testid="select-filter-users-server">
+                <SelectValue placeholder={t('common.allServers')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.allServers')}</SelectItem>
+                {servers.map(s => (
+                  <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Card className="bg-card/30 border-border/50">
             <CardHeader>
               <CardTitle>{t('admin.users.title')}</CardTitle>
@@ -316,7 +377,7 @@ export default function Admin() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {users.map(user => (
+                {filteredUsers.map(user => (
                   <div key={user.id} className="flex items-center justify-between p-4 border border-border/40 rounded-lg bg-card/40" data-testid={`user-item-${user.id}`}>
                     <div className="flex items-center gap-4">
                       <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
