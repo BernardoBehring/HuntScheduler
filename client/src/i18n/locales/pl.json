@@ -1,0 +1,160 @@
+{
+  "app": {
+    "name": "GuildHall",
+    "tagline": "Menedżer Huntów Tibia",
+    "enterSystem": "Wejdź do systemu zarządzania huntami"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "huntSchedule": "Harmonogram Huntów",
+    "adminPanel": "Panel Admina"
+  },
+  "auth": {
+    "selectUserDemo": "Wybierz Rolę Użytkownika (Demo)",
+    "logout": "Wyloguj"
+  },
+  "common": {
+    "points": "pkt",
+    "search": "Szukaj",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "save": "Zapisz",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "add": "Dodaj",
+    "create": "Utwórz",
+    "update": "Zaktualizuj",
+    "submit": "Wyślij",
+    "loading": "Ładowanie...",
+    "noData": "Brak dostępnych danych",
+    "unknown": "Nieznany",
+    "solo": "Solo",
+    "members": "Członkowie",
+    "max": "Maks",
+    "period": "Okres",
+    "server": "Serwer",
+    "active": "Aktywny",
+    "inactive": "Nieaktywny"
+  },
+  "status": {
+    "pending": "Oczekujący",
+    "approved": "Zatwierdzony",
+    "rejected": "Odrzucony",
+    "cancelled": "Anulowany",
+    "booked": "ZAREZERWOWANY"
+  },
+  "difficulty": {
+    "easy": "Łatwy",
+    "medium": "Średni",
+    "hard": "Trudny",
+    "nightmare": "Koszmar"
+  },
+  "roles": {
+    "admin": "Admin",
+    "user": "Użytkownik"
+  },
+  "dashboard": {
+    "title": "Centrum Dowodzenia",
+    "welcome": "Witaj ponownie",
+    "guildPoints": "Punkty Gildii",
+    "fromLastWeek": "+20 z ostatniego tygodnia",
+    "activeRequests": "Aktywne Wnioski",
+    "pendingApproval": "Oczekujące na zatwierdzenie",
+    "upcomingHunts": "Nadchodzące Hunty",
+    "approvedSessions": "Zatwierdzone sesje",
+    "myRequestsHistory": "Historia Moich Wniosków",
+    "trackStatus": "Śledź status swoich zgłoszeń huntowych",
+    "noRequests": "Nie znaleziono wniosków.",
+    "goToSchedule": "Idź do Harmonogramu",
+    "claimPoints": "Odbierz Punkty",
+    "claimGuildPoints": "Odbierz Punkty Gildii",
+    "uploadScreenshot": "Prześlij zrzut ekranu ze swojego hunta lub udziału w wydarzeniu.",
+    "screenshotEvidence": "Dowód Zrzutu Ekranu",
+    "clickToUpload": "Kliknij, aby przesłać lub przeciągnij i upuść",
+    "noteOptional": "Notatka (Opcjonalnie)",
+    "submitClaim": "Wyślij Wniosek",
+    "claimSubmitted": "Wniosek Wysłany",
+    "claimDescription": "Twój zrzut ekranu został przesłany do weryfikacji przez admina."
+  },
+  "schedule": {
+    "title": "Harmonogram Huntów",
+    "selectServer": "Wybierz Serwer",
+    "selectPeriod": "Wybierz Okres",
+    "searchRespawn": "Szukaj respawnu...",
+    "respawnArea": "Obszar Respawnu",
+    "request": "Zgłoś",
+    "requestHunt": "Zgłoś Hunt",
+    "noActivePeriod": "Brak Aktywnego Okresu",
+    "partyLeader": "Lider Grupy",
+    "partyMembersOptional": "Członkowie Grupy (Opcjonalnie)",
+    "memberPlaceholder": "Nazwa Członka {{number}}",
+    "confirmRequest": "Potwierdź Zgłoszenie",
+    "requestWarning": "Zgłaszasz się na ten slot na cały czas trwania wybranego okresu. Upewnij się, że twoja drużyna może zobowiązać się do tego harmonogramu."
+  },
+  "admin": {
+    "title": "Polecenie Admina",
+    "accessGranted": "Przyznano Dostęp Admina",
+    "tabs": {
+      "requests": "Przegląd Wniosków",
+      "periods": "Okresy i Rotacje",
+      "respawns": "Respawny i Sloty",
+      "users": "Użytkownicy i Punkty"
+    },
+    "requests": {
+      "pendingApproval": "Oczekujące Zatwierdzenie",
+      "historyLog": "Dziennik Historii",
+      "noPending": "Brak oczekujących wniosków.",
+      "approve": "Zatwierdź",
+      "reject": "Odrzuć",
+      "requestApproved": "Wniosek zatwierdzony",
+      "requestRejected": "Wniosek odrzucony",
+      "requestStatus": "Wniosek o hunt został {{status}}."
+    },
+    "periods": {
+      "createNew": "Utwórz Nowy Okres",
+      "defineSchedule": "Zdefiniuj nowy harmonogram rotacji huntów",
+      "periodName": "Nazwa Okresu",
+      "periodNamePlaceholder": "np. Tydzień 50 - Specjal Bożonarodzeniowy",
+      "startDate": "Data Rozpoczęcia",
+      "endDate": "Data Zakończenia",
+      "createPeriod": "Utwórz Okres",
+      "activePeriods": "Aktywne Okresy",
+      "periodCreated": "Okres Utworzony",
+      "periodCreatedDesc": "Dodano nowy okres rotacji huntów.",
+      "deactivate": "Dezaktywuj",
+      "activate": "Aktywuj"
+    },
+    "respawns": {
+      "serverConfig": "Konfiguracja Serwera",
+      "manageRespawns": "Zarządzaj obszarami respawnu i globalnymi ustawieniami",
+      "addRespawn": "Dodaj Respawn",
+      "addNewRespawn": "Dodaj Nowy Respawn",
+      "createHuntingArea": "Utwórz nowy obszar łowiecki dla graczy do rezerwacji.",
+      "editRespawn": "Edytuj Respawn",
+      "updateDetails": "Zaktualizuj szczegóły tego obszaru łowieckiego.",
+      "respawnName": "Nazwa Respawnu",
+      "respawnNamePlaceholder": "np. Library - Ice",
+      "maxPlayers": "Maks Graczy",
+      "createRespawn": "Utwórz Respawn",
+      "saveChanges": "Zapisz Zmiany",
+      "respawnAdded": "Respawn Dodany",
+      "respawnAddedDesc": "Utworzono nowy obszar respawnu.",
+      "respawnUpdated": "Respawn Zaktualizowany",
+      "respawnUpdatedDesc": "Szczegóły obszaru respawnu zaktualizowane.",
+      "respawnDeleted": "Respawn Usunięty",
+      "respawnDeletedDesc": "Obszar respawnu został usunięty.",
+      "confirmDelete": "Czy na pewno chcesz usunąć ten respawn?"
+    },
+    "users": {
+      "title": "Zarządzanie Użytkownikami",
+      "description": "Zarządzaj punktami i rolami gildii",
+      "pointsUpdated": "Punkty Zaktualizowane",
+      "pointsUpdatedDesc": "Dodano {{amount}} punktów użytkownikowi."
+    }
+  },
+  "errors": {
+    "loadFailed": "Nie udało się załadować danych",
+    "saveFailed": "Nie udało się zapisać danych",
+    "networkError": "Wystąpił błąd sieci"
+  }
+}

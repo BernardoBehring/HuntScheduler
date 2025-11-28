@@ -1,0 +1,160 @@
+{
+  "app": {
+    "name": "GuildHall",
+    "tagline": "Tibia Hunt Manager",
+    "enterSystem": "Enter the hunt management system"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "huntSchedule": "Hunt Schedule",
+    "adminPanel": "Admin Panel"
+  },
+  "auth": {
+    "selectUserDemo": "Select User Role Demo",
+    "logout": "Logout"
+  },
+  "common": {
+    "points": "pts",
+    "search": "Search",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "create": "Create",
+    "update": "Update",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "unknown": "Unknown",
+    "solo": "Solo",
+    "members": "Members",
+    "max": "Max",
+    "period": "Period",
+    "server": "Server",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "cancelled": "Cancelled",
+    "booked": "BOOKED"
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "nightmare": "Nightmare"
+  },
+  "roles": {
+    "admin": "Admin",
+    "user": "User"
+  },
+  "dashboard": {
+    "title": "Command Center",
+    "welcome": "Welcome back",
+    "guildPoints": "Guild Points",
+    "fromLastWeek": "+20 from last week",
+    "activeRequests": "Active Requests",
+    "pendingApproval": "Pending approval",
+    "upcomingHunts": "Upcoming Hunts",
+    "approvedSessions": "Approved sessions",
+    "myRequestsHistory": "My Requests History",
+    "trackStatus": "Track the status of your hunt applications",
+    "noRequests": "No requests found.",
+    "goToSchedule": "Go to Schedule",
+    "claimPoints": "Claim Points",
+    "claimGuildPoints": "Claim Guild Points",
+    "uploadScreenshot": "Upload a screenshot of your hunt or event participation.",
+    "screenshotEvidence": "Screenshot Evidence",
+    "clickToUpload": "Click to upload or drag and drop",
+    "noteOptional": "Note (Optional)",
+    "submitClaim": "Submit Claim",
+    "claimSubmitted": "Claim Submitted",
+    "claimDescription": "Your screenshot has been uploaded for admin review."
+  },
+  "schedule": {
+    "title": "Hunt Schedule",
+    "selectServer": "Select Server",
+    "selectPeriod": "Select Period",
+    "searchRespawn": "Search respawn...",
+    "respawnArea": "Respawn Area",
+    "request": "Request",
+    "requestHunt": "Request Hunt",
+    "noActivePeriod": "No Active Period",
+    "partyLeader": "Party Leader",
+    "partyMembersOptional": "Party Members (Optional)",
+    "memberPlaceholder": "Member {{number}} Name",
+    "confirmRequest": "Confirm Request",
+    "requestWarning": "You are requesting this slot for the entire duration of the selected period. Ensure your team can commit to this schedule."
+  },
+  "admin": {
+    "title": "Admin Command",
+    "accessGranted": "Admin Access Granted",
+    "tabs": {
+      "requests": "Requests Review",
+      "periods": "Periods & Rotations",
+      "respawns": "Respawns & Slots",
+      "users": "Users & Points"
+    },
+    "requests": {
+      "pendingApproval": "Pending Approval",
+      "historyLog": "History Log",
+      "noPending": "No pending requests.",
+      "approve": "Approve",
+      "reject": "Reject",
+      "requestApproved": "Request approved",
+      "requestRejected": "Request rejected",
+      "requestStatus": "The hunt request has been {{status}}."
+    },
+    "periods": {
+      "createNew": "Create New Period",
+      "defineSchedule": "Define a new hunt rotation schedule",
+      "periodName": "Period Name",
+      "periodNamePlaceholder": "e.g. Week 50 - Christmas Special",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "createPeriod": "Create Period",
+      "activePeriods": "Active Periods",
+      "periodCreated": "Period Created",
+      "periodCreatedDesc": "New hunt rotation period added.",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
+    },
+    "respawns": {
+      "serverConfig": "Server Configuration",
+      "manageRespawns": "Manage respawn areas and global settings",
+      "addRespawn": "Add Respawn",
+      "addNewRespawn": "Add New Respawn",
+      "createHuntingArea": "Create a new hunting area for players to book.",
+      "editRespawn": "Edit Respawn",
+      "updateDetails": "Update details for this hunting area.",
+      "respawnName": "Respawn Name",
+      "respawnNamePlaceholder": "e.g. Library - Ice",
+      "maxPlayers": "Max Players",
+      "createRespawn": "Create Respawn",
+      "saveChanges": "Save Changes",
+      "respawnAdded": "Respawn Added",
+      "respawnAddedDesc": "New respawn area has been created.",
+      "respawnUpdated": "Respawn Updated",
+      "respawnUpdatedDesc": "Respawn area details updated.",
+      "respawnDeleted": "Respawn Deleted",
+      "respawnDeletedDesc": "Respawn area has been removed.",
+      "confirmDelete": "Are you sure you want to delete this respawn?"
+    },
+    "users": {
+      "title": "User Management",
+      "description": "Manage guild points and roles",
+      "pointsUpdated": "Points Updated",
+      "pointsUpdatedDesc": "Added {{amount}} points to user."
+    }
+  },
+  "errors": {
+    "loadFailed": "Failed to load data",
+    "saveFailed": "Failed to save data",
+    "networkError": "Network error occurred"
+  }
+}
