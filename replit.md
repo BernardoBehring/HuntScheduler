@@ -149,7 +149,14 @@ Seed data is automatically created on first run.
 ### Service Layer Pattern
 - Services contain all business logic
 - Controllers are thin wrappers that call services
-- `ServiceResult<T>` for returning operation outcomes
+- `ServiceResult<T>` for returning operation outcomes with error codes
+
+### Backend Error Handling (i18n)
+- Error codes defined in `Backend/HuntSchedule.Services/Results/ErrorCode.cs`
+- ServiceResult returns `ErrorCode` + `ErrorParams` instead of hardcoded messages
+- Controllers return `ErrorResponse` DTOs with error code and parameters
+- Frontend translates error codes using `client/src/lib/translateError.ts`
+- All error messages translatable in 5 languages (see `error.*` keys in locale files)
 
 ## Design System
 
