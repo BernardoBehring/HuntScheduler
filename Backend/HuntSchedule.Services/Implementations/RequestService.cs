@@ -5,6 +5,7 @@ using HuntSchedule.Services.External;
 using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.Results;
 using static HuntSchedule.Services.Results.ErrorType;
+using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Services.Implementations;
 
@@ -34,7 +35,7 @@ public class RequestService : IRequestService
     public async Task<ServiceResult<Request>> CreateAsync(CreateRequestDto dto)
     {
         var server = await _unitOfWork.Servers.GetByIdAsync(dto.ServerId);
-        if (server == null) return ServiceResult<Request>.Fail(_localization.GetString("ServerNotFound"), NotFound);
+        if (server == null) return ServiceResult<Request>.Fail(_localization.GetString(ServerNotFound), NotFound);
 
         var pendingStatus = await _unitOfWork.RequestStatuses.GetByNameAsync("pending");
 
@@ -54,7 +55,7 @@ public class RequestService : IRequestService
                     if (character == null)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<Request>.Fail(_localization.GetString("CharacterNotFound"), NotFound);
+                        return ServiceResult<Request>.Fail(_localization.GetString(CharacterNotFound), NotFound);
                     }
                 }
                 else if (!string.IsNullOrEmpty(pm.CharacterName))
@@ -68,7 +69,7 @@ public class RequestService : IRequestService
                         if (tibiaResult == null || !tibiaResult.Exists)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail(_localization.GetString("CharacterNotFoundOnTibia", pm.CharacterName), Validation);
+                            return ServiceResult<Request>.Fail(_localization.GetString(CharacterNotFoundOnTibia, pm.CharacterName), Validation);
                         }
 
                         var tibiaServer = await _unitOfWork.Servers.GetByNameAsync(tibiaResult.World);
@@ -76,13 +77,13 @@ public class RequestService : IRequestService
                         if (tibiaServer == null)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail(_localization.GetString("CharacterServerNotConfigured", pm.CharacterName, tibiaResult.World), Validation);
+                            return ServiceResult<Request>.Fail(_localization.GetString(CharacterServerNotConfigured, pm.CharacterName, tibiaResult.World), Validation);
                         }
 
                         if (tibiaServer.Id != dto.ServerId)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail(_localization.GetString("CharacterServerMismatch", pm.CharacterName, tibiaResult.World, server.Name), Validation);
+                            return ServiceResult<Request>.Fail(_localization.GetString(CharacterServerMismatch, pm.CharacterName, tibiaResult.World, server.Name), Validation);
                         }
 
                         character = new Character
@@ -145,7 +146,7 @@ public class RequestService : IRequestService
     public async Task<ServiceResult> UpdateStatusAsync(int id, StatusUpdateDto dto)
     {
         var request = await _unitOfWork.Requests.GetByIdAsync(id);
-        if (request == null) return ServiceResult.Fail(_localization.GetString("RequestNotFound"), NotFound);
+        if (request == null) return ServiceResult.Fail(_localization.GetString(RequestNotFound), NotFound);
 
         request.StatusId = dto.StatusId;
         request.RejectionReason = dto.Reason;
@@ -162,7 +163,7 @@ public class RequestService : IRequestService
             foreach (var conflict in conflicts)
             {
                 conflict.StatusId = rejectedStatus.Id;
-                conflict.RejectionReason = _localization.GetString("ConflictWithApprovedRequest", id);
+                conflict.RejectionReason = _localization.GetString(ConflictWithApprovedRequest, id);
             }
         }
 
