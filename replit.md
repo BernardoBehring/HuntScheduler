@@ -12,7 +12,9 @@ Located in `Backend/HuntScheduleApi/`:
 - **Pattern**: Code First with seeded data
 
 ### Models
-- `User` - Guild members with roles (admin/user) and points
+- `User` - Guild members with roleId (FK) and points
+- `Role` - Lookup table for user roles (admin/user)
+- `Character` - Player characters linked to users (name, world, vocation, level, isMain)
 - `Server` - Game servers (Antica, Wintera, etc.)
 - `Respawn` - Hunt locations with difficultyId (FK) and max players
 - `Slot` - Time slots for hunting sessions (with serverId FK)
@@ -25,6 +27,8 @@ Located in `Backend/HuntScheduleApi/`:
 All endpoints are prefixed with `/api`:
 
 - `/api/users` - User management and points
+- `/api/roles` - Role lookup table (admin/user)
+- `/api/characters` - Character management (CRUD, set-main)
 - `/api/servers` - Server CRUD operations
 - `/api/respawns` - Respawn area management
 - `/api/slots` - Time slot configuration
