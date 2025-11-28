@@ -14,7 +14,7 @@ Located in `Backend/HuntScheduleApi/`:
 ### Models
 - `User` - Guild members with roleId (FK) and points
 - `Role` - Lookup table for user roles (admin/user)
-- `Character` - Player characters linked to users (name, world, vocation, level, isMain)
+- `Character` - Player characters linked to users and servers (name, serverId, vocation, level, isMain)
 - `Server` - Game servers (Antica, Wintera, etc.)
 - `Respawn` - Hunt locations with difficultyId (FK) and max players
 - `Slot` - Time slots for hunting sessions (with serverId FK)

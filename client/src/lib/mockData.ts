@@ -261,11 +261,12 @@ export const useStore = create<AppState>((set, get) => ({
           characters: u.characters?.map((c: any) => ({
             ...c,
             id: String(c.id),
-            userId: String(c.userId)
+            userId: String(c.userId),
+            serverId: String(c.serverId)
           }))
         })),
         roles: roles.map(r => ({ ...r, id: String(r.id) })),
-        characters: characters.map(c => ({ ...c, id: String(c.id), userId: String(c.userId) })),
+        characters: characters.map(c => ({ ...c, id: String(c.id), userId: String(c.userId), serverId: String(c.serverId) })),
         servers: servers.map(s => ({ ...s, id: String(s.id) })),
         statuses: statuses.map(s => ({ ...s, id: String(s.id) })),
         difficulties: difficulties.map(d => ({ ...d, id: String(d.id) })),
@@ -300,7 +301,13 @@ export const useStore = create<AppState>((set, get) => ({
           ...users[0], 
           id: String(users[0].id),
           roleId: String(users[0].roleId),
-          role: users[0].role?.name
+          role: users[0].role?.name,
+          characters: users[0].characters?.map((c: any) => ({
+            ...c,
+            id: String(c.id),
+            userId: String(c.userId),
+            serverId: String(c.serverId)
+          }))
         } : null,
         useApi: true,
         isLoading: false,

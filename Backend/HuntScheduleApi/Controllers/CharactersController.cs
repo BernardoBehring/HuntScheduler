@@ -73,6 +73,12 @@ public class CharactersController : ControllerBase
     {
         if (id != character.Id) return BadRequest();
 
+        var user = await _context.Users.FindAsync(character.UserId);
+        if (user == null) return BadRequest("User not found");
+
+        var server = await _context.Servers.FindAsync(character.ServerId);
+        if (server == null) return BadRequest("Server not found");
+
         if (character.IsMain)
         {
             var existingMain = await _context.Characters
