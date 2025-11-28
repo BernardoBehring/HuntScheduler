@@ -16,11 +16,14 @@ public class Character
     public User? User { get; set; }
     
     [Required]
+    public int ServerId { get; set; }
+    
+    [ForeignKey("ServerId")]
+    public Server? Server { get; set; }
+    
+    [Required]
     [MaxLength(100)]
     public string Name { get; set; } = string.Empty;
-    
-    [MaxLength(50)]
-    public string? World { get; set; }
     
     [MaxLength(50)]
     public string? Vocation { get; set; }

@@ -35,12 +35,12 @@ public class AppDbContext : DbContext
         );
 
         modelBuilder.Entity<Character>().HasData(
-            new Character { Id = 1, UserId = 1, Name = "Admin Knight", World = "Antica", Vocation = "Elite Knight", Level = 500, IsMain = true },
-            new Character { Id = 2, UserId = 2, Name = "Hunter Elite", World = "Antica", Vocation = "Royal Paladin", Level = 450, IsMain = true },
-            new Character { Id = 3, UserId = 2, Name = "Hunter Alt", World = "Antica", Vocation = "Master Sorcerer", Level = 320, IsMain = false },
-            new Character { Id = 4, UserId = 3, Name = "Paladin Master", World = "Antica", Vocation = "Royal Paladin", Level = 380, IsMain = true },
-            new Character { Id = 5, UserId = 4, Name = "Druid Healer", World = "Antica", Vocation = "Elder Druid", Level = 420, IsMain = true },
-            new Character { Id = 6, UserId = 4, Name = "Druid Backup", World = "Wintera", Vocation = "Elder Druid", Level = 280, IsMain = false }
+            new Character { Id = 1, UserId = 1, ServerId = 1, Name = "Admin Knight", Vocation = "Elite Knight", Level = 500, IsMain = true },
+            new Character { Id = 2, UserId = 2, ServerId = 1, Name = "Hunter Elite", Vocation = "Royal Paladin", Level = 450, IsMain = true },
+            new Character { Id = 3, UserId = 2, ServerId = 1, Name = "Hunter Alt", Vocation = "Master Sorcerer", Level = 320, IsMain = false },
+            new Character { Id = 4, UserId = 3, ServerId = 1, Name = "Paladin Master", Vocation = "Royal Paladin", Level = 380, IsMain = true },
+            new Character { Id = 5, UserId = 4, ServerId = 1, Name = "Druid Healer", Vocation = "Elder Druid", Level = 420, IsMain = true },
+            new Character { Id = 6, UserId = 4, ServerId = 2, Name = "Druid Backup", Vocation = "Elder Druid", Level = 280, IsMain = false }
         );
 
         modelBuilder.Entity<Server>().HasData(
