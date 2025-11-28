@@ -19,8 +19,10 @@ public class Respawn
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(20)]
-    public string Difficulty { get; set; } = "medium";
+    public int DifficultyId { get; set; }
+
+    [ForeignKey("DifficultyId")]
+    public Difficulty? Difficulty { get; set; }
 
     public int MaxPlayers { get; set; } = 4;
 }

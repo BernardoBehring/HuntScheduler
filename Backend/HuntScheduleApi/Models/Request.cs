@@ -39,8 +39,10 @@ public class Request
     public SchedulePeriod? Period { get; set; }
 
     [Required]
-    [MaxLength(20)]
-    public string Status { get; set; } = "pending";
+    public int StatusId { get; set; }
+
+    [ForeignKey("StatusId")]
+    public RequestStatus? Status { get; set; }
 
     public string[] PartyMembers { get; set; } = Array.Empty<string>();
 

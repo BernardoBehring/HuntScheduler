@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HuntScheduleApi.Models;
 
@@ -6,6 +7,12 @@ public class Slot
 {
     [Key]
     public int Id { get; set; }
+
+    [Required]
+    public int ServerId { get; set; }
+
+    [ForeignKey("ServerId")]
+    public Server? Server { get; set; }
 
     [Required]
     [MaxLength(10)]
