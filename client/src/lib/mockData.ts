@@ -222,7 +222,7 @@ interface AppState {
 }
 
 export const useStore = create<AppState>((set, get) => ({
-  currentUser: MOCK_USERS[0],
+  currentUser: null,
   users: MOCK_USERS,
   roles: MOCK_ROLES,
   characters: MOCK_CHARACTERS,
@@ -327,18 +327,6 @@ export const useStore = create<AppState>((set, get) => ({
           })),
           createdAt: new Date(r.createdAt).getTime(),
         })),
-        currentUser: users.length > 0 ? { 
-          ...users[0], 
-          id: String(users[0].id),
-          roleId: String(users[0].roleId),
-          role: users[0].role?.name,
-          characters: users[0].characters?.map((c: any) => ({
-            ...c,
-            id: String(c.id),
-            userId: String(c.userId),
-            serverId: String(c.serverId)
-          }))
-        } : null,
         useApi: true,
         isLoading: false,
       });

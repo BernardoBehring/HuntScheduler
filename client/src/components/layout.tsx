@@ -1,4 +1,4 @@
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, Redirect } from "wouter";
 import { useStore } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,16 @@ import {
 import generatedImage from "@assets/generated_images/dark_fantasy_map_texture_background.png";
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { currentUser, logout, getRoleName } = useStore();
 
+  const handleLogout = () => {
+    logout();
+    setLocation("/login");
+  };
+
   if (!currentUser) {
-    return <div className="min-h-screen w-full bg-background">{children}</div>;
+    return <Redirect to="/login" />;
   }
 
   const navItems = [
@@ -84,7 +89,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Button 
             variant="outline" 
             className="w-full justify-start gap-2 border-destructive/30 hover:bg-destructive/10 hover:text-destructive text-muted-foreground"
-            onClick={() => logout()}
+            onClick={handleLogout}
+            data-testid="button-logout"
           >
             <LogOut className="h-4 w-4" />
             Logout
