@@ -453,18 +453,23 @@ export default function Admin() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                 {respawns.map(r => (
+                 {respawns.map(r => {
+                   const server = servers.find(s => s.id === r.serverId);
+                   return (
                    <div key={r.id} className="flex items-center justify-between p-3 border border-border/40 rounded bg-muted/10" data-testid={`respawn-item-${r.id}`}>
                      <div>
                        <p className="font-medium">{r.name}</p>
-                       <p className="text-xs text-muted-foreground">{t('common.max')} {t('common.members')}: {r.maxPlayers} • {getTranslatedDifficulty(r.difficultyId)}</p>
+                       <p className="text-xs text-muted-foreground">
+                         <span className="text-primary">{server?.name || t('common.unknown')}</span> • {t('common.max')} {t('common.members')}: {r.maxPlayers} • {getTranslatedDifficulty(r.difficultyId)}
+                       </p>
                      </div>
                      <div className="flex gap-2">
                        <Button size="sm" variant="ghost" onClick={() => openEditRespawnDialog(r)} data-testid={`button-edit-respawn-${r.id}`}>{t('common.edit')}</Button>
                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleDeleteRespawn(r.id)} data-testid={`button-delete-respawn-${r.id}`}><Trash2 className="h-4 w-4"/></Button>
                      </div>
                    </div>
-                 ))}
+                   );
+                 })}
               </div>
             </CardContent>
            </Card>

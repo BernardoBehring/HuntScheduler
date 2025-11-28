@@ -41,6 +41,8 @@ export function HuntSchedule() {
     r.serverId === selectedServer && 
     r.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const activeSlots = slots.filter(s => s.serverId === selectedServer);
   
   const getRequestForSlot = (respawnId: string, slotId: string) => {
     if (!currentPeriod) return undefined;
@@ -118,7 +120,7 @@ export function HuntSchedule() {
             <thead className="text-xs text-muted-foreground uppercase bg-muted/30 border-b border-border/40">
               <tr>
                 <th className="px-6 py-4 font-display font-bold tracking-wider text-primary">{t('schedule.respawnArea')}</th>
-                {slots.map(slot => (
+                {activeSlots.map(slot => (
                   <th key={slot.id} className="px-6 py-4 text-center min-w-[180px]">
                     <div className="flex items-center justify-center gap-2">
                       <Clock className="h-3 w-3" />
@@ -147,7 +149,7 @@ export function HuntSchedule() {
                       </span>
                     </div>
                   </td>
-                  {slots.map(slot => {
+                  {activeSlots.map(slot => {
                     const request = getRequestForSlot(respawn.id, slot.id);
                     return (
                       <td key={slot.id} className="px-4 py-3 text-center">
