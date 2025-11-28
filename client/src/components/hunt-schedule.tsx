@@ -159,7 +159,7 @@ export function HuntSchedule() {
                               : "bg-primary/10 border-primary/30 text-primary"
                           )}>
                             <span className="font-bold">{request.statusId === '2' ? t('status.booked') : t('status.pending').toUpperCase()}</span>
-                            <span className="opacity-70">User #{request.userId}</span>
+                            <span className="opacity-70">{t('common.user')} #{request.userId}</span>
                           </div>
                         ) : (
                           currentPeriod ? (

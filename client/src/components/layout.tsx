@@ -49,7 +49,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
     navItems.push({ href: "/admin", label: t('nav.adminPanel'), icon: Shield });
   }
 
-  const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
+  const resolvedLang = i18n.resolvedLanguage || i18n.language?.split('-')[0] || 'en';
+  const currentLanguage = languages.find(l => l.code === resolvedLang) || languages[0];
 
   return (
     <div className="min-h-screen flex bg-background text-foreground font-sans selection:bg-primary/20">
@@ -199,7 +200,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <DropdownMenuItem
                     key={lang.code}
                     onClick={() => i18n.changeLanguage(lang.code)}
-                    className={cn(i18n.language === lang.code && "bg-primary/10")}
+                    className={cn(resolvedLang === lang.code && "bg-primary/10")}
                     data-testid={`language-option-${lang.code}`}
                   >
                     <span className="mr-2">{lang.flag}</span>

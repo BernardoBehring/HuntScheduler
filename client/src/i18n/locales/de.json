@@ -34,7 +34,8 @@
     "period": "Zeitraum",
     "server": "Server",
     "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "user": "Benutzer"
   },
   "status": {
     "pending": "Ausstehend",
@@ -155,6 +156,9 @@
   "errors": {
     "loadFailed": "Laden der Daten fehlgeschlagen",
     "saveFailed": "Speichern der Daten fehlgeschlagen",
-    "networkError": "Netzwerkfehler aufgetreten"
+    "networkError": "Netzwerkfehler aufgetreten",
+    "pageNotFound": "404 Seite nicht gefunden",
+    "pageNotFoundDesc": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "goHome": "Zum Dashboard"
   }
 }

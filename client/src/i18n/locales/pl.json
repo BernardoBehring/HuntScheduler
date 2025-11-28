@@ -34,7 +34,8 @@
     "period": "Okres",
     "server": "Serwer",
     "active": "Aktywny",
-    "inactive": "Nieaktywny"
+    "inactive": "Nieaktywny",
+    "user": "Użytkownik"
   },
   "status": {
     "pending": "Oczekujący",
@@ -155,6 +156,9 @@
   "errors": {
     "loadFailed": "Nie udało się załadować danych",
     "saveFailed": "Nie udało się zapisać danych",
-    "networkError": "Wystąpił błąd sieci"
+    "networkError": "Wystąpił błąd sieci",
+    "pageNotFound": "404 Nie znaleziono strony",
+    "pageNotFoundDesc": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "goHome": "Idź do Panelu"
   }
 }

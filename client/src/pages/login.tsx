@@ -19,6 +19,7 @@ export default function Login() {
   const { users, login, getRoleName } = useStore();
   const [, setLocation] = useLocation();
   const { t, i18n } = useTranslation();
+  const resolvedLang = i18n.resolvedLanguage || i18n.language?.split('-')[0] || 'en';
 
   const handleLogin = (userId: string) => {
     login(userId);
@@ -40,7 +41,7 @@ export default function Login() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2 border-primary/30" data-testid="button-language-login">
               <Globe className="h-4 w-4" />
-              {languages.find(l => l.code === i18n.language)?.flag}
+              {languages.find(l => l.code === resolvedLang)?.flag}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -48,7 +49,7 @@ export default function Login() {
               <DropdownMenuItem
                 key={lang.code}
                 onClick={() => i18n.changeLanguage(lang.code)}
-                className={cn(i18n.language === lang.code && "bg-primary/10")}
+                className={cn(resolvedLang === lang.code && "bg-primary/10")}
                 data-testid={`language-option-login-${lang.code}`}
               >
                 <span className="mr-2">{lang.flag}</span>

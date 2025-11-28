@@ -80,6 +80,24 @@ Located in `client/src/`:
 - **State Management**: Zustand with API fallback
 - **Styling**: Tailwind CSS with Dark Fantasy theme
 - **Font**: Cinzel display font for headings
+- **Internationalization**: react-i18next with 5 languages
+
+### Multi-Language Support (i18n)
+Located in `client/src/i18n/`:
+
+**Supported Languages:**
+- English (en) - Default
+- Portuguese (pt)
+- Spanish (es)
+- German (de)
+- Polish (pl)
+
+**Implementation:**
+- Uses `react-i18next` with `i18next-browser-languagedetector`
+- Translation files in `client/src/i18n/locales/*.json`
+- Language selector in sidebar (desktop) and header (mobile)
+- Language preference persisted in localStorage
+- Uses `i18n.resolvedLanguage` for reliable locale detection
 
 ### Pages
 - `/` - Dashboard with user stats and requests
@@ -151,3 +169,4 @@ Seed data is automatically created on first run.
 - Clean architecture with separated layers
 - One class per file convention
 - Business logic in services, not controllers
+- Multi-language support (EN, PT, ES, DE, PL)

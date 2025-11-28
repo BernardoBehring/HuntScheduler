@@ -34,7 +34,8 @@
     "period": "Período",
     "server": "Servidor",
     "active": "Ativo",
-    "inactive": "Inativo"
+    "inactive": "Inativo",
+    "user": "Usuário"
   },
   "status": {
     "pending": "Pendente",
@@ -155,6 +156,9 @@
   "errors": {
     "loadFailed": "Falha ao carregar dados",
     "saveFailed": "Falha ao salvar dados",
-    "networkError": "Ocorreu um erro de rede"
+    "networkError": "Ocorreu um erro de rede",
+    "pageNotFound": "404 Página Não Encontrada",
+    "pageNotFoundDesc": "A página que você está procurando não existe ou foi movida.",
+    "goHome": "Ir para o Painel"
   }
 }
