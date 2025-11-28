@@ -19,13 +19,17 @@ public class PeriodsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SchedulePeriod>>> GetPeriods()
     {
-        return await _context.SchedulePeriods.ToListAsync();
+        return await _context.SchedulePeriods
+            .Include(p => p.Server)
+            .ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<SchedulePeriod>> GetPeriod(int id)
     {
-        var period = await _context.SchedulePeriods.FindAsync(id);
+        var period = await _context.SchedulePeriods
+            .Include(p => p.Server)
+            .FirstOrDefaultAsync(p => p.Id == id);
         if (period == null) return NotFound();
         return period;
     }

@@ -19,13 +19,17 @@ public class SlotsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Slot>>> GetSlots()
     {
-        return await _context.Slots.ToListAsync();
+        return await _context.Slots
+            .Include(s => s.Server)
+            .ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Slot>> GetSlot(int id)
     {
-        var slot = await _context.Slots.FindAsync(id);
+        var slot = await _context.Slots
+            .Include(s => s.Server)
+            .FirstOrDefaultAsync(s => s.Id == id);
         if (slot == null) return NotFound();
         return slot;
     }

@@ -19,13 +19,19 @@ public class RespawnsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Respawn>>> GetRespawns()
     {
-        return await _context.Respawns.Include(r => r.Server).ToListAsync();
+        return await _context.Respawns
+            .Include(r => r.Server)
+            .Include(r => r.Difficulty)
+            .ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Respawn>> GetRespawn(int id)
     {
-        var respawn = await _context.Respawns.Include(r => r.Server).FirstOrDefaultAsync(r => r.Id == id);
+        var respawn = await _context.Respawns
+            .Include(r => r.Server)
+            .Include(r => r.Difficulty)
+            .FirstOrDefaultAsync(r => r.Id == id);
         if (respawn == null) return NotFound();
         return respawn;
     }

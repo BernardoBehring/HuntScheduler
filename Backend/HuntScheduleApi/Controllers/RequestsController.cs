@@ -23,8 +23,10 @@ public class RequestsController : ControllerBase
             .Include(r => r.User)
             .Include(r => r.Server)
             .Include(r => r.Respawn)
+                .ThenInclude(resp => resp!.Difficulty)
             .Include(r => r.Slot)
             .Include(r => r.Period)
+            .Include(r => r.Status)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
     }
@@ -34,9 +36,12 @@ public class RequestsController : ControllerBase
     {
         var request = await _context.Requests
             .Include(r => r.User)
+            .Include(r => r.Server)
             .Include(r => r.Respawn)
+                .ThenInclude(resp => resp!.Difficulty)
             .Include(r => r.Slot)
             .Include(r => r.Period)
+            .Include(r => r.Status)
             .FirstOrDefaultAsync(r => r.Id == id);
         if (request == null) return NotFound();
         return request;
@@ -45,7 +50,8 @@ public class RequestsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Request>> CreateRequest(Request request)
     {
-        request.Status = "pending";
+        var pendingStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "pending");
+        request.StatusId = pendingStatus?.Id ?? 1;
         request.CreatedAt = DateTime.UtcNow;
         _context.Requests.Add(request);
         await _context.SaveChangesAsync();
@@ -54,7 +60,7 @@ public class RequestsController : ControllerBase
 
     public class StatusUpdateDto
     {
-        public string Status { get; set; } = string.Empty;
+        public int StatusId { get; set; }
         public string? Reason { get; set; }
     }
 
@@ -64,10 +70,14 @@ public class RequestsController : ControllerBase
         var request = await _context.Requests.FindAsync(id);
         if (request == null) return NotFound();
 
-        request.Status = dto.Status;
+        request.StatusId = dto.StatusId;
         request.RejectionReason = dto.Reason;
 
-        if (dto.Status == "approved")
+        var approvedStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "approved");
+        var rejectedStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "rejected");
+        var pendingStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "pending");
+
+        if (approvedStatus != null && dto.StatusId == approvedStatus.Id && pendingStatus != null && rejectedStatus != null)
         {
             var conflicts = await _context.Requests
                 .Where(r => r.Id != id
@@ -75,12 +85,12 @@ public class RequestsController : ControllerBase
                     && r.RespawnId == request.RespawnId
                     && r.SlotId == request.SlotId
                     && r.PeriodId == request.PeriodId
-                    && r.Status == "pending")
+                    && r.StatusId == pendingStatus.Id)
                 .ToListAsync();
 
             foreach (var conflict in conflicts)
             {
-                conflict.Status = "rejected";
+                conflict.StatusId = rejectedStatus.Id;
                 conflict.RejectionReason = $"Conflict with approved request #{id}";
             }
         }
