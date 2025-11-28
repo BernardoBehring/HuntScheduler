@@ -56,49 +56,50 @@ export function HuntSchedule() {
   return (
     <div className="space-y-6">
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-card/50 p-4 rounded-lg border border-border/50 backdrop-blur-sm">
-        <div className="flex gap-4 items-center w-full md:w-auto">
+      <div className="flex flex-col gap-4 bg-card/50 p-4 rounded-lg border border-border/50 backdrop-blur-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Select value={selectedServer} onValueChange={setSelectedServer}>
-            <SelectTrigger className="w-[200px] border-primary/20 bg-background/50">
+            <SelectTrigger className="w-full border-primary/20 bg-background/50" data-testid="select-server">
               <SelectValue placeholder="Select Server" />
             </SelectTrigger>
             <SelectContent>
               {servers.map(s => (
-                <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                <SelectItem key={s.id} value={s.id} data-testid={`server-option-${s.id}`}>{s.name} ({s.region})</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <Select value={selectedPeriodId} onValueChange={setSelectedPeriodId}>
-             <SelectTrigger className="w-[260px] border-primary/20 bg-background/50">
+             <SelectTrigger className="w-full border-primary/20 bg-background/50" data-testid="select-period">
                <SelectValue placeholder="Select Period" />
              </SelectTrigger>
              <SelectContent>
                {periods.map(p => (
-                 <SelectItem key={p.id} value={p.id}>
+                 <SelectItem key={p.id} value={p.id} data-testid={`period-option-${p.id}`}>
                    {p.name} ({format(new Date(p.startDate), "MMM d")} - {format(new Date(p.endDate), "MMM d")})
                  </SelectItem>
                ))}
              </SelectContent>
           </Select>
-        </div>
 
-        <div className="relative w-full md:w-auto">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search respawn..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 w-full md:w-[200px] bg-background/50 border-primary/20"
-          />
-        </div>
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search respawn..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 w-full bg-background/50 border-primary/20"
+              data-testid="input-search-respawn"
+            />
+          </div>
 
-        {currentPeriod && (
-           <Badge variant="outline" className="ml-auto border-primary/30 text-primary bg-primary/5 hidden lg:flex">
-             <CalendarIcon className="w-3 h-3 mr-2" />
-             {format(new Date(currentPeriod.startDate), "MMM d, yyyy")} — {format(new Date(currentPeriod.endDate), "MMM d, yyyy")}
-           </Badge>
-        )}
+          {currentPeriod && (
+             <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 hidden lg:flex items-center justify-center">
+               <CalendarIcon className="w-3 h-3 mr-2 flex-shrink-0" />
+               <span className="truncate">{format(new Date(currentPeriod.startDate), "MMM d")} — {format(new Date(currentPeriod.endDate), "MMM d")}</span>
+             </Badge>
+          )}
+        </div>
       </div>
 
       {/* Schedule Grid */}
@@ -180,13 +181,20 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
   const [party, setParty] = useState(['', '', '', '']);
 
   const handleSubmit = () => {
+    const filteredParty = party.filter(p => p.trim() !== '');
     addRequest({
       userId: currentUser!.id,
       serverId: server,
       respawnId: respawn.id,
       slotId: slot.id,
       periodId: period.id,
-      partyMembers: party.filter(p => p.trim() !== '')
+      partyMembers: filteredParty.map((name, idx) => ({
+        id: `temp-${idx}`,
+        requestId: '',
+        characterId: '',
+        character: { id: '', name, serverId: server, level: 0, isMain: false },
+        roleInParty: 'member'
+      }))
     });
     setIsOpen(false);
   };
