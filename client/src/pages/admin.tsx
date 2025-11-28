@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "react-i18next";
 
 export default function Admin() {
-  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, getStatusName, getDifficultyName, getRoleName, characters } = useStore();
+  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, getStatusName, getDifficultyName, getRoleName, characters, slots } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
   const { t } = useTranslation();
 
@@ -237,7 +237,7 @@ export default function Admin() {
                         </div>
                         
                         <div className="text-xs bg-muted/30 p-2 rounded text-muted-foreground">
-                          Party: {req.partyMembers.length > 0 ? req.partyMembers.join(", ") : t('common.solo')}
+                          Party: {req.partyMembers.length > 0 ? req.partyMembers.map(pm => pm.character?.name || pm.characterId).join(", ") : t('common.solo')}
                         </div>
 
                         <div className="flex gap-2 pt-2">
@@ -264,15 +264,24 @@ export default function Admin() {
                   <div className="space-y-4 opacity-70">
                     {filteredProcessedRequests.map(req => {
                       const statusName = getTranslatedStatus(req.statusId);
+                      const respawnName = respawns.find(r => r.id === req.respawnId)?.name || t('common.unknown');
+                      const slotInfo = slots.find(s => s.id === req.slotId);
+                      const periodName = periods.find(p => p.id === req.periodId)?.name || t('common.unknown');
                       return (
-                        <div key={req.id} className="p-3 rounded border border-border/30 flex justify-between items-center">
-                          <div>
-                            <p className="text-sm font-medium">Request #{req.id.slice(0,4)}</p>
-                            <p className="text-xs text-muted-foreground">{statusName}</p>
+                        <div key={req.id} className="p-3 rounded border border-border/30 space-y-2">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="text-sm font-medium text-primary">{getCharacterName(req.userId, req.serverId)}</p>
+                              <p className="text-xs text-muted-foreground">{respawnName}</p>
+                            </div>
+                            <Badge variant={req.statusId === '2' ? 'default' : 'destructive'}>
+                              {statusName}
+                            </Badge>
                           </div>
-                          <Badge variant={req.statusId === '2' ? 'default' : 'destructive'}>
-                            {statusName}
-                          </Badge>
+                          <div className="text-xs text-muted-foreground flex gap-2 flex-wrap">
+                            <span>{periodName}</span>
+                            {slotInfo && <span>• {slotInfo.startTime} - {slotInfo.endTime}</span>}
+                          </div>
                         </div>
                       );
                     })}
