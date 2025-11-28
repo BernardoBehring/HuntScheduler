@@ -11,7 +11,15 @@
   },
   "auth": {
     "selectUserDemo": "Select User Role Demo",
-    "logout": "Logout"
+    "logout": "Logout",
+    "login": "Login",
+    "username": "Username",
+    "password": "Password",
+    "usernamePlaceholder": "Enter your username",
+    "passwordPlaceholder": "Enter your password",
+    "loggingIn": "Logging in...",
+    "invalidCredentials": "Invalid username or password",
+    "demoCredentials": "Demo Credentials"
   },
   "common": {
     "points": "pts",

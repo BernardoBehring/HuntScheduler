@@ -11,7 +11,15 @@
   },
   "auth": {
     "selectUserDemo": "Selecciona Tipo de Usuario (Demo)",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "usernamePlaceholder": "Ingresa tu usuario",
+    "passwordPlaceholder": "Ingresa tu contraseña",
+    "loggingIn": "Iniciando sesión...",
+    "invalidCredentials": "Usuario o contraseña inválidos",
+    "demoCredentials": "Credenciales de Demostración"
   },
   "common": {
     "points": "pts",

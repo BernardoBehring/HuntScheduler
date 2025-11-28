@@ -11,7 +11,15 @@
   },
   "auth": {
     "selectUserDemo": "Wybierz Rolę Użytkownika (Demo)",
-    "logout": "Wyloguj"
+    "logout": "Wyloguj",
+    "login": "Zaloguj",
+    "username": "Nazwa użytkownika",
+    "password": "Hasło",
+    "usernamePlaceholder": "Wpisz nazwę użytkownika",
+    "passwordPlaceholder": "Wpisz hasło",
+    "loggingIn": "Logowanie...",
+    "invalidCredentials": "Nieprawidłowa nazwa użytkownika lub hasło",
+    "demoCredentials": "Dane logowania demo"
   },
   "common": {
     "points": "pkt",

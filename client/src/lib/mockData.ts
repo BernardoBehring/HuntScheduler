@@ -202,8 +202,10 @@ interface AppState {
   isLoading: boolean;
   useApi: boolean;
   
+  setCurrentUser: (user: any) => void;
   login: (userId: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<boolean>;
   addRequest: (req: Omit<Request, 'id' | 'statusId' | 'status' | 'createdAt'>) => void;
   updateRequestStatus: (id: string, statusId: string, reason?: string) => void;
   addPoints: (userId: string, amount: number) => void;
@@ -235,6 +237,26 @@ export const useStore = create<AppState>((set, get) => ({
   requests: MOCK_REQUESTS,
   isLoading: false,
   useApi: false,
+
+  setCurrentUser: (user: any) => {
+    if (user) {
+      const normalizedUser = {
+        ...user,
+        id: String(user.id),
+        roleId: String(user.roleId),
+        role: user.role?.name || user.role,
+        characters: user.characters?.map((c: any) => ({
+          ...c,
+          id: String(c.id),
+          userId: c.userId ? String(c.userId) : null,
+          serverId: String(c.serverId)
+        }))
+      };
+      set({ currentUser: normalizedUser });
+    } else {
+      set({ currentUser: null });
+    }
+  },
 
   getStatusName: (statusId: string) => {
     const state = get();
@@ -340,7 +362,25 @@ export const useStore = create<AppState>((set, get) => ({
     currentUser: state.users.find(u => u.id === userId) || null 
   })),
   
-  logout: () => set({ currentUser: null }),
+  logout: async () => {
+    try {
+      await api.auth.logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+    set({ currentUser: null });
+  },
+
+  checkAuth: async () => {
+    try {
+      const user = await api.auth.me();
+      get().setCurrentUser(user);
+      return true;
+    } catch {
+      set({ currentUser: null });
+      return false;
+    }
+  },
 
   addRequest: async (req) => {
     const state = get();

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import { HuntSchedule } from "@/components/hunt-schedule";
 import { Layout } from "@/components/layout";
 import { useStore } from "@/lib/mockData";
 import { useTranslation } from "react-i18next";
+import { Loader2 } from "lucide-react";
 
 function ProtectedRoute({ component: Component, adminOnly = false }: { component: React.ComponentType, adminOnly?: boolean }) {
   const { currentUser, getRoleName } = useStore();
@@ -32,12 +33,32 @@ function SchedulePage() {
   );
 }
 
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  );
+}
+
 function Router() {
-  const loadFromApi = useStore((state) => state.loadFromApi);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const { loadFromApi, checkAuth } = useStore();
 
   useEffect(() => {
-    loadFromApi();
-  }, [loadFromApi]);
+    const initialize = async () => {
+      await Promise.all([
+        loadFromApi(),
+        checkAuth()
+      ]);
+      setIsInitializing(false);
+    };
+    initialize();
+  }, [loadFromApi, checkAuth]);
+
+  if (isInitializing) {
+    return <LoadingScreen />;
+  }
 
   return (
     <Switch>

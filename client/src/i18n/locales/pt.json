@@ -11,7 +11,15 @@
   },
   "auth": {
     "selectUserDemo": "Selecione o Tipo de Usuário (Demo)",
-    "logout": "Sair"
+    "logout": "Sair",
+    "login": "Entrar",
+    "username": "Usuário",
+    "password": "Senha",
+    "usernamePlaceholder": "Digite seu nome de usuário",
+    "passwordPlaceholder": "Digite sua senha",
+    "loggingIn": "Entrando...",
+    "invalidCredentials": "Usuário ou senha inválidos",
+    "demoCredentials": "Credenciais de Demonstração"
   },
   "common": {
     "points": "pts",

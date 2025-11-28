@@ -11,7 +11,15 @@
   },
   "auth": {
     "selectUserDemo": "Benutzerrolle auswählen (Demo)",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "login": "Anmelden",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "usernamePlaceholder": "Benutzername eingeben",
+    "passwordPlaceholder": "Passwort eingeben",
+    "loggingIn": "Anmelden...",
+    "invalidCredentials": "Ungültiger Benutzername oder Passwort",
+    "demoCredentials": "Demo-Anmeldedaten"
   },
   "common": {
     "points": "Pkt",

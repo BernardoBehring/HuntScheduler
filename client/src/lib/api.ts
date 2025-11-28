@@ -282,4 +282,23 @@ export const api = {
     delete: (id: number): Promise<void> =>
       fetch(`${API_BASE}/characters/${id}`, { method: 'DELETE' }).then(r => handleResponse(r)),
   },
+
+  auth: {
+    login: (username: string, password: string): Promise<User> =>
+      fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include',
+      }).then(r => handleResponse(r)),
+    logout: (): Promise<void> =>
+      fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      }).then(r => handleResponse(r)),
+    me: (): Promise<User> =>
+      fetch(`${API_BASE}/auth/me`, {
+        credentials: 'include',
+      }).then(r => handleResponse(r)),
+  },
 };

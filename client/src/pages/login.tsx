@@ -1,12 +1,15 @@
-import { useStore } from "@/lib/mockData";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Swords, Globe } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Swords, Globe, Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { languages } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { useStore } from "@/lib/mockData";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,26 +19,39 @@ import {
 import generatedImage from "@assets/generated_images/dark_fantasy_map_texture_background.png";
 
 export default function Login() {
-  const { users, login, getRoleName } = useStore();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { setCurrentUser } = useStore();
   const [, setLocation] = useLocation();
   const { t, i18n } = useTranslation();
   const resolvedLang = i18n.resolvedLanguage || i18n.language?.split('-')[0] || 'en';
 
-  const handleLogin = (userId: string) => {
-    login(userId);
-    setLocation("/");
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const user = await api.auth.login(username, password);
+      setCurrentUser(user);
+      setLocation("/");
+    } catch (err: any) {
+      setError(err.message || t('auth.invalidCredentials'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center relative bg-background overflow-hidden">
-      {/* Background Texture */}
       <div 
         className="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay"
         style={{ backgroundImage: `url(${generatedImage})`, backgroundSize: 'cover' }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90 pointer-events-none" />
 
-      {/* Language Selector - Top Right */}
       <div className="absolute top-4 right-4 z-20">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -68,22 +84,61 @@ export default function Login() {
           <CardTitle className="text-3xl font-display font-bold text-primary tracking-wider">{t('app.name')}</CardTitle>
           <CardDescription>{t('app.enterSystem')}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-3">
-            <Label className="text-xs uppercase tracking-widest text-muted-foreground">{t('auth.selectUserDemo')}</Label>
-            {users.map(user => (
-              <Button 
-                key={user.id} 
-                variant="outline" 
-                className="w-full justify-between h-12 border-border/50 hover:border-primary/50 hover:bg-primary/5 group"
-                onClick={() => handleLogin(user.id)}
-                data-testid={`button-login-${user.id}`}
-              >
-                <span className="font-medium group-hover:text-primary transition-colors">{user.username}</span>
-                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded uppercase">{t(`roles.${getRoleName(user.roleId)}`)}</span>
-              </Button>
-            ))}
-          </div>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">{t('auth.username')}</Label>
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t('auth.usernamePlaceholder')}
+                disabled={isLoading}
+                data-testid="input-username"
+                className="bg-background/50"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">{t('auth.password')}</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('auth.passwordPlaceholder')}
+                disabled={isLoading}
+                data-testid="input-password"
+                className="bg-background/50"
+              />
+            </div>
+            
+            {error && (
+              <p className="text-sm text-destructive text-center" data-testid="text-error">{error}</p>
+            )}
+
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading || !username || !password}
+              data-testid="button-login"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t('auth.loggingIn')}
+                </>
+              ) : (
+                t('auth.login')
+              )}
+            </Button>
+
+            <div className="text-xs text-muted-foreground text-center pt-2 space-y-1">
+              <p>{t('auth.demoCredentials')}</p>
+              <p className="font-mono bg-muted/30 p-2 rounded">admin / admin123</p>
+              <p className="font-mono bg-muted/30 p-2 rounded">player1 / player123</p>
+            </div>
+          </form>
         </CardContent>
       </Card>
     </div>
