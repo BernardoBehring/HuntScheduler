@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HuntScheduleApi.Data;
-using HuntScheduleApi.Models;
+using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.Interfaces;
 
 namespace HuntScheduleApi.Controllers;
 
@@ -9,23 +8,24 @@ namespace HuntScheduleApi.Controllers;
 [Route("api/[controller]")]
 public class ServersController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IServerService _serverService;
 
-    public ServersController(AppDbContext context)
+    public ServersController(IServerService serverService)
     {
-        _context = context;
+        _serverService = serverService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Server>>> GetServers()
     {
-        return await _context.Servers.ToListAsync();
+        var servers = await _serverService.GetAllAsync();
+        return Ok(servers);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Server>> GetServer(int id)
     {
-        var server = await _context.Servers.FindAsync(id);
+        var server = await _serverService.GetByIdAsync(id);
         if (server == null) return NotFound();
         return server;
     }
@@ -33,27 +33,28 @@ public class ServersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Server>> CreateServer(Server server)
     {
-        _context.Servers.Add(server);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetServer), new { id = server.Id }, server);
+        var createdServer = await _serverService.CreateAsync(server);
+        return CreatedAtAction(nameof(GetServer), new { id = createdServer.Id }, createdServer);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateServer(int id, Server server)
     {
         if (id != server.Id) return BadRequest();
-        _context.Entry(server).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        var existing = await _serverService.GetByIdAsync(id);
+        if (existing == null) return NotFound();
+        
+        await _serverService.UpdateAsync(server);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteServer(int id)
     {
-        var server = await _context.Servers.FindAsync(id);
+        var server = await _serverService.GetByIdAsync(id);
         if (server == null) return NotFound();
-        _context.Servers.Remove(server);
-        await _context.SaveChangesAsync();
+        
+        await _serverService.DeleteAsync(id);
         return NoContent();
     }
 }

@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using HuntScheduleApi.Data;
-using HuntScheduleApi.Services;
+using HuntSchedule.Persistence.Context;
+using HuntSchedule.Persistence.Repositories;
+using HuntSchedule.Services.External;
+using HuntSchedule.Services.Interfaces;
+using HuntSchedule.Services.Implementations;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +42,19 @@ connectionString = npgsqlBuilder.ToString();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<ICharacterService, CharacterService>();
+builder.Services.AddScoped<IServerService, ServerService>();
+builder.Services.AddScoped<ISlotService, SlotService>();
+builder.Services.AddScoped<ISchedulePeriodService, SchedulePeriodService>();
+builder.Services.AddScoped<IRespawnService, RespawnService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddScoped<IRequestStatusService, RequestStatusService>();
+builder.Services.AddScoped<IDifficultyService, DifficultyService>();
 
 builder.Services.AddCors(options =>
 {

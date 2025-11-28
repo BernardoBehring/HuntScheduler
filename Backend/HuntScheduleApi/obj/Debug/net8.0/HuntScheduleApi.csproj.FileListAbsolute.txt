@@ -111,3 +111,7 @@
 /home/runner/workspace/Backend/HuntScheduleApi/obj/Debug/net8.0/HuntScheduleApi.genruntimeconfig.cache
 /home/runner/workspace/Backend/HuntScheduleApi/obj/Debug/net8.0/ref/HuntScheduleApi.dll
 /home/runner/workspace/Backend/HuntScheduleApi/bin/Debug/net8.0/HuntScheduleApi.staticwebassets.runtime.json
+/home/runner/workspace/Backend/HuntScheduleApi/bin/Debug/net8.0/HuntSchedule.Persistence.dll
+/home/runner/workspace/Backend/HuntScheduleApi/bin/Debug/net8.0/HuntSchedule.Services.dll
+/home/runner/workspace/Backend/HuntScheduleApi/bin/Debug/net8.0/HuntSchedule.Services.pdb
+/home/runner/workspace/Backend/HuntScheduleApi/bin/Debug/net8.0/HuntSchedule.Persistence.pdb

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HuntScheduleApi.Data;
-using HuntScheduleApi.Models;
+using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.Interfaces;
 
 namespace HuntScheduleApi.Controllers;
 
@@ -9,29 +8,24 @@ namespace HuntScheduleApi.Controllers;
 [Route("api/[controller]")]
 public class RespawnsController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IRespawnService _respawnService;
 
-    public RespawnsController(AppDbContext context)
+    public RespawnsController(IRespawnService respawnService)
     {
-        _context = context;
+        _respawnService = respawnService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Respawn>>> GetRespawns()
     {
-        return await _context.Respawns
-            .Include(r => r.Server)
-            .Include(r => r.Difficulty)
-            .ToListAsync();
+        var respawns = await _respawnService.GetAllAsync();
+        return Ok(respawns);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Respawn>> GetRespawn(int id)
     {
-        var respawn = await _context.Respawns
-            .Include(r => r.Server)
-            .Include(r => r.Difficulty)
-            .FirstOrDefaultAsync(r => r.Id == id);
+        var respawn = await _respawnService.GetByIdAsync(id);
         if (respawn == null) return NotFound();
         return respawn;
     }
@@ -39,27 +33,28 @@ public class RespawnsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Respawn>> CreateRespawn(Respawn respawn)
     {
-        _context.Respawns.Add(respawn);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetRespawn), new { id = respawn.Id }, respawn);
+        var createdRespawn = await _respawnService.CreateAsync(respawn);
+        return CreatedAtAction(nameof(GetRespawn), new { id = createdRespawn.Id }, createdRespawn);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRespawn(int id, Respawn respawn)
     {
         if (id != respawn.Id) return BadRequest();
-        _context.Entry(respawn).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        var existing = await _respawnService.GetByIdAsync(id);
+        if (existing == null) return NotFound();
+        
+        await _respawnService.UpdateAsync(respawn);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRespawn(int id)
     {
-        var respawn = await _context.Respawns.FindAsync(id);
+        var respawn = await _respawnService.GetByIdAsync(id);
         if (respawn == null) return NotFound();
-        _context.Respawns.Remove(respawn);
-        await _context.SaveChangesAsync();
+        
+        await _respawnService.DeleteAsync(id);
         return NoContent();
     }
 }

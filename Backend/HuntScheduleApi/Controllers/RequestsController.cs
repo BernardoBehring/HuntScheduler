@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HuntScheduleApi.Data;
-using HuntScheduleApi.Models;
-using HuntScheduleApi.Services;
+using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.Interfaces;
+using HuntSchedule.Services.DTOs;
 
 namespace HuntScheduleApi.Controllers;
 
@@ -10,230 +9,55 @@ namespace HuntScheduleApi.Controllers;
 [Route("api/[controller]")]
 public class RequestsController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly ITibiaCharacterValidator _tibiaValidator;
+    private readonly IRequestService _requestService;
 
-    public RequestsController(AppDbContext context, ITibiaCharacterValidator tibiaValidator)
+    public RequestsController(IRequestService requestService)
     {
-        _context = context;
-        _tibiaValidator = tibiaValidator;
+        _requestService = requestService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Request>>> GetRequests()
     {
-        return await _context.Requests
-            .Include(r => r.User)
-            .Include(r => r.Server)
-            .Include(r => r.Respawn)
-                .ThenInclude(resp => resp!.Difficulty)
-            .Include(r => r.Slot)
-            .Include(r => r.Period)
-            .Include(r => r.Status)
-            .Include(r => r.PartyMembers)
-                .ThenInclude(pm => pm.Character)
-                    .ThenInclude(c => c!.Server)
-            .OrderByDescending(r => r.CreatedAt)
-            .ToListAsync();
+        var requests = await _requestService.GetAllAsync();
+        return Ok(requests);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Request>> GetRequest(int id)
     {
-        var request = await _context.Requests
-            .Include(r => r.User)
-            .Include(r => r.Server)
-            .Include(r => r.Respawn)
-                .ThenInclude(resp => resp!.Difficulty)
-            .Include(r => r.Slot)
-            .Include(r => r.Period)
-            .Include(r => r.Status)
-            .Include(r => r.PartyMembers)
-                .ThenInclude(pm => pm.Character)
-                    .ThenInclude(c => c!.Server)
-            .FirstOrDefaultAsync(r => r.Id == id);
+        var request = await _requestService.GetByIdAsync(id);
         if (request == null) return NotFound();
         return request;
-    }
-
-    public class PartyMemberDto
-    {
-        public int? CharacterId { get; set; }
-        public string? CharacterName { get; set; }
-        public string? RoleInParty { get; set; }
-    }
-
-    public class CreateRequestDto
-    {
-        public int UserId { get; set; }
-        public int ServerId { get; set; }
-        public int RespawnId { get; set; }
-        public int SlotId { get; set; }
-        public int PeriodId { get; set; }
-        public List<PartyMemberDto> PartyMembers { get; set; } = new();
     }
 
     [HttpPost]
     public async Task<ActionResult<Request>> CreateRequest(CreateRequestDto dto)
     {
-        var server = await _context.Servers.FindAsync(dto.ServerId);
-        if (server == null) return BadRequest("Server not found");
-
-        var pendingStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "pending");
-
-        using var transaction = await _context.Database.BeginTransactionAsync();
-        
-        try
-        {
-            var resolvedPartyMembers = new List<(Character character, string? role)>();
-            
-            foreach (var pm in dto.PartyMembers)
-            {
-                Character? character = null;
-
-                if (pm.CharacterId.HasValue)
-                {
-                    character = await _context.Characters.FindAsync(pm.CharacterId.Value);
-                    if (character == null)
-                    {
-                        await transaction.RollbackAsync();
-                        return BadRequest($"Character with ID {pm.CharacterId} not found");
-                    }
-                }
-                else if (!string.IsNullOrEmpty(pm.CharacterName))
-                {
-                    character = await _context.Characters
-                        .FirstOrDefaultAsync(c => c.Name.ToLower() == pm.CharacterName.ToLower() && c.ServerId == dto.ServerId);
-
-                    if (character == null)
-                    {
-                        var tibiaResult = await _tibiaValidator.ValidateCharacterAsync(pm.CharacterName);
-                        
-                        if (tibiaResult == null || !tibiaResult.Exists)
-                        {
-                            await transaction.RollbackAsync();
-                            return BadRequest($"Character '{pm.CharacterName}' not found on Tibia.com");
-                        }
-
-                        var tibiaServer = await _context.Servers
-                            .FirstOrDefaultAsync(s => s.Name.ToLower() == tibiaResult.World.ToLower());
-
-                        if (tibiaServer == null)
-                        {
-                            await transaction.RollbackAsync();
-                            return BadRequest($"Character '{pm.CharacterName}' is on server '{tibiaResult.World}' which is not configured in our system");
-                        }
-
-                        if (tibiaServer.Id != dto.ServerId)
-                        {
-                            await transaction.RollbackAsync();
-                            return BadRequest($"Character '{pm.CharacterName}' is on server '{tibiaResult.World}', but this request is for server '{server.Name}'");
-                        }
-
-                        character = new Character
-                        {
-                            Name = tibiaResult.Name,
-                            ServerId = tibiaServer.Id,
-                            Vocation = tibiaResult.Vocation,
-                            Level = tibiaResult.Level,
-                            IsExternal = true,
-                            ExternalVerifiedAt = DateTime.UtcNow
-                        };
-                        _context.Characters.Add(character);
-                    }
-                }
-
-                if (character != null)
-                {
-                    resolvedPartyMembers.Add((character, pm.RoleInParty));
-                }
-            }
-
-            var request = new Request
-            {
-                UserId = dto.UserId,
-                ServerId = dto.ServerId,
-                RespawnId = dto.RespawnId,
-                SlotId = dto.SlotId,
-                PeriodId = dto.PeriodId,
-                StatusId = pendingStatus?.Id ?? 1,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Requests.Add(request);
-            await _context.SaveChangesAsync();
-
-            foreach (var (character, role) in resolvedPartyMembers)
-            {
-                var partyMember = new RequestPartyMember
-                {
-                    RequestId = request.Id,
-                    CharacterId = character.Id,
-                    RoleInParty = role
-                };
-                _context.RequestPartyMembers.Add(partyMember);
-            }
-
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return CreatedAtAction(nameof(GetRequest), new { id = request.Id }, request);
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
-    }
-
-    public class StatusUpdateDto
-    {
-        public int StatusId { get; set; }
-        public string? Reason { get; set; }
+        var result = await _requestService.CreateAsync(dto);
+        if (!result.Success) return BadRequest(result.ErrorMessage);
+        return CreatedAtAction(nameof(GetRequest), new { id = result.Data!.Id }, result.Data);
     }
 
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] StatusUpdateDto dto)
     {
-        var request = await _context.Requests.FindAsync(id);
-        if (request == null) return NotFound();
-
-        request.StatusId = dto.StatusId;
-        request.RejectionReason = dto.Reason;
-
-        var approvedStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "approved");
-        var rejectedStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "rejected");
-        var pendingStatus = await _context.RequestStatuses.FirstOrDefaultAsync(s => s.Name == "pending");
-
-        if (approvedStatus != null && dto.StatusId == approvedStatus.Id && pendingStatus != null && rejectedStatus != null)
+        var result = await _requestService.UpdateStatusAsync(id, dto);
+        if (!result.Success)
         {
-            var conflicts = await _context.Requests
-                .Where(r => r.Id != id
-                    && r.ServerId == request.ServerId
-                    && r.RespawnId == request.RespawnId
-                    && r.SlotId == request.SlotId
-                    && r.PeriodId == request.PeriodId
-                    && r.StatusId == pendingStatus.Id)
-                .ToListAsync();
-
-            foreach (var conflict in conflicts)
-            {
-                conflict.StatusId = rejectedStatus.Id;
-                conflict.RejectionReason = $"Conflict with approved request #{id}";
-            }
+            if (result.ErrorMessage == "Request not found") return NotFound();
+            return BadRequest(result.ErrorMessage);
         }
-
-        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRequest(int id)
     {
-        var request = await _context.Requests.FindAsync(id);
+        var request = await _requestService.GetByIdAsync(id);
         if (request == null) return NotFound();
-        _context.Requests.Remove(request);
-        await _context.SaveChangesAsync();
+        
+        await _requestService.DeleteAsync(id);
         return NoContent();
     }
 }

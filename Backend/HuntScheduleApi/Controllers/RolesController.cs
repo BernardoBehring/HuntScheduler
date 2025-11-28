@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HuntScheduleApi.Data;
-using HuntScheduleApi.Models;
+using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.Interfaces;
 
 namespace HuntScheduleApi.Controllers;
 
@@ -9,51 +8,25 @@ namespace HuntScheduleApi.Controllers;
 [Route("api/[controller]")]
 public class RolesController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IRoleService _roleService;
 
-    public RolesController(AppDbContext context)
+    public RolesController(IRoleService roleService)
     {
-        _context = context;
+        _roleService = roleService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Role>>> GetRoles()
     {
-        return await _context.Roles.ToListAsync();
+        var roles = await _roleService.GetAllAsync();
+        return Ok(roles);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Role>> GetRole(int id)
     {
-        var role = await _context.Roles.FindAsync(id);
+        var role = await _roleService.GetByIdAsync(id);
         if (role == null) return NotFound();
         return role;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Role>> CreateRole(Role role)
-    {
-        _context.Roles.Add(role);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetRole), new { id = role.Id }, role);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateRole(int id, Role role)
-    {
-        if (id != role.Id) return BadRequest();
-        _context.Entry(role).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteRole(int id)
-    {
-        var role = await _context.Roles.FindAsync(id);
-        if (role == null) return NotFound();
-        _context.Roles.Remove(role);
-        await _context.SaveChangesAsync();
-        return NoContent();
     }
 }

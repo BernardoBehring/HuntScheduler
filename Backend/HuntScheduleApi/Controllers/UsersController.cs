@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HuntScheduleApi.Data;
-using HuntScheduleApi.Models;
+using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.Interfaces;
 
 namespace HuntScheduleApi.Controllers;
 
@@ -9,29 +8,26 @@ namespace HuntScheduleApi.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IUserService _userService;
+    private readonly IRoleService _roleService;
 
-    public UsersController(AppDbContext context)
+    public UsersController(IUserService userService, IRoleService roleService)
     {
-        _context = context;
+        _userService = userService;
+        _roleService = roleService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
-        return await _context.Users
-            .Include(u => u.Role)
-            .Include(u => u.Characters)
-            .ToListAsync();
+        var users = await _userService.GetAllAsync();
+        return Ok(users);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-        var user = await _context.Users
-            .Include(u => u.Role)
-            .Include(u => u.Characters)
-            .FirstOrDefaultAsync(u => u.Id == id);
+        var user = await _userService.GetByIdWithCharactersAsync(id);
         if (user == null) return NotFound();
         return user;
     }
@@ -39,33 +35,31 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser(User user)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+        var createdUser = await _userService.CreateAsync(user);
+        return CreatedAtAction(nameof(GetUser), new { id = createdUser.Id }, createdUser);
     }
 
     [HttpPatch("{id}/points")]
     public async Task<IActionResult> UpdatePoints(int id, [FromBody] int amount)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _userService.GetByIdAsync(id);
         if (user == null) return NotFound();
 
-        user.Points += amount;
-        await _context.SaveChangesAsync();
+        await _userService.UpdatePointsAsync(id, user.Points + amount);
         return NoContent();
     }
 
     [HttpPatch("{id}/role")]
     public async Task<IActionResult> UpdateRole(int id, [FromBody] int roleId)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _userService.GetByIdAsync(id);
         if (user == null) return NotFound();
 
-        var role = await _context.Roles.FindAsync(roleId);
+        var role = await _roleService.GetByIdAsync(roleId);
         if (role == null) return BadRequest("Role not found");
 
         user.RoleId = roleId;
-        await _context.SaveChangesAsync();
+        await _userService.UpdateAsync(user);
         return NoContent();
     }
 }

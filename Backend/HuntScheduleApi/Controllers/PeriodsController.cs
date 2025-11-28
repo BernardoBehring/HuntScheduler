@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HuntScheduleApi.Data;
-using HuntScheduleApi.Models;
+using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.Interfaces;
 
 namespace HuntScheduleApi.Controllers;
 
@@ -9,27 +8,24 @@ namespace HuntScheduleApi.Controllers;
 [Route("api/[controller]")]
 public class PeriodsController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ISchedulePeriodService _periodService;
 
-    public PeriodsController(AppDbContext context)
+    public PeriodsController(ISchedulePeriodService periodService)
     {
-        _context = context;
+        _periodService = periodService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SchedulePeriod>>> GetPeriods()
     {
-        return await _context.SchedulePeriods
-            .Include(p => p.Server)
-            .ToListAsync();
+        var periods = await _periodService.GetAllAsync();
+        return Ok(periods);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<SchedulePeriod>> GetPeriod(int id)
     {
-        var period = await _context.SchedulePeriods
-            .Include(p => p.Server)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        var period = await _periodService.GetByIdAsync(id);
         if (period == null) return NotFound();
         return period;
     }
@@ -37,29 +33,28 @@ public class PeriodsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<SchedulePeriod>> CreatePeriod(SchedulePeriod period)
     {
-        _context.SchedulePeriods.Add(period);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetPeriod), new { id = period.Id }, period);
+        var createdPeriod = await _periodService.CreateAsync(period);
+        return CreatedAtAction(nameof(GetPeriod), new { id = createdPeriod.Id }, createdPeriod);
     }
 
     [HttpPatch("{id}/toggle")]
     public async Task<IActionResult> TogglePeriod(int id)
     {
-        var period = await _context.SchedulePeriods.FindAsync(id);
+        var period = await _periodService.GetByIdAsync(id);
         if (period == null) return NotFound();
 
         period.IsActive = !period.IsActive;
-        await _context.SaveChangesAsync();
+        await _periodService.UpdateAsync(period);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePeriod(int id)
     {
-        var period = await _context.SchedulePeriods.FindAsync(id);
+        var period = await _periodService.GetByIdAsync(id);
         if (period == null) return NotFound();
-        _context.SchedulePeriods.Remove(period);
-        await _context.SaveChangesAsync();
+        
+        await _periodService.DeleteAsync(id);
         return NoContent();
     }
 }

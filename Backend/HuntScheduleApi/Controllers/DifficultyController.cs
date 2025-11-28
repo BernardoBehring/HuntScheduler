@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HuntScheduleApi.Data;
-using HuntScheduleApi.Models;
+using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.Interfaces;
 
 namespace HuntScheduleApi.Controllers;
 
@@ -9,65 +8,25 @@ namespace HuntScheduleApi.Controllers;
 [Route("api/difficulties")]
 public class DifficultyController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IDifficultyService _difficultyService;
 
-    public DifficultyController(AppDbContext context)
+    public DifficultyController(IDifficultyService difficultyService)
     {
-        _context = context;
+        _difficultyService = difficultyService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Difficulty>>> GetAll()
     {
-        return await _context.Difficulties.OrderBy(d => d.SortOrder).ToListAsync();
+        var difficulties = await _difficultyService.GetAllAsync();
+        return Ok(difficulties);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Difficulty>> GetById(int id)
     {
-        var difficulty = await _context.Difficulties.FindAsync(id);
-        if (difficulty == null)
-            return NotFound();
+        var difficulty = await _difficultyService.GetByIdAsync(id);
+        if (difficulty == null) return NotFound();
         return difficulty;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Difficulty>> Create(Difficulty difficulty)
-    {
-        _context.Difficulties.Add(difficulty);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = difficulty.Id }, difficulty);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Difficulty difficulty)
-    {
-        if (id != difficulty.Id)
-            return BadRequest();
-
-        _context.Entry(difficulty).State = EntityState.Modified;
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!await _context.Difficulties.AnyAsync(d => d.Id == id))
-                return NotFound();
-            throw;
-        }
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var difficulty = await _context.Difficulties.FindAsync(id);
-        if (difficulty == null)
-            return NotFound();
-
-        _context.Difficulties.Remove(difficulty);
-        await _context.SaveChangesAsync();
-        return NoContent();
     }
 }
