@@ -149,14 +149,25 @@ Seed data is automatically created on first run.
 ### Service Layer Pattern
 - Services contain all business logic
 - Controllers are thin wrappers that call services
-- `ServiceResult<T>` for returning operation outcomes with error codes
+- `ServiceResult<T>` for returning operation outcomes with ErrorType and ErrorMessage
 
-### Backend Error Handling (i18n)
-- Error codes defined in `Backend/HuntSchedule.Services/Results/ErrorCode.cs`
-- ServiceResult returns `ErrorCode` + `ErrorParams` instead of hardcoded messages
-- Controllers return `ErrorResponse` DTOs with error code and parameters
-- Frontend translates error codes using `client/src/lib/translateError.ts`
-- All error messages translatable in 5 languages (see `error.*` keys in locale files)
+### Backend Localization (C# Resources)
+- **Resource Files**: Located in `Backend/HuntSchedule.Services/Resources/`
+  - `ErrorMessages.resx` - Default (English)
+  - `ErrorMessages.pt.resx` - Portuguese
+  - `ErrorMessages.es.resx` - Spanish
+  - `ErrorMessages.de.resx` - German
+  - `ErrorMessages.pl.resx` - Polish
+- **LocalizationService**: `ILocalizationService` interface with `LocalizationService` implementation
+  - Uses `ResourceManager` to load culture-specific error messages
+  - Thread-safe via `CultureInfo.CurrentUICulture`
+  - Registered as singleton in DI container
+- **ServiceResult Pattern**:
+  - `ErrorType` enum: `None`, `NotFound`, `Validation`, `Conflict`
+  - Controllers check `ErrorType` (not message text) for HTTP status decisions
+  - `ErrorMessage` contains localized user-facing text
+- **Request Localization**: Configured in Program.cs with supported cultures
+- **Error Keys**: `UserNotFound`, `ServerNotFound`, `CharacterNotFoundOnTibia`, `CharacterServerMismatch`, etc.
 
 ## Design System
 

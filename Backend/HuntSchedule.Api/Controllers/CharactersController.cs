@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
-using HuntSchedule.Api.DTOs;
-using static HuntSchedule.Services.Results.ErrorCode;
+using HuntSchedule.Services.Results;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -43,8 +42,11 @@ public class CharactersController : ControllerBase
     public async Task<ActionResult<Character>> CreateCharacter(Character character)
     {
         var result = await _characterService.CreateAsync(character);
-        if (!result.Success) 
-            return BadRequest(new ErrorResponse { ErrorCode = result.ErrorCode!, ErrorParams = result.ErrorParams });
+        if (!result.Success)
+        {
+            if (result.ErrorType == ErrorType.NotFound) return NotFound(result.ErrorMessage);
+            return BadRequest(result.ErrorMessage);
+        }
         return CreatedAtAction(nameof(GetCharacter), new { id = result.Data!.Id }, result.Data);
     }
 
@@ -54,8 +56,8 @@ public class CharactersController : ControllerBase
         var result = await _characterService.UpdateAsync(id, character);
         if (!result.Success) 
         {
-            if (result.ErrorCode == CharacterNotFound) return NotFound();
-            return BadRequest(new ErrorResponse { ErrorCode = result.ErrorCode!, ErrorParams = result.ErrorParams });
+            if (result.ErrorType == ErrorType.NotFound) return NotFound(result.ErrorMessage);
+            return BadRequest(result.ErrorMessage);
         }
         return NoContent();
     }

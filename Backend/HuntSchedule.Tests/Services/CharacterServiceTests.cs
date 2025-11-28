@@ -2,6 +2,7 @@ using Moq;
 using Xunit;
 using HuntSchedule.Services.Implementations;
 using HuntSchedule.Services.External;
+using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.Results;
 using HuntSchedule.Persistence.Repositories;
 using HuntSchedule.Persistence.Entities;
@@ -15,6 +16,7 @@ public class CharacterServiceTests
     private readonly Mock<IServerRepository> _mockServerRepository;
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<ITibiaCharacterValidator> _mockTibiaValidator;
+    private readonly Mock<ILocalizationService> _mockLocalization;
     private readonly CharacterService _characterService;
 
     public CharacterServiceTests()
@@ -24,12 +26,17 @@ public class CharacterServiceTests
         _mockServerRepository = new Mock<IServerRepository>();
         _mockUserRepository = new Mock<IUserRepository>();
         _mockTibiaValidator = new Mock<ITibiaCharacterValidator>();
+        _mockLocalization = new Mock<ILocalizationService>();
 
         _mockUnitOfWork.Setup(uow => uow.Characters).Returns(_mockCharacterRepository.Object);
         _mockUnitOfWork.Setup(uow => uow.Servers).Returns(_mockServerRepository.Object);
         _mockUnitOfWork.Setup(uow => uow.Users).Returns(_mockUserRepository.Object);
 
-        _characterService = new CharacterService(_mockUnitOfWork.Object, _mockTibiaValidator.Object);
+        _mockLocalization.Setup(l => l.GetString(It.IsAny<string>())).Returns((string key) => key);
+        _mockLocalization.Setup(l => l.GetString(It.IsAny<string>(), It.IsAny<object[]>()))
+            .Returns((string key, object[] args) => string.Format(key + " {0}", args));
+
+        _characterService = new CharacterService(_mockUnitOfWork.Object, _mockTibiaValidator.Object, _mockLocalization.Object);
     }
 
     [Fact]
@@ -116,7 +123,7 @@ public class CharacterServiceTests
         var result = await _characterService.CreateAsync(character);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorCode.ServerNotFound, result.ErrorCode);
+        Assert.Equal(ErrorType.NotFound, result.ErrorType);
     }
 
     [Fact]
@@ -133,9 +140,7 @@ public class CharacterServiceTests
         var result = await _characterService.CreateAsync(character);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorCode.CharacterNotFoundOnTibia, result.ErrorCode);
-        Assert.NotNull(result.ErrorParams);
-        Assert.Equal("FakeChar", result.ErrorParams["name"]);
+        Assert.Equal(ErrorType.Validation, result.ErrorType);
     }
 
     [Fact]
@@ -161,9 +166,7 @@ public class CharacterServiceTests
         var result = await _characterService.CreateAsync(character);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorCode.CharacterServerMismatch, result.ErrorCode);
-        Assert.NotNull(result.ErrorParams);
-        Assert.Equal("Wintera", result.ErrorParams["actualServer"]);
+        Assert.Equal(ErrorType.Validation, result.ErrorType);
     }
 
     [Fact]

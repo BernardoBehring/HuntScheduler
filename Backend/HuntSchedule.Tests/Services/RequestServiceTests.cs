@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using HuntSchedule.Services.Implementations;
 using HuntSchedule.Services.External;
 using HuntSchedule.Services.DTOs;
+using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.Results;
 using HuntSchedule.Persistence.Repositories;
 using HuntSchedule.Persistence.Entities;
@@ -18,6 +19,7 @@ public class RequestServiceTests
     private readonly Mock<IServerRepository> _mockServerRepository;
     private readonly Mock<ICharacterRepository> _mockCharacterRepository;
     private readonly Mock<ITibiaCharacterValidator> _mockTibiaValidator;
+    private readonly Mock<ILocalizationService> _mockLocalization;
     private readonly Mock<IDbContextTransaction> _mockTransaction;
     private readonly RequestService _requestService;
 
@@ -29,6 +31,7 @@ public class RequestServiceTests
         _mockServerRepository = new Mock<IServerRepository>();
         _mockCharacterRepository = new Mock<ICharacterRepository>();
         _mockTibiaValidator = new Mock<ITibiaCharacterValidator>();
+        _mockLocalization = new Mock<ILocalizationService>();
         _mockTransaction = new Mock<IDbContextTransaction>();
 
         _mockUnitOfWork.Setup(uow => uow.Requests).Returns(_mockRequestRepository.Object);
@@ -37,7 +40,11 @@ public class RequestServiceTests
         _mockUnitOfWork.Setup(uow => uow.Characters).Returns(_mockCharacterRepository.Object);
         _mockUnitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(_mockTransaction.Object);
 
-        _requestService = new RequestService(_mockUnitOfWork.Object, _mockTibiaValidator.Object);
+        _mockLocalization.Setup(l => l.GetString(It.IsAny<string>())).Returns((string key) => key);
+        _mockLocalization.Setup(l => l.GetString(It.IsAny<string>(), It.IsAny<object[]>()))
+            .Returns((string key, object[] args) => string.Format(key + " {0}", args));
+
+        _requestService = new RequestService(_mockUnitOfWork.Object, _mockTibiaValidator.Object, _mockLocalization.Object);
     }
 
     [Fact]
@@ -124,7 +131,7 @@ public class RequestServiceTests
         var result = await _requestService.CreateAsync(dto);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorCode.ServerNotFound, result.ErrorCode);
+        Assert.Equal(ErrorType.NotFound, result.ErrorType);
     }
 
     [Fact]
@@ -158,7 +165,7 @@ public class RequestServiceTests
         var result = await _requestService.UpdateStatusAsync(999, dto);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorCode.RequestNotFound, result.ErrorCode);
+        Assert.Equal(ErrorType.NotFound, result.ErrorType);
     }
 
     [Fact]

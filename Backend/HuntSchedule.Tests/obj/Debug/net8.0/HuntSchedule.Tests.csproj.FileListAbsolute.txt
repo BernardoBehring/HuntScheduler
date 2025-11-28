@@ -128,3 +128,7 @@
 /home/runner/workspace/Backend/HuntSchedule.Tests/obj/Debug/net8.0/HuntSchedule.Tests.pdb
 /home/runner/workspace/Backend/HuntSchedule.Tests/obj/Debug/net8.0/HuntSchedule.Tests.genruntimeconfig.cache
 /home/runner/workspace/Backend/HuntSchedule.Tests/obj/Debug/net8.0/ref/HuntSchedule.Tests.dll
+/home/runner/workspace/Backend/HuntSchedule.Tests/bin/Debug/net8.0/pt/HuntSchedule.Services.resources.dll
+/home/runner/workspace/Backend/HuntSchedule.Tests/bin/Debug/net8.0/pl/HuntSchedule.Services.resources.dll
+/home/runner/workspace/Backend/HuntSchedule.Tests/bin/Debug/net8.0/es/HuntSchedule.Services.resources.dll
+/home/runner/workspace/Backend/HuntSchedule.Tests/bin/Debug/net8.0/de/HuntSchedule.Services.resources.dll

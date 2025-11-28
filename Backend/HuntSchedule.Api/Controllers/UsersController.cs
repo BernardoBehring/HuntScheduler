@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
-using HuntSchedule.Api.DTOs;
-using static HuntSchedule.Services.Results.ErrorCode;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -12,11 +10,13 @@ public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IRoleService _roleService;
+    private readonly ILocalizationService _localization;
 
-    public UsersController(IUserService userService, IRoleService roleService)
+    public UsersController(IUserService userService, IRoleService roleService, ILocalizationService localization)
     {
         _userService = userService;
         _roleService = roleService;
+        _localization = localization;
     }
 
     [HttpGet]
@@ -58,7 +58,7 @@ public class UsersController : ControllerBase
         if (user == null) return NotFound();
 
         var role = await _roleService.GetByIdAsync(roleId);
-        if (role == null) return BadRequest(new ErrorResponse { ErrorCode = RoleNotFound });
+        if (role == null) return NotFound(_localization.GetString("RoleNotFound"));
 
         user.RoleId = roleId;
         await _userService.UpdateAsync(user);

@@ -44,6 +44,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
@@ -81,6 +82,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+app.UseRequestLocalization(options =>
+{
+    var supportedCultures = new[] { "en", "pt", "es", "de", "pl" };
+    options.SetDefaultCulture("en")
+           .AddSupportedCultures(supportedCultures)
+           .AddSupportedUICultures(supportedCultures);
+});
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.MapControllers();

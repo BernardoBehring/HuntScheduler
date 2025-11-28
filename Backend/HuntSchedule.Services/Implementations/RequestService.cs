@@ -4,7 +4,7 @@ using HuntSchedule.Services.DTOs;
 using HuntSchedule.Services.External;
 using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.Results;
-using static HuntSchedule.Services.Results.ErrorCode;
+using static HuntSchedule.Services.Results.ErrorType;
 
 namespace HuntSchedule.Services.Implementations;
 
@@ -12,11 +12,13 @@ public class RequestService : IRequestService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITibiaCharacterValidator _tibiaValidator;
+    private readonly ILocalizationService _localization;
 
-    public RequestService(IUnitOfWork unitOfWork, ITibiaCharacterValidator tibiaValidator)
+    public RequestService(IUnitOfWork unitOfWork, ITibiaCharacterValidator tibiaValidator, ILocalizationService localization)
     {
         _unitOfWork = unitOfWork;
         _tibiaValidator = tibiaValidator;
+        _localization = localization;
     }
 
     public async Task<IEnumerable<Request>> GetAllAsync()
@@ -32,7 +34,7 @@ public class RequestService : IRequestService
     public async Task<ServiceResult<Request>> CreateAsync(CreateRequestDto dto)
     {
         var server = await _unitOfWork.Servers.GetByIdAsync(dto.ServerId);
-        if (server == null) return ServiceResult<Request>.Fail(ServerNotFound);
+        if (server == null) return ServiceResult<Request>.Fail(_localization.GetString("ServerNotFound"), NotFound);
 
         var pendingStatus = await _unitOfWork.RequestStatuses.GetByNameAsync("pending");
 
@@ -52,8 +54,7 @@ public class RequestService : IRequestService
                     if (character == null)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<Request>.Fail(CharacterNotFound, 
-                            new Dictionary<string, string> { { "id", pm.CharacterId.ToString()! } });
+                        return ServiceResult<Request>.Fail(_localization.GetString("CharacterNotFound"), NotFound);
                     }
                 }
                 else if (!string.IsNullOrEmpty(pm.CharacterName))
@@ -67,8 +68,7 @@ public class RequestService : IRequestService
                         if (tibiaResult == null || !tibiaResult.Exists)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail(CharacterNotFoundOnTibia, 
-                                new Dictionary<string, string> { { "name", pm.CharacterName } });
+                            return ServiceResult<Request>.Fail(_localization.GetString("CharacterNotFoundOnTibia", pm.CharacterName), Validation);
                         }
 
                         var tibiaServer = await _unitOfWork.Servers.GetByNameAsync(tibiaResult.World);
@@ -76,15 +76,13 @@ public class RequestService : IRequestService
                         if (tibiaServer == null)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail(CharacterServerNotConfigured, 
-                                new Dictionary<string, string> { { "name", pm.CharacterName }, { "world", tibiaResult.World } });
+                            return ServiceResult<Request>.Fail(_localization.GetString("CharacterServerNotConfigured", pm.CharacterName, tibiaResult.World), Validation);
                         }
 
                         if (tibiaServer.Id != dto.ServerId)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail(CharacterServerMismatch, 
-                                new Dictionary<string, string> { { "name", pm.CharacterName }, { "actualServer", tibiaResult.World }, { "selectedServer", server.Name } });
+                            return ServiceResult<Request>.Fail(_localization.GetString("CharacterServerMismatch", pm.CharacterName, tibiaResult.World, server.Name), Validation);
                         }
 
                         character = new Character
@@ -147,7 +145,7 @@ public class RequestService : IRequestService
     public async Task<ServiceResult> UpdateStatusAsync(int id, StatusUpdateDto dto)
     {
         var request = await _unitOfWork.Requests.GetByIdAsync(id);
-        if (request == null) return ServiceResult.Fail(RequestNotFound);
+        if (request == null) return ServiceResult.Fail(_localization.GetString("RequestNotFound"), NotFound);
 
         request.StatusId = dto.StatusId;
         request.RejectionReason = dto.Reason;
@@ -164,7 +162,7 @@ public class RequestService : IRequestService
             foreach (var conflict in conflicts)
             {
                 conflict.StatusId = rejectedStatus.Id;
-                conflict.RejectionReason = $"{ConflictWithApprovedRequest}|id={id}";
+                conflict.RejectionReason = _localization.GetString("ConflictWithApprovedRequest", id);
             }
         }
 

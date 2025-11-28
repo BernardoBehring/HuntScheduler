@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.DTOs;
-using HuntSchedule.Api.DTOs;
-using static HuntSchedule.Services.Results.ErrorCode;
+using HuntSchedule.Services.Results;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -37,8 +36,11 @@ public class RequestsController : ControllerBase
     public async Task<ActionResult<Request>> CreateRequest(CreateRequestDto dto)
     {
         var result = await _requestService.CreateAsync(dto);
-        if (!result.Success) 
-            return BadRequest(new ErrorResponse { ErrorCode = result.ErrorCode!, ErrorParams = result.ErrorParams });
+        if (!result.Success)
+        {
+            if (result.ErrorType == ErrorType.NotFound) return NotFound(result.ErrorMessage);
+            return BadRequest(result.ErrorMessage);
+        }
         return CreatedAtAction(nameof(GetRequest), new { id = result.Data!.Id }, result.Data);
     }
 
@@ -48,8 +50,8 @@ public class RequestsController : ControllerBase
         var result = await _requestService.UpdateStatusAsync(id, dto);
         if (!result.Success)
         {
-            if (result.ErrorCode == RequestNotFound) return NotFound();
-            return BadRequest(new ErrorResponse { ErrorCode = result.ErrorCode!, ErrorParams = result.ErrorParams });
+            if (result.ErrorType == ErrorType.NotFound) return NotFound(result.ErrorMessage);
+            return BadRequest(result.ErrorMessage);
         }
         return NoContent();
     }
