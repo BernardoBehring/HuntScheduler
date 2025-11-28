@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using HuntSchedule.Services.Implementations;
 using HuntSchedule.Services.External;
 using HuntSchedule.Services.DTOs;
+using HuntSchedule.Services.Results;
 using HuntSchedule.Persistence.Repositories;
 using HuntSchedule.Persistence.Entities;
 
@@ -123,7 +124,7 @@ public class RequestServiceTests
         var result = await _requestService.CreateAsync(dto);
 
         Assert.False(result.Success);
-        Assert.Contains("Server not found", result.ErrorMessage);
+        Assert.Equal(ErrorCode.ServerNotFound, result.ErrorCode);
     }
 
     [Fact]
@@ -157,7 +158,7 @@ public class RequestServiceTests
         var result = await _requestService.UpdateStatusAsync(999, dto);
 
         Assert.False(result.Success);
-        Assert.Contains("Request not found", result.ErrorMessage);
+        Assert.Equal(ErrorCode.RequestNotFound, result.ErrorCode);
     }
 
     [Fact]

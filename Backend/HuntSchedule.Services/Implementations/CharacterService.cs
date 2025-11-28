@@ -3,6 +3,7 @@ using HuntSchedule.Persistence.Repositories;
 using HuntSchedule.Services.External;
 using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.Results;
+using static HuntSchedule.Services.Results.ErrorCode;
 
 namespace HuntSchedule.Services.Implementations;
 
@@ -37,27 +38,30 @@ public class CharacterService : ICharacterService
         if (character.UserId.HasValue)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(character.UserId.Value);
-            if (user == null) return ServiceResult<Character>.Fail("User not found");
+            if (user == null) return ServiceResult<Character>.Fail(ErrorCode.UserNotFound);
         }
 
         var server = await _unitOfWork.Servers.GetByIdAsync(character.ServerId);
-        if (server == null) return ServiceResult<Character>.Fail("Server not found");
+        if (server == null) return ServiceResult<Character>.Fail(ErrorCode.ServerNotFound);
 
         var tibiaResult = await _tibiaValidator.ValidateCharacterAsync(character.Name);
         if (tibiaResult == null || !tibiaResult.Exists)
         {
-            return ServiceResult<Character>.Fail($"Character '{character.Name}' not found on Tibia.com");
+            return ServiceResult<Character>.Fail(ErrorCode.CharacterNotFoundOnTibia, 
+                new Dictionary<string, string> { { "name", character.Name } });
         }
 
         var tibiaServer = await _unitOfWork.Servers.GetByNameAsync(tibiaResult.World);
         if (tibiaServer == null)
         {
-            return ServiceResult<Character>.Fail($"Character '{character.Name}' is on server '{tibiaResult.World}' which is not configured in our system");
+            return ServiceResult<Character>.Fail(ErrorCode.CharacterServerNotConfigured, 
+                new Dictionary<string, string> { { "name", character.Name }, { "world", tibiaResult.World } });
         }
 
         if (tibiaServer.Id != character.ServerId)
         {
-            return ServiceResult<Character>.Fail($"Character '{character.Name}' is on server '{tibiaResult.World}', but you selected '{server.Name}'");
+            return ServiceResult<Character>.Fail(ErrorCode.CharacterServerMismatch, 
+                new Dictionary<string, string> { { "name", character.Name }, { "actualServer", tibiaResult.World }, { "selectedServer", server.Name } });
         }
 
         character.Name = tibiaResult.Name;
@@ -80,19 +84,19 @@ public class CharacterService : ICharacterService
 
     public async Task<ServiceResult<Character>> UpdateAsync(int id, Character character)
     {
-        if (id != character.Id) return ServiceResult<Character>.Fail("ID mismatch");
+        if (id != character.Id) return ServiceResult<Character>.Fail(ErrorCode.IdMismatch);
 
         var existingCharacter = await _unitOfWork.Characters.GetByIdAsync(id);
-        if (existingCharacter == null) return ServiceResult<Character>.Fail("Character not found");
+        if (existingCharacter == null) return ServiceResult<Character>.Fail(ErrorCode.CharacterNotFound);
 
         if (character.UserId.HasValue)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(character.UserId.Value);
-            if (user == null) return ServiceResult<Character>.Fail("User not found");
+            if (user == null) return ServiceResult<Character>.Fail(ErrorCode.UserNotFound);
         }
 
         var server = await _unitOfWork.Servers.GetByIdAsync(character.ServerId);
-        if (server == null) return ServiceResult<Character>.Fail("Server not found");
+        if (server == null) return ServiceResult<Character>.Fail(ErrorCode.ServerNotFound);
 
         bool nameChanged = !string.Equals(existingCharacter.Name, character.Name, StringComparison.OrdinalIgnoreCase);
         bool serverChanged = existingCharacter.ServerId != character.ServerId;
@@ -102,18 +106,21 @@ public class CharacterService : ICharacterService
             var tibiaResult = await _tibiaValidator.ValidateCharacterAsync(character.Name);
             if (tibiaResult == null || !tibiaResult.Exists)
             {
-                return ServiceResult<Character>.Fail($"Character '{character.Name}' not found on Tibia.com");
+                return ServiceResult<Character>.Fail(ErrorCode.CharacterNotFoundOnTibia, 
+                    new Dictionary<string, string> { { "name", character.Name } });
             }
 
             var tibiaServer = await _unitOfWork.Servers.GetByNameAsync(tibiaResult.World);
             if (tibiaServer == null)
             {
-                return ServiceResult<Character>.Fail($"Character '{character.Name}' is on server '{tibiaResult.World}' which is not configured in our system");
+                return ServiceResult<Character>.Fail(ErrorCode.CharacterServerNotConfigured, 
+                    new Dictionary<string, string> { { "name", character.Name }, { "world", tibiaResult.World } });
             }
 
             if (tibiaServer.Id != character.ServerId)
             {
-                return ServiceResult<Character>.Fail($"Character '{character.Name}' is on server '{tibiaResult.World}', but you selected '{server.Name}'");
+                return ServiceResult<Character>.Fail(ErrorCode.CharacterServerMismatch, 
+                    new Dictionary<string, string> { { "name", character.Name }, { "actualServer", tibiaResult.World }, { "selectedServer", server.Name } });
             }
 
             existingCharacter.Name = tibiaResult.Name;

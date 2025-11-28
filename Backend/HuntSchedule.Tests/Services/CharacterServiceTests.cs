@@ -2,6 +2,7 @@ using Moq;
 using Xunit;
 using HuntSchedule.Services.Implementations;
 using HuntSchedule.Services.External;
+using HuntSchedule.Services.Results;
 using HuntSchedule.Persistence.Repositories;
 using HuntSchedule.Persistence.Entities;
 
@@ -115,7 +116,7 @@ public class CharacterServiceTests
         var result = await _characterService.CreateAsync(character);
 
         Assert.False(result.Success);
-        Assert.Contains("Server not found", result.ErrorMessage);
+        Assert.Equal(ErrorCode.ServerNotFound, result.ErrorCode);
     }
 
     [Fact]
@@ -132,7 +133,9 @@ public class CharacterServiceTests
         var result = await _characterService.CreateAsync(character);
 
         Assert.False(result.Success);
-        Assert.Contains("not found on Tibia.com", result.ErrorMessage);
+        Assert.Equal(ErrorCode.CharacterNotFoundOnTibia, result.ErrorCode);
+        Assert.NotNull(result.ErrorParams);
+        Assert.Equal("FakeChar", result.ErrorParams["name"]);
     }
 
     [Fact]
@@ -158,7 +161,9 @@ public class CharacterServiceTests
         var result = await _characterService.CreateAsync(character);
 
         Assert.False(result.Success);
-        Assert.Contains("Wintera", result.ErrorMessage);
+        Assert.Equal(ErrorCode.CharacterServerMismatch, result.ErrorCode);
+        Assert.NotNull(result.ErrorParams);
+        Assert.Equal("Wintera", result.ErrorParams["actualServer"]);
     }
 
     [Fact]

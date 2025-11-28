@@ -4,6 +4,7 @@ using HuntSchedule.Services.DTOs;
 using HuntSchedule.Services.External;
 using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.Results;
+using static HuntSchedule.Services.Results.ErrorCode;
 
 namespace HuntSchedule.Services.Implementations;
 
@@ -31,7 +32,7 @@ public class RequestService : IRequestService
     public async Task<ServiceResult<Request>> CreateAsync(CreateRequestDto dto)
     {
         var server = await _unitOfWork.Servers.GetByIdAsync(dto.ServerId);
-        if (server == null) return ServiceResult<Request>.Fail("Server not found");
+        if (server == null) return ServiceResult<Request>.Fail(ServerNotFound);
 
         var pendingStatus = await _unitOfWork.RequestStatuses.GetByNameAsync("pending");
 
@@ -51,7 +52,8 @@ public class RequestService : IRequestService
                     if (character == null)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<Request>.Fail($"Character with ID {pm.CharacterId} not found");
+                        return ServiceResult<Request>.Fail(CharacterNotFound, 
+                            new Dictionary<string, string> { { "id", pm.CharacterId.ToString()! } });
                     }
                 }
                 else if (!string.IsNullOrEmpty(pm.CharacterName))
@@ -65,7 +67,8 @@ public class RequestService : IRequestService
                         if (tibiaResult == null || !tibiaResult.Exists)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail($"Character '{pm.CharacterName}' not found on Tibia.com");
+                            return ServiceResult<Request>.Fail(CharacterNotFoundOnTibia, 
+                                new Dictionary<string, string> { { "name", pm.CharacterName } });
                         }
 
                         var tibiaServer = await _unitOfWork.Servers.GetByNameAsync(tibiaResult.World);
@@ -73,13 +76,15 @@ public class RequestService : IRequestService
                         if (tibiaServer == null)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail($"Character '{pm.CharacterName}' is on server '{tibiaResult.World}' which is not configured in our system");
+                            return ServiceResult<Request>.Fail(CharacterServerNotConfigured, 
+                                new Dictionary<string, string> { { "name", pm.CharacterName }, { "world", tibiaResult.World } });
                         }
 
                         if (tibiaServer.Id != dto.ServerId)
                         {
                             await transaction.RollbackAsync();
-                            return ServiceResult<Request>.Fail($"Character '{pm.CharacterName}' is on server '{tibiaResult.World}', but this request is for server '{server.Name}'");
+                            return ServiceResult<Request>.Fail(CharacterServerMismatch, 
+                                new Dictionary<string, string> { { "name", pm.CharacterName }, { "actualServer", tibiaResult.World }, { "selectedServer", server.Name } });
                         }
 
                         character = new Character
@@ -142,7 +147,7 @@ public class RequestService : IRequestService
     public async Task<ServiceResult> UpdateStatusAsync(int id, StatusUpdateDto dto)
     {
         var request = await _unitOfWork.Requests.GetByIdAsync(id);
-        if (request == null) return ServiceResult.Fail("Request not found");
+        if (request == null) return ServiceResult.Fail(RequestNotFound);
 
         request.StatusId = dto.StatusId;
         request.RejectionReason = dto.Reason;
@@ -159,7 +164,7 @@ public class RequestService : IRequestService
             foreach (var conflict in conflicts)
             {
                 conflict.StatusId = rejectedStatus.Id;
-                conflict.RejectionReason = $"Conflict with approved request #{id}";
+                conflict.RejectionReason = $"{ConflictWithApprovedRequest}|id={id}";
             }
         }
 

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
+using HuntSchedule.Api.DTOs;
+using static HuntSchedule.Services.Results.ErrorCode;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -56,7 +58,7 @@ public class UsersController : ControllerBase
         if (user == null) return NotFound();
 
         var role = await _roleService.GetByIdAsync(roleId);
-        if (role == null) return BadRequest("Role not found");
+        if (role == null) return BadRequest(new ErrorResponse { ErrorCode = RoleNotFound });
 
         user.RoleId = roleId;
         await _userService.UpdateAsync(user);
