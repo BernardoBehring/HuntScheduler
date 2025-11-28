@@ -8,8 +8,7 @@ public class Character
 {
     public int Id { get; set; }
     
-    [Required]
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
     
     [JsonIgnore]
     [ForeignKey("UserId")]
@@ -31,4 +30,8 @@ public class Character
     public int Level { get; set; } = 1;
     
     public bool IsMain { get; set; } = false;
+    
+    public bool IsExternal { get; set; } = false;
+    
+    public DateTime? ExternalVerifiedAt { get; set; }
 }
