@@ -24,11 +24,13 @@ Located in `Backend/HuntScheduleApi/`:
 - `RequestStatus` - Lookup table for status values (pending/approved/rejected/cancelled)
 - `Difficulty` - Lookup table for difficulty levels (easy/medium/hard/nightmare)
 
-### External Character Validation
+### TibiaData Character Validation
+- All character operations are validated against the TibiaData API (https://api.tibiadata.com/v4/character/{name})
+- Character creation: Name must exist on Tibia.com, vocation/level are synced from API
+- Character update: Re-validates if name or server changes
 - Party members can be existing guild characters or external characters not registered in the system
-- External characters are validated against the TibiaData API (https://api.tibiadata.com/v4/character/{name})
 - Validated external characters are stored with isExternal=true and externalVerifiedAt timestamp
-- Server must match between the hunt request and the character's world
+- Server must match between the character's actual world and the selected server
 
 ### API Endpoints
 All endpoints are prefixed with `/api`:
