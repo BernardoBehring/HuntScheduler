@@ -1,13 +1,29 @@
 import { create } from 'zustand';
 import { api } from './api';
 
-export type Role = 'admin' | 'user';
+export interface Role {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+export interface Character {
+  id: string;
+  userId: string;
+  name: string;
+  world?: string;
+  vocation?: string;
+  level: number;
+  isMain: boolean;
+}
 
 export interface User {
   id: string;
   username: string;
-  role: Role;
+  roleId: string;
+  role?: string;
   points: number;
+  characters?: Character[];
 }
 
 export interface Server {
@@ -70,6 +86,20 @@ export interface Request {
   createdAt: number;
 }
 
+const MOCK_ROLES: Role[] = [
+  { id: '1', name: 'admin', description: 'Guild administrator with full access' },
+  { id: '2', name: 'user', description: 'Regular guild member' },
+];
+
+const MOCK_CHARACTERS: Character[] = [
+  { id: '1', userId: '1', name: 'Admin Knight', world: 'Antica', vocation: 'Elite Knight', level: 500, isMain: true },
+  { id: '2', userId: '2', name: 'Hunter Elite', world: 'Antica', vocation: 'Royal Paladin', level: 450, isMain: true },
+  { id: '3', userId: '2', name: 'Hunter Alt', world: 'Antica', vocation: 'Master Sorcerer', level: 320, isMain: false },
+  { id: '4', userId: '3', name: 'Paladin Master', world: 'Antica', vocation: 'Royal Paladin', level: 380, isMain: true },
+  { id: '5', userId: '4', name: 'Druid Healer', world: 'Antica', vocation: 'Elder Druid', level: 420, isMain: true },
+  { id: '6', userId: '4', name: 'Druid Backup', world: 'Wintera', vocation: 'Elder Druid', level: 280, isMain: false },
+];
+
 const MOCK_STATUSES: RequestStatus[] = [
   { id: '1', name: 'pending', description: 'Awaiting admin approval', color: 'yellow' },
   { id: '2', name: 'approved', description: 'Request approved', color: 'green' },
@@ -85,10 +115,10 @@ const MOCK_DIFFICULTIES: Difficulty[] = [
 ];
 
 const MOCK_USERS: User[] = [
-  { id: '1', username: 'AdminUser', role: 'admin', points: 1000 },
-  { id: '2', username: 'HunterElite', role: 'user', points: 150 },
-  { id: '3', username: 'PaladinMaster', role: 'user', points: 80 },
-  { id: '4', username: 'DruidHealer', role: 'user', points: 200 },
+  { id: '1', username: 'AdminUser', roleId: '1', role: 'admin', points: 1000, characters: MOCK_CHARACTERS.filter(c => c.userId === '1') },
+  { id: '2', username: 'HunterElite', roleId: '2', role: 'user', points: 150, characters: MOCK_CHARACTERS.filter(c => c.userId === '2') },
+  { id: '3', username: 'PaladinMaster', roleId: '2', role: 'user', points: 80, characters: MOCK_CHARACTERS.filter(c => c.userId === '3') },
+  { id: '4', username: 'DruidHealer', roleId: '2', role: 'user', points: 200, characters: MOCK_CHARACTERS.filter(c => c.userId === '4') },
 ];
 
 const MOCK_SERVERS: Server[] = [
@@ -142,6 +172,8 @@ const MOCK_REQUESTS: Request[] = [
 interface AppState {
   currentUser: User | null;
   users: User[];
+  roles: Role[];
+  characters: Character[];
   servers: Server[];
   statuses: RequestStatus[];
   difficulties: Difficulty[];
@@ -162,14 +194,20 @@ interface AppState {
   addRespawn: (respawn: Omit<Respawn, 'id'>) => void;
   updateRespawn: (id: string, respawn: Partial<Omit<Respawn, 'id'>>) => void;
   deleteRespawn: (id: string) => void;
+  addCharacter: (character: Omit<Character, 'id'>) => void;
+  updateCharacter: (id: string, character: Partial<Omit<Character, 'id'>>) => void;
+  deleteCharacter: (id: string) => void;
   loadFromApi: () => Promise<void>;
   getStatusName: (statusId: string) => string;
   getDifficultyName: (difficultyId: string) => string;
+  getRoleName: (roleId: string) => string;
 }
 
 export const useStore = create<AppState>((set, get) => ({
   currentUser: MOCK_USERS[0],
   users: MOCK_USERS,
+  roles: MOCK_ROLES,
+  characters: MOCK_CHARACTERS,
   servers: MOCK_SERVERS,
   statuses: MOCK_STATUSES,
   difficulties: MOCK_DIFFICULTIES,
@@ -192,11 +230,19 @@ export const useStore = create<AppState>((set, get) => ({
     return difficulty?.name || 'unknown';
   },
 
+  getRoleName: (roleId: string) => {
+    const state = get();
+    const role = state.roles.find(r => r.id === roleId);
+    return role?.name || 'unknown';
+  },
+
   loadFromApi: async () => {
     set({ isLoading: true });
     try {
-      const [users, servers, statuses, difficulties, respawns, slots, periods, requests] = await Promise.all([
+      const [users, roles, characters, servers, statuses, difficulties, respawns, slots, periods, requests] = await Promise.all([
         api.users.getAll(),
+        api.roles.getAll(),
+        api.characters.getAll(),
         api.servers.getAll(),
         api.statuses.getAll(),
         api.difficulties.getAll(),
@@ -207,7 +253,19 @@ export const useStore = create<AppState>((set, get) => ({
       ]);
 
       set({
-        users: users.map(u => ({ ...u, id: String(u.id) })),
+        users: users.map(u => ({ 
+          ...u, 
+          id: String(u.id),
+          roleId: String(u.roleId),
+          role: u.role?.name,
+          characters: u.characters?.map((c: any) => ({
+            ...c,
+            id: String(c.id),
+            userId: String(c.userId)
+          }))
+        })),
+        roles: roles.map(r => ({ ...r, id: String(r.id) })),
+        characters: characters.map(c => ({ ...c, id: String(c.id), userId: String(c.userId) })),
         servers: servers.map(s => ({ ...s, id: String(s.id) })),
         statuses: statuses.map(s => ({ ...s, id: String(s.id) })),
         difficulties: difficulties.map(d => ({ ...d, id: String(d.id) })),
@@ -238,7 +296,12 @@ export const useStore = create<AppState>((set, get) => ({
           status: r.status?.name,
           createdAt: new Date(r.createdAt).getTime(),
         })),
-        currentUser: users.length > 0 ? { ...users[0], id: String(users[0].id) } : null,
+        currentUser: users.length > 0 ? { 
+          ...users[0], 
+          id: String(users[0].id),
+          roleId: String(users[0].roleId),
+          role: users[0].role?.name
+        } : null,
         useApi: true,
         isLoading: false,
       });
@@ -469,6 +532,89 @@ export const useStore = create<AppState>((set, get) => ({
     } else {
       set((state) => ({
         respawns: state.respawns.filter(r => r.id !== id)
+      }));
+    }
+  },
+
+  addCharacter: async (character) => {
+    const state = get();
+    if (state.useApi) {
+      try {
+        await api.characters.create({
+          userId: parseInt(character.userId),
+          name: character.name,
+          world: character.world,
+          vocation: character.vocation,
+          level: character.level,
+          isMain: character.isMain,
+        });
+        await state.loadFromApi();
+      } catch (error) {
+        console.error('Failed to add character:', error);
+      }
+    } else {
+      const newChar = { 
+        ...character, 
+        id: Math.random().toString(36).substr(2, 9) 
+      };
+      set((state) => ({
+        characters: [...state.characters, newChar],
+        users: state.users.map(u => 
+          u.id === character.userId 
+            ? { ...u, characters: [...(u.characters || []), newChar] }
+            : u
+        )
+      }));
+    }
+  },
+
+  updateCharacter: async (id, character) => {
+    const state = get();
+    if (state.useApi) {
+      try {
+        const existing = state.characters.find(c => c.id === id);
+        if (existing) {
+          await api.characters.update(parseInt(id), {
+            id: parseInt(id),
+            userId: parseInt(character.userId || existing.userId),
+            name: character.name || existing.name,
+            world: character.world || existing.world,
+            vocation: character.vocation || existing.vocation,
+            level: character.level ?? existing.level,
+            isMain: character.isMain ?? existing.isMain,
+          });
+          await state.loadFromApi();
+        }
+      } catch (error) {
+        console.error('Failed to update character:', error);
+      }
+    } else {
+      set((state) => ({
+        characters: state.characters.map(c => c.id === id ? { ...c, ...character } : c),
+        users: state.users.map(u => ({
+          ...u,
+          characters: u.characters?.map(c => c.id === id ? { ...c, ...character } : c)
+        }))
+      }));
+    }
+  },
+
+  deleteCharacter: async (id) => {
+    const state = get();
+    if (state.useApi) {
+      try {
+        await api.characters.delete(parseInt(id));
+        await state.loadFromApi();
+      } catch (error) {
+        console.error('Failed to delete character:', error);
+      }
+    } else {
+      set((state) => ({
+        characters: state.characters.filter(c => c.id !== id),
+        users: state.users.map(u => ({
+          ...u,
+          characters: u.characters?.filter(c => c.id !== id)
+        }))
       }));
     }
   }

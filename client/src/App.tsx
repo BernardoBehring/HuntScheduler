@@ -13,10 +13,10 @@ import { Layout } from "@/components/layout";
 import { useStore } from "@/lib/mockData";
 
 function ProtectedRoute({ component: Component, adminOnly = false }: { component: React.ComponentType, adminOnly?: boolean }) {
-  const { currentUser } = useStore();
+  const { currentUser, getRoleName } = useStore();
 
   if (!currentUser) return <Redirect to="/login" />;
-  if (adminOnly && currentUser.role !== 'admin') return <Redirect to="/" />;
+  if (adminOnly && getRoleName(currentUser.roleId) !== 'admin') return <Redirect to="/" />;
 
   return <Component />;
 }

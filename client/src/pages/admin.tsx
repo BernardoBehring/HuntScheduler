@@ -299,7 +299,7 @@ export default function Admin() {
                       </div>
                       <div>
                         <p className="font-bold">{user.username}</p>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{user.role}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{getRoleName(user.roleId)}</p>
                       </div>
                     </div>
                     

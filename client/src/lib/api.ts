@@ -1,10 +1,28 @@
 const API_BASE = '/api';
 
+export interface Role {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+export interface Character {
+  id: number;
+  userId: number;
+  name: string;
+  world?: string;
+  vocation?: string;
+  level: number;
+  isMain: boolean;
+}
+
 export interface User {
   id: number;
   username: string;
-  role: 'admin' | 'user';
+  roleId: number;
+  role?: Role;
   points: number;
+  characters?: Character[];
 }
 
 export interface Server {
@@ -211,5 +229,37 @@ export const api = {
       }).then(r => handleResponse(r)),
     delete: (id: number): Promise<void> =>
       fetch(`${API_BASE}/requests/${id}`, { method: 'DELETE' }).then(r => handleResponse(r)),
+  },
+
+  roles: {
+    getAll: (): Promise<Role[]> =>
+      fetch(`${API_BASE}/roles`).then(r => handleResponse(r)),
+    get: (id: number): Promise<Role> =>
+      fetch(`${API_BASE}/roles/${id}`).then(r => handleResponse(r)),
+  },
+
+  characters: {
+    getAll: (): Promise<Character[]> =>
+      fetch(`${API_BASE}/characters`).then(r => handleResponse(r)),
+    get: (id: number): Promise<Character> =>
+      fetch(`${API_BASE}/characters/${id}`).then(r => handleResponse(r)),
+    getByUser: (userId: number): Promise<Character[]> =>
+      fetch(`${API_BASE}/characters/user/${userId}`).then(r => handleResponse(r)),
+    create: (character: Omit<Character, 'id'>): Promise<Character> =>
+      fetch(`${API_BASE}/characters`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(character),
+      }).then(r => handleResponse(r)),
+    update: (id: number, character: Character): Promise<void> =>
+      fetch(`${API_BASE}/characters/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(character),
+      }).then(r => handleResponse(r)),
+    setMain: (id: number): Promise<void> =>
+      fetch(`${API_BASE}/characters/${id}/set-main`, { method: 'PATCH' }).then(r => handleResponse(r)),
+    delete: (id: number): Promise<void> =>
+      fetch(`${API_BASE}/characters/${id}`, { method: 'DELETE' }).then(r => handleResponse(r)),
   },
 };

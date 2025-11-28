@@ -8,7 +8,7 @@ import { useLocation } from "wouter";
 import generatedImage from "@assets/generated_images/dark_fantasy_map_texture_background.png";
 
 export default function Login() {
-  const { users, login } = useStore();
+  const { users, login, getRoleName } = useStore();
   const [, setLocation] = useLocation();
 
   const handleLogin = (userId: string) => {
@@ -44,7 +44,7 @@ export default function Login() {
                 onClick={() => handleLogin(user.id)}
               >
                 <span className="font-medium group-hover:text-primary transition-colors">{user.username}</span>
-                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded uppercase">{user.role}</span>
+                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded uppercase">{getRoleName(user.roleId)}</span>
               </Button>
             ))}
           </div>

@@ -15,7 +15,7 @@ import generatedImage from "@assets/generated_images/dark_fantasy_map_texture_ba
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const { currentUser, logout } = useStore();
+  const { currentUser, logout, getRoleName } = useStore();
 
   if (!currentUser) {
     return <div className="min-h-screen w-full bg-background">{children}</div>;
@@ -26,7 +26,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { href: "/schedule", label: "Hunt Schedule", icon: Scroll },
   ];
 
-  if (currentUser.role === "admin") {
+  if (getRoleName(currentUser.roleId) === "admin") {
     navItems.push({ href: "/admin", label: "Admin Panel", icon: Shield });
   }
 

@@ -19,13 +19,19 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
-        return await _context.Users.ToListAsync();
+        return await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.Characters)
+            .ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.Characters)
+            .FirstOrDefaultAsync(u => u.Id == id);
         if (user == null) return NotFound();
         return user;
     }
@@ -45,6 +51,20 @@ public class UsersController : ControllerBase
         if (user == null) return NotFound();
 
         user.Points += amount;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPatch("{id}/role")]
+    public async Task<IActionResult> UpdateRole(int id, [FromBody] int roleId)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return NotFound();
+
+        var role = await _context.Roles.FindAsync(roleId);
+        if (role == null) return BadRequest("Role not found");
+
+        user.RoleId = roleId;
         await _context.SaveChangesAsync();
         return NoContent();
     }
