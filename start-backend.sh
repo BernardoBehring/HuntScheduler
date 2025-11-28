@@ -9,6 +9,11 @@ rm -rf Backend/HuntSchedule.Api/wwwroot
 mkdir -p Backend/HuntSchedule.Api/wwwroot
 cp -r dist/public/* Backend/HuntSchedule.Api/wwwroot/
 
+echo "Building C# backend..."
+cd Backend
+dotnet restore HuntSchedule.sln
+dotnet build HuntSchedule.sln --no-restore
+
 echo "Starting C# backend on port 5000..."
-cd Backend/HuntSchedule.Api
-ASPNETCORE_URLS="http://0.0.0.0:5000" dotnet run
+cd HuntSchedule.Api
+dotnet run --no-build

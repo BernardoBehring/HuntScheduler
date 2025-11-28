@@ -1102,9 +1102,9 @@
         "dependencies": {
           "BCrypt.Net-Next": "4.0.3",
           "HuntSchedule.Persistence": "1.0.0",
-          "Microsoft.Extensions.Caching.Memory": "8.0.0",
+          "Microsoft.Extensions.Caching.Memory": "8.0.1",
           "Microsoft.Extensions.Http": "8.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         },
         "compile": {
           "bin/placeholder/HuntSchedule.Services.dll": {}

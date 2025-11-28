@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HuntSchedule.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dc14f39535f9e4ff912a4a230d9400a209481cc5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+64b0909579b512ab2011da21e9b5912cb57befdd")]
 [assembly: System.Reflection.AssemblyProductAttribute("HuntSchedule.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HuntSchedule.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
