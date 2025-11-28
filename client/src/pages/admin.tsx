@@ -220,7 +220,9 @@ export default function Admin() {
                 <ScrollArea className="h-full p-6 pt-0">
                   <div className="space-y-4">
                     {filteredPendingRequests.length === 0 && <p className="text-muted-foreground text-center py-10">{t('admin.requests.noPending')}</p>}
-                    {filteredPendingRequests.map(req => (
+                    {filteredPendingRequests.map(req => {
+                      const serverName = servers.find(s => s.id === req.serverId)?.name || t('common.unknown');
+                      return (
                       <div key={req.id} className="p-4 rounded-lg border border-border/50 bg-card/50 space-y-3 hover:border-primary/30 transition-all" data-testid={`pending-request-${req.id}`}>
                         <div className="flex justify-between items-start">
                           <div>
@@ -228,6 +230,7 @@ export default function Admin() {
                             <p className="text-sm text-muted-foreground">
                               {respawns.find(r => r.id === req.respawnId)?.name}
                             </p>
+                            <p className="text-xs text-primary/70">{serverName}</p>
                           </div>
                           <div className="text-right">
                             <Badge variant="outline" className="mb-1">
@@ -249,7 +252,8 @@ export default function Admin() {
                           </Button>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </ScrollArea>
               </CardContent>
@@ -267,12 +271,14 @@ export default function Admin() {
                       const respawnName = respawns.find(r => r.id === req.respawnId)?.name || t('common.unknown');
                       const slotInfo = slots.find(s => s.id === req.slotId);
                       const periodName = periods.find(p => p.id === req.periodId)?.name || t('common.unknown');
+                      const serverName = servers.find(s => s.id === req.serverId)?.name || t('common.unknown');
                       return (
                         <div key={req.id} className="p-3 rounded border border-border/30 space-y-2">
                           <div className="flex justify-between items-start">
                             <div>
                               <p className="text-sm font-medium text-primary">{getCharacterName(req.userId, req.serverId)}</p>
                               <p className="text-xs text-muted-foreground">{respawnName}</p>
+                              <p className="text-xs text-primary/70">{serverName}</p>
                             </div>
                             <Badge variant={req.statusId === '2' ? 'default' : 'destructive'}>
                               {statusName}
