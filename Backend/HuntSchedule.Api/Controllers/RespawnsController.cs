@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
+using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -28,7 +29,7 @@ public class RespawnsController : ControllerBase
     public async Task<ActionResult<Respawn>> GetRespawn(int id)
     {
         var respawn = await _respawnService.GetByIdAsync(id);
-        if (respawn == null) return NotFound(_localization.GetString("RespawnNotFound"));
+        if (respawn == null) return NotFound(_localization.GetString(RespawnNotFound));
         return respawn;
     }
 
@@ -42,9 +43,9 @@ public class RespawnsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRespawn(int id, Respawn respawn)
     {
-        if (id != respawn.Id) return BadRequest(_localization.GetString("IdMismatch"));
+        if (id != respawn.Id) return BadRequest(_localization.GetString(IdMismatch));
         var existing = await _respawnService.GetByIdAsync(id);
-        if (existing == null) return NotFound(_localization.GetString("RespawnNotFound"));
+        if (existing == null) return NotFound(_localization.GetString(RespawnNotFound));
         
         await _respawnService.UpdateAsync(respawn);
         return NoContent();
@@ -54,7 +55,7 @@ public class RespawnsController : ControllerBase
     public async Task<IActionResult> DeleteRespawn(int id)
     {
         var respawn = await _respawnService.GetByIdAsync(id);
-        if (respawn == null) return NotFound(_localization.GetString("RespawnNotFound"));
+        if (respawn == null) return NotFound(_localization.GetString(RespawnNotFound));
         
         await _respawnService.DeleteAsync(id);
         return NoContent();

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.Results;
+using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -29,7 +30,7 @@ public class CharactersController : ControllerBase
     public async Task<ActionResult<Character>> GetCharacter(int id)
     {
         var character = await _characterService.GetByIdAsync(id);
-        if (character == null) return NotFound(_localization.GetString("CharacterNotFound"));
+        if (character == null) return NotFound(_localization.GetString(CharacterNotFound));
         return character;
     }
 
@@ -68,7 +69,7 @@ public class CharactersController : ControllerBase
     public async Task<IActionResult> SetMainCharacter(int id)
     {
         var character = await _characterService.GetByIdAsync(id);
-        if (character == null) return NotFound(_localization.GetString("CharacterNotFound"));
+        if (character == null) return NotFound(_localization.GetString(CharacterNotFound));
 
         await _characterService.SetMainCharacterAsync(id);
         return NoContent();
@@ -78,7 +79,7 @@ public class CharactersController : ControllerBase
     public async Task<IActionResult> DeleteCharacter(int id)
     {
         var character = await _characterService.GetByIdAsync(id);
-        if (character == null) return NotFound(_localization.GetString("CharacterNotFound"));
+        if (character == null) return NotFound(_localization.GetString(CharacterNotFound));
         
         await _characterService.DeleteAsync(id);
         return NoContent();

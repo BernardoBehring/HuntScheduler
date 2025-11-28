@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
+using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -28,7 +29,7 @@ public class RequestStatusController : ControllerBase
     public async Task<ActionResult<RequestStatus>> GetById(int id)
     {
         var status = await _requestStatusService.GetByIdAsync(id);
-        if (status == null) return NotFound(_localization.GetString("StatusNotFound"));
+        if (status == null) return NotFound(_localization.GetString(StatusNotFound));
         return status;
     }
 }

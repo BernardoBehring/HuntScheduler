@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
+using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -28,7 +29,7 @@ public class ServersController : ControllerBase
     public async Task<ActionResult<Server>> GetServer(int id)
     {
         var server = await _serverService.GetByIdAsync(id);
-        if (server == null) return NotFound(_localization.GetString("ServerNotFound"));
+        if (server == null) return NotFound(_localization.GetString(ServerNotFound));
         return server;
     }
 
@@ -42,9 +43,9 @@ public class ServersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateServer(int id, Server server)
     {
-        if (id != server.Id) return BadRequest(_localization.GetString("IdMismatch"));
+        if (id != server.Id) return BadRequest(_localization.GetString(IdMismatch));
         var existing = await _serverService.GetByIdAsync(id);
-        if (existing == null) return NotFound(_localization.GetString("ServerNotFound"));
+        if (existing == null) return NotFound(_localization.GetString(ServerNotFound));
         
         await _serverService.UpdateAsync(server);
         return NoContent();
@@ -54,7 +55,7 @@ public class ServersController : ControllerBase
     public async Task<IActionResult> DeleteServer(int id)
     {
         var server = await _serverService.GetByIdAsync(id);
-        if (server == null) return NotFound(_localization.GetString("ServerNotFound"));
+        if (server == null) return NotFound(_localization.GetString(ServerNotFound));
         
         await _serverService.DeleteAsync(id);
         return NoContent();

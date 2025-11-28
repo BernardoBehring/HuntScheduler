@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
+using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -28,7 +29,7 @@ public class DifficultyController : ControllerBase
     public async Task<ActionResult<Difficulty>> GetById(int id)
     {
         var difficulty = await _difficultyService.GetByIdAsync(id);
-        if (difficulty == null) return NotFound(_localization.GetString("DifficultyNotFound"));
+        if (difficulty == null) return NotFound(_localization.GetString(DifficultyNotFound));
         return difficulty;
     }
 }

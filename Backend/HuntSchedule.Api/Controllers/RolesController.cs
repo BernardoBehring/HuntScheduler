@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
+using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -28,7 +29,7 @@ public class RolesController : ControllerBase
     public async Task<ActionResult<Role>> GetRole(int id)
     {
         var role = await _roleService.GetByIdAsync(id);
-        if (role == null) return NotFound(_localization.GetString("RoleNotFound"));
+        if (role == null) return NotFound(_localization.GetString(RoleNotFound));
         return role;
     }
 }

@@ -3,6 +3,7 @@ using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.DTOs;
 using HuntSchedule.Services.Results;
+using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
 
@@ -30,7 +31,7 @@ public class RequestsController : ControllerBase
     public async Task<ActionResult<Request>> GetRequest(int id)
     {
         var request = await _requestService.GetByIdAsync(id);
-        if (request == null) return NotFound(_localization.GetString("RequestNotFound"));
+        if (request == null) return NotFound(_localization.GetString(RequestNotFound));
         return request;
     }
 
@@ -62,7 +63,7 @@ public class RequestsController : ControllerBase
     public async Task<IActionResult> DeleteRequest(int id)
     {
         var request = await _requestService.GetByIdAsync(id);
-        if (request == null) return NotFound(_localization.GetString("RequestNotFound"));
+        if (request == null) return NotFound(_localization.GetString(RequestNotFound));
         
         await _requestService.DeleteAsync(id);
         return NoContent();
