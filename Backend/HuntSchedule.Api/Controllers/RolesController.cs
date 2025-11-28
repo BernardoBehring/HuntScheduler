@@ -9,10 +9,12 @@ namespace HuntSchedule.Api.Controllers;
 public class RolesController : ControllerBase
 {
     private readonly IRoleService _roleService;
+    private readonly ILocalizationService _localization;
 
-    public RolesController(IRoleService roleService)
+    public RolesController(IRoleService roleService, ILocalizationService localization)
     {
         _roleService = roleService;
+        _localization = localization;
     }
 
     [HttpGet]
@@ -26,7 +28,7 @@ public class RolesController : ControllerBase
     public async Task<ActionResult<Role>> GetRole(int id)
     {
         var role = await _roleService.GetByIdAsync(id);
-        if (role == null) return NotFound();
+        if (role == null) return NotFound(_localization.GetString("RoleNotFound"));
         return role;
     }
 }

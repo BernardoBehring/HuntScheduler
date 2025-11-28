@@ -30,7 +30,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<User>> GetUser(int id)
     {
         var user = await _userService.GetByIdWithCharactersAsync(id);
-        if (user == null) return NotFound();
+        if (user == null) return NotFound(_localization.GetString("UserNotFound"));
         return user;
     }
 
@@ -45,7 +45,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> UpdatePoints(int id, [FromBody] int amount)
     {
         var user = await _userService.GetByIdAsync(id);
-        if (user == null) return NotFound();
+        if (user == null) return NotFound(_localization.GetString("UserNotFound"));
 
         await _userService.UpdatePointsAsync(id, user.Points + amount);
         return NoContent();
@@ -55,7 +55,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> UpdateRole(int id, [FromBody] int roleId)
     {
         var user = await _userService.GetByIdAsync(id);
-        if (user == null) return NotFound();
+        if (user == null) return NotFound(_localization.GetString("UserNotFound"));
 
         var role = await _roleService.GetByIdAsync(roleId);
         if (role == null) return NotFound(_localization.GetString("RoleNotFound"));

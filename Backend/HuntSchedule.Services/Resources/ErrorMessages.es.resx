@@ -78,4 +78,10 @@
   <data name="ConflictWithApprovedRequest" xml:space="preserve">
     <value>Conflicto con solicitud aprobada #{0}</value>
   </data>
+  <data name="StatusNotFound" xml:space="preserve">
+    <value>Estado no encontrado</value>
+  </data>
+  <data name="DifficultyNotFound" xml:space="preserve">
+    <value>Dificultad no encontrada</value>
+  </data>
 </root>

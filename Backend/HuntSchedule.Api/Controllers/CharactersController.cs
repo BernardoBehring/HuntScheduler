@@ -10,10 +10,12 @@ namespace HuntSchedule.Api.Controllers;
 public class CharactersController : ControllerBase
 {
     private readonly ICharacterService _characterService;
+    private readonly ILocalizationService _localization;
 
-    public CharactersController(ICharacterService characterService)
+    public CharactersController(ICharacterService characterService, ILocalizationService localization)
     {
         _characterService = characterService;
+        _localization = localization;
     }
 
     [HttpGet]
@@ -27,7 +29,7 @@ public class CharactersController : ControllerBase
     public async Task<ActionResult<Character>> GetCharacter(int id)
     {
         var character = await _characterService.GetByIdAsync(id);
-        if (character == null) return NotFound();
+        if (character == null) return NotFound(_localization.GetString("CharacterNotFound"));
         return character;
     }
 
@@ -66,7 +68,7 @@ public class CharactersController : ControllerBase
     public async Task<IActionResult> SetMainCharacter(int id)
     {
         var character = await _characterService.GetByIdAsync(id);
-        if (character == null) return NotFound();
+        if (character == null) return NotFound(_localization.GetString("CharacterNotFound"));
 
         await _characterService.SetMainCharacterAsync(id);
         return NoContent();
@@ -76,7 +78,7 @@ public class CharactersController : ControllerBase
     public async Task<IActionResult> DeleteCharacter(int id)
     {
         var character = await _characterService.GetByIdAsync(id);
-        if (character == null) return NotFound();
+        if (character == null) return NotFound(_localization.GetString("CharacterNotFound"));
         
         await _characterService.DeleteAsync(id);
         return NoContent();

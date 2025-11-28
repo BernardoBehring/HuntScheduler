@@ -9,10 +9,12 @@ namespace HuntSchedule.Api.Controllers;
 public class RequestStatusController : ControllerBase
 {
     private readonly IRequestStatusService _requestStatusService;
+    private readonly ILocalizationService _localization;
 
-    public RequestStatusController(IRequestStatusService requestStatusService)
+    public RequestStatusController(IRequestStatusService requestStatusService, ILocalizationService localization)
     {
         _requestStatusService = requestStatusService;
+        _localization = localization;
     }
 
     [HttpGet]
@@ -26,7 +28,7 @@ public class RequestStatusController : ControllerBase
     public async Task<ActionResult<RequestStatus>> GetById(int id)
     {
         var status = await _requestStatusService.GetByIdAsync(id);
-        if (status == null) return NotFound();
+        if (status == null) return NotFound(_localization.GetString("StatusNotFound"));
         return status;
     }
 }

@@ -11,10 +11,12 @@ namespace HuntSchedule.Api.Controllers;
 public class RequestsController : ControllerBase
 {
     private readonly IRequestService _requestService;
+    private readonly ILocalizationService _localization;
 
-    public RequestsController(IRequestService requestService)
+    public RequestsController(IRequestService requestService, ILocalizationService localization)
     {
         _requestService = requestService;
+        _localization = localization;
     }
 
     [HttpGet]
@@ -28,7 +30,7 @@ public class RequestsController : ControllerBase
     public async Task<ActionResult<Request>> GetRequest(int id)
     {
         var request = await _requestService.GetByIdAsync(id);
-        if (request == null) return NotFound();
+        if (request == null) return NotFound(_localization.GetString("RequestNotFound"));
         return request;
     }
 
@@ -60,7 +62,7 @@ public class RequestsController : ControllerBase
     public async Task<IActionResult> DeleteRequest(int id)
     {
         var request = await _requestService.GetByIdAsync(id);
-        if (request == null) return NotFound();
+        if (request == null) return NotFound(_localization.GetString("RequestNotFound"));
         
         await _requestService.DeleteAsync(id);
         return NoContent();

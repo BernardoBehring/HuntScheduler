@@ -9,10 +9,12 @@ namespace HuntSchedule.Api.Controllers;
 public class SlotsController : ControllerBase
 {
     private readonly ISlotService _slotService;
+    private readonly ILocalizationService _localization;
 
-    public SlotsController(ISlotService slotService)
+    public SlotsController(ISlotService slotService, ILocalizationService localization)
     {
         _slotService = slotService;
+        _localization = localization;
     }
 
     [HttpGet]
@@ -26,7 +28,7 @@ public class SlotsController : ControllerBase
     public async Task<ActionResult<Slot>> GetSlot(int id)
     {
         var slot = await _slotService.GetByIdAsync(id);
-        if (slot == null) return NotFound();
+        if (slot == null) return NotFound(_localization.GetString("SlotNotFound"));
         return slot;
     }
 
@@ -41,7 +43,7 @@ public class SlotsController : ControllerBase
     public async Task<IActionResult> DeleteSlot(int id)
     {
         var slot = await _slotService.GetByIdAsync(id);
-        if (slot == null) return NotFound();
+        if (slot == null) return NotFound(_localization.GetString("SlotNotFound"));
         
         await _slotService.DeleteAsync(id);
         return NoContent();

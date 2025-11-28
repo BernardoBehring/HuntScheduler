@@ -9,10 +9,12 @@ namespace HuntSchedule.Api.Controllers;
 public class DifficultyController : ControllerBase
 {
     private readonly IDifficultyService _difficultyService;
+    private readonly ILocalizationService _localization;
 
-    public DifficultyController(IDifficultyService difficultyService)
+    public DifficultyController(IDifficultyService difficultyService, ILocalizationService localization)
     {
         _difficultyService = difficultyService;
+        _localization = localization;
     }
 
     [HttpGet]
@@ -26,7 +28,7 @@ public class DifficultyController : ControllerBase
     public async Task<ActionResult<Difficulty>> GetById(int id)
     {
         var difficulty = await _difficultyService.GetByIdAsync(id);
-        if (difficulty == null) return NotFound();
+        if (difficulty == null) return NotFound(_localization.GetString("DifficultyNotFound"));
         return difficulty;
     }
 }
