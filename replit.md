@@ -14,10 +14,12 @@ Located in `Backend/HuntScheduleApi/`:
 ### Models
 - `User` - Guild members with roles (admin/user) and points
 - `Server` - Game servers (Antica, Wintera, etc.)
-- `Respawn` - Hunt locations with difficulty and max players
-- `Slot` - Time slots for hunting sessions
-- `SchedulePeriod` - Weekly rotation periods
-- `Request` - Hunt booking requests with status tracking
+- `Respawn` - Hunt locations with difficultyId (FK) and max players
+- `Slot` - Time slots for hunting sessions (with serverId FK)
+- `SchedulePeriod` - Weekly rotation periods (with serverId FK)
+- `Request` - Hunt booking requests with statusId (FK) tracking
+- `RequestStatus` - Lookup table for status values (pending/approved/rejected/cancelled)
+- `Difficulty` - Lookup table for difficulty levels (easy/medium/hard/nightmare)
 
 ### API Endpoints
 All endpoints are prefixed with `/api`:
