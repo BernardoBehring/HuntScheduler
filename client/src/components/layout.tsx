@@ -11,15 +11,25 @@ import {
   Scroll, 
   Users,
   Menu,
-  X
+  X,
+  Globe
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { languages } from "@/i18n";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import generatedImage from "@assets/generated_images/dark_fantasy_map_texture_background.png";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { currentUser, logout, getRoleName } = useStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t, i18n } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -31,13 +41,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }
 
   const navItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/schedule", label: "Hunt Schedule", icon: Scroll },
+    { href: "/", label: t('nav.dashboard'), icon: LayoutDashboard },
+    { href: "/schedule", label: t('nav.huntSchedule'), icon: Scroll },
   ];
 
   if (getRoleName(currentUser.roleId) === "admin") {
-    navItems.push({ href: "/admin", label: "Admin Panel", icon: Shield });
+    navItems.push({ href: "/admin", label: t('nav.adminPanel'), icon: Shield });
   }
+
+  const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
 
   return (
     <div className="min-h-screen flex bg-background text-foreground font-sans selection:bg-primary/20">
@@ -51,16 +63,38 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <header className="fixed top-0 left-0 right-0 h-14 bg-card/90 backdrop-blur-md border-b border-border/40 z-50 md:hidden flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <Swords className="h-5 w-5 text-primary" />
-          <span className="font-display font-bold text-primary">GuildHall</span>
+          <span className="font-display font-bold text-primary">{t('app.name')}</span>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          data-testid="button-mobile-menu"
-        >
-          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" data-testid="button-language-mobile">
+                <Globe className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {languages.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  onClick={() => i18n.changeLanguage(lang.code)}
+                  className={cn(i18n.language === lang.code && "bg-primary/10")}
+                  data-testid={`language-option-${lang.code}`}
+                >
+                  <span className="mr-2">{lang.flag}</span>
+                  {lang.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            data-testid="button-mobile-menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
       </header>
 
       {/* Mobile Menu Overlay */}
@@ -95,7 +129,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </div>
                 <div>
                   <p className="font-medium text-sm">{currentUser.username}</p>
-                  <p className="text-xs text-primary">{currentUser.points} pts</p>
+                  <p className="text-xs text-primary">{currentUser.points} {t('common.points')}</p>
                 </div>
               </div>
               <Button 
@@ -105,7 +139,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 data-testid="button-logout-mobile"
               >
                 <LogOut className="h-4 w-4" />
-                Logout
+                {t('auth.logout')}
               </Button>
             </div>
           </nav>
@@ -117,9 +151,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="p-6 border-b border-border/40">
           <h1 className="text-2xl font-display font-bold text-primary flex items-center gap-2">
             <Swords className="h-6 w-6" />
-            GuildHall
+            {t('app.name')}
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">Tibia Hunt Manager</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('app.tagline')}</p>
         </div>
 
         <ScrollArea className="flex-1 py-4">
@@ -147,13 +181,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
               <span className="font-display font-bold text-primary">{currentUser.username[0]}</span>
             </div>
-            <div className="overflow-hidden">
+            <div className="overflow-hidden flex-1">
               <p className="font-medium truncate text-sm">{currentUser.username}</p>
               <p className="text-xs text-primary flex items-center gap-1">
                 <Users className="h-3 w-3" />
-                {currentUser.points} pts
+                {currentUser.points} {t('common.points')}
               </p>
             </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8" data-testid="button-language">
+                  <Globe className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {languages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => i18n.changeLanguage(lang.code)}
+                    className={cn(i18n.language === lang.code && "bg-primary/10")}
+                    data-testid={`language-option-${lang.code}`}
+                  >
+                    <span className="mr-2">{lang.flag}</span>
+                    {lang.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <Button 
             variant="outline" 
@@ -162,7 +216,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             data-testid="button-logout"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            {t('auth.logout')}
           </Button>
         </div>
       </aside>

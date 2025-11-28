@@ -1,15 +1,24 @@
 import { useStore } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Swords } from "lucide-react";
+import { Swords, Globe } from "lucide-react";
 import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
+import { languages } from "@/i18n";
+import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import generatedImage from "@assets/generated_images/dark_fantasy_map_texture_background.png";
 
 export default function Login() {
   const { users, login, getRoleName } = useStore();
   const [, setLocation] = useLocation();
+  const { t, i18n } = useTranslation();
 
   const handleLogin = (userId: string) => {
     login(userId);
@@ -25,26 +34,52 @@ export default function Login() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90 pointer-events-none" />
 
+      {/* Language Selector - Top Right */}
+      <div className="absolute top-4 right-4 z-20">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-2 border-primary/30" data-testid="button-language-login">
+              <Globe className="h-4 w-4" />
+              {languages.find(l => l.code === i18n.language)?.flag}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {languages.map((lang) => (
+              <DropdownMenuItem
+                key={lang.code}
+                onClick={() => i18n.changeLanguage(lang.code)}
+                className={cn(i18n.language === lang.code && "bg-primary/10")}
+                data-testid={`language-option-login-${lang.code}`}
+              >
+                <span className="mr-2">{lang.flag}</span>
+                {lang.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <Card className="w-[400px] z-10 border-primary/20 bg-card/80 backdrop-blur-md shadow-2xl shadow-primary/5">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center border border-primary/40 mb-4 ring-4 ring-primary/5">
             <Swords className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-display font-bold text-primary tracking-wider">GuildHall</CardTitle>
-          <CardDescription>Enter the hunt management system</CardDescription>
+          <CardTitle className="text-3xl font-display font-bold text-primary tracking-wider">{t('app.name')}</CardTitle>
+          <CardDescription>{t('app.enterSystem')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-3">
-            <Label className="text-xs uppercase tracking-widest text-muted-foreground">Select User Role Demo</Label>
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">{t('auth.selectUserDemo')}</Label>
             {users.map(user => (
               <Button 
                 key={user.id} 
                 variant="outline" 
                 className="w-full justify-between h-12 border-border/50 hover:border-primary/50 hover:bg-primary/5 group"
                 onClick={() => handleLogin(user.id)}
+                data-testid={`button-login-${user.id}`}
               >
                 <span className="font-medium group-hover:text-primary transition-colors">{user.username}</span>
-                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded uppercase">{getRoleName(user.roleId)}</span>
+                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded uppercase">{t(`roles.${getRoleName(user.roleId)}`)}</span>
               </Button>
             ))}
           </div>

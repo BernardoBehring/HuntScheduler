@@ -6,28 +6,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Check, X, Plus, Trash2, Calendar } from "lucide-react";
+import { Check, X, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 export default function Admin() {
   const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, getStatusName, getDifficultyName, getRoleName } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
+  const { t } = useTranslation();
 
-  // Derived data - filter by statusId (pending = '1')
   const pendingRequests = requests.filter(r => r.statusId === '1').sort((a, b) => b.createdAt - a.createdAt);
   const processedRequests = requests.filter(r => r.statusId !== '1').sort((a, b) => b.createdAt - a.createdAt);
 
-  // New Period State
   const [newPeriodName, setNewPeriodName] = useState("");
   const [newPeriodStart, setNewPeriodStart] = useState("");
   const [newPeriodEnd, setNewPeriodEnd] = useState("");
 
-  // Respawn State
   const [isAddRespawnOpen, setIsAddRespawnOpen] = useState(false);
   const [isEditRespawnOpen, setIsEditRespawnOpen] = useState(false);
   const [editingRespawnId, setEditingRespawnId] = useState<string | null>(null);
@@ -39,19 +38,42 @@ export default function Admin() {
   
   const [newPeriodServer, setNewPeriodServer] = useState(servers[0]?.id || "");
 
+  const getTranslatedStatus = (statusId: string) => {
+    const statusMap: Record<string, string> = {
+      '1': 'pending',
+      '2': 'approved', 
+      '3': 'rejected',
+      '4': 'cancelled'
+    };
+    return t(`status.${statusMap[statusId] || 'pending'}`);
+  };
+
+  const getTranslatedDifficulty = (difficultyId: string) => {
+    const difficultyMap: Record<string, string> = {
+      '1': 'easy',
+      '2': 'medium', 
+      '3': 'hard',
+      '4': 'nightmare'
+    };
+    return t(`difficulty.${difficultyMap[difficultyId] || 'medium'}`);
+  };
+
   const handleReview = (id: string, statusId: string, reason?: string) => {
     updateRequestStatus(id, statusId, reason);
-    const statusName = statusId === '2' ? 'approved' : 'rejected';
+    const statusKey = statusId === '2' ? 'approved' : 'rejected';
     toast({
-      title: `Request ${statusName}`,
-      description: `The hunt request has been ${statusName}.`,
+      title: t(`admin.requests.request${statusId === '2' ? 'Approved' : 'Rejected'}`),
+      description: t('admin.requests.requestStatus', { status: t(`status.${statusKey}`).toLowerCase() }),
       variant: statusId === '2' ? 'default' : 'destructive',
     });
   };
 
   const handleAddPoints = (userId: string, amount: number) => {
     addPoints(userId, amount);
-    toast({ title: "Points Updated", description: `Added ${amount} points to user.` });
+    toast({ 
+      title: t('admin.users.pointsUpdated'), 
+      description: t('admin.users.pointsUpdatedDesc', { amount: Math.abs(amount) })
+    });
   };
 
   const handleCreatePeriod = () => {
@@ -63,7 +85,7 @@ export default function Admin() {
       endDate: newPeriodEnd,
       isActive: true
     });
-    toast({ title: "Period Created", description: "New hunt rotation period added." });
+    toast({ title: t('admin.periods.periodCreated'), description: t('admin.periods.periodCreatedDesc') });
     setNewPeriodName("");
     setNewPeriodStart("");
     setNewPeriodEnd("");
@@ -94,7 +116,7 @@ export default function Admin() {
       difficultyId: newRespawnDifficulty,
       maxPlayers: parseInt(newRespawnMaxPlayers) || 4
     });
-    toast({ title: "Respawn Added", description: "New respawn area has been created." });
+    toast({ title: t('admin.respawns.respawnAdded'), description: t('admin.respawns.respawnAddedDesc') });
     setIsAddRespawnOpen(false);
   };
 
@@ -106,52 +128,50 @@ export default function Admin() {
       difficultyId: newRespawnDifficulty,
       maxPlayers: parseInt(newRespawnMaxPlayers) || 4
     });
-    toast({ title: "Respawn Updated", description: "Respawn area details updated." });
+    toast({ title: t('admin.respawns.respawnUpdated'), description: t('admin.respawns.respawnUpdatedDesc') });
     setIsEditRespawnOpen(false);
     setEditingRespawnId(null);
   };
 
   const handleDeleteRespawn = (id: string) => {
-    if (confirm("Are you sure you want to delete this respawn?")) {
+    if (confirm(t('admin.respawns.confirmDelete'))) {
       deleteRespawn(id);
-      toast({ title: "Respawn Deleted", description: "Respawn area has been removed." });
+      toast({ title: t('admin.respawns.respawnDeleted'), description: t('admin.respawns.respawnDeletedDesc') });
     }
   };
 
   return (
     <Layout>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-display font-bold text-primary">Admin Command</h1>
+        <h1 className="text-3xl font-display font-bold text-primary">{t('admin.title')}</h1>
         <Badge variant="outline" className="border-primary/50 text-primary px-4 py-1">
-          Admin Access Granted
+          {t('admin.accessGranted')}
         </Badge>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-card/50 border border-border/50 p-1">
-          <TabsTrigger value="requests" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Requests Review</TabsTrigger>
-          <TabsTrigger value="periods" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Periods & Rotations</TabsTrigger>
-          <TabsTrigger value="respawns" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Respawns & Slots</TabsTrigger>
-          <TabsTrigger value="users" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Users & Points</TabsTrigger>
+          <TabsTrigger value="requests" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-requests">{t('admin.tabs.requests')}</TabsTrigger>
+          <TabsTrigger value="periods" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-periods">{t('admin.tabs.periods')}</TabsTrigger>
+          <TabsTrigger value="respawns" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-respawns">{t('admin.tabs.respawns')}</TabsTrigger>
+          <TabsTrigger value="users" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-users">{t('admin.tabs.users')}</TabsTrigger>
         </TabsList>
 
-        {/* ... (Requests, Periods, Users tabs content remain unchanged) ... */}
         <TabsContent value="requests" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
-            {/* Pending Column */}
             <Card className="bg-card/30 border-border/50 h-[600px] flex flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  Pending Approval
+                  {t('admin.requests.pendingApproval')}
                   <Badge variant="secondary">{pendingRequests.length}</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex-1 p-0 overflow-hidden">
                 <ScrollArea className="h-full p-6 pt-0">
                   <div className="space-y-4">
-                    {pendingRequests.length === 0 && <p className="text-muted-foreground text-center py-10">No pending requests.</p>}
+                    {pendingRequests.length === 0 && <p className="text-muted-foreground text-center py-10">{t('admin.requests.noPending')}</p>}
                     {pendingRequests.map(req => (
-                      <div key={req.id} className="p-4 rounded-lg border border-border/50 bg-card/50 space-y-3 hover:border-primary/30 transition-all">
+                      <div key={req.id} className="p-4 rounded-lg border border-border/50 bg-card/50 space-y-3 hover:border-primary/30 transition-all" data-testid={`pending-request-${req.id}`}>
                         <div className="flex justify-between items-start">
                           <div>
                             <p className="font-bold text-primary">User #{req.userId}</p>
@@ -161,21 +181,21 @@ export default function Admin() {
                           </div>
                           <div className="text-right">
                             <Badge variant="outline" className="mb-1">
-                              {periods.find(p => p.id === req.periodId)?.name || 'Unknown Period'}
+                              {periods.find(p => p.id === req.periodId)?.name || t('common.unknown')}
                             </Badge>
                           </div>
                         </div>
                         
                         <div className="text-xs bg-muted/30 p-2 rounded text-muted-foreground">
-                          Party: {req.partyMembers.length > 0 ? req.partyMembers.join(", ") : "Solo"}
+                          Party: {req.partyMembers.length > 0 ? req.partyMembers.join(", ") : t('common.solo')}
                         </div>
 
                         <div className="flex gap-2 pt-2">
-                          <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleReview(req.id, '2')}>
-                            <Check className="h-4 w-4 mr-1" /> Approve
+                          <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleReview(req.id, '2')} data-testid={`button-approve-${req.id}`}>
+                            <Check className="h-4 w-4 mr-1" /> {t('admin.requests.approve')}
                           </Button>
-                          <Button size="sm" variant="destructive" className="flex-1" onClick={() => handleReview(req.id, '3', 'Admin declined')}>
-                            <X className="h-4 w-4 mr-1" /> Reject
+                          <Button size="sm" variant="destructive" className="flex-1" onClick={() => handleReview(req.id, '3', 'Admin declined')} data-testid={`button-reject-${req.id}`}>
+                            <X className="h-4 w-4 mr-1" /> {t('admin.requests.reject')}
                           </Button>
                         </div>
                       </div>
@@ -185,16 +205,15 @@ export default function Admin() {
               </CardContent>
             </Card>
 
-            {/* History Column */}
             <Card className="bg-card/30 border-border/50 h-[600px] flex flex-col">
               <CardHeader>
-                <CardTitle>History Log</CardTitle>
+                <CardTitle>{t('admin.requests.historyLog')}</CardTitle>
               </CardHeader>
               <CardContent className="flex-1 p-0 overflow-hidden">
                 <ScrollArea className="h-full p-6 pt-0">
                   <div className="space-y-4 opacity-70">
                     {processedRequests.map(req => {
-                      const statusName = getStatusName(req.statusId);
+                      const statusName = getTranslatedStatus(req.statusId);
                       return (
                         <div key={req.id} className="p-3 rounded border border-border/30 flex justify-between items-center">
                           <div>
@@ -218,19 +237,19 @@ export default function Admin() {
           <div className="grid gap-6 md:grid-cols-2">
              <Card className="bg-card/30 border-border/50">
                <CardHeader>
-                 <CardTitle>Create New Period</CardTitle>
-                 <CardDescription>Define a new hunt rotation schedule</CardDescription>
+                 <CardTitle>{t('admin.periods.createNew')}</CardTitle>
+                 <CardDescription>{t('admin.periods.defineSchedule')}</CardDescription>
                </CardHeader>
                <CardContent className="space-y-4">
                  <div className="space-y-2">
-                   <Label>Period Name</Label>
-                   <Input placeholder="e.g. Week 50 - Christmas Special" value={newPeriodName} onChange={(e) => setNewPeriodName(e.target.value)} />
+                   <Label>{t('admin.periods.periodName')}</Label>
+                   <Input placeholder={t('admin.periods.periodNamePlaceholder')} value={newPeriodName} onChange={(e) => setNewPeriodName(e.target.value)} data-testid="input-period-name" />
                  </div>
                  <div className="space-y-2">
-                   <Label>Server</Label>
+                   <Label>{t('common.server')}</Label>
                    <Select value={newPeriodServer} onValueChange={setNewPeriodServer}>
-                     <SelectTrigger>
-                       <SelectValue placeholder="Select Server" />
+                     <SelectTrigger data-testid="select-period-server">
+                       <SelectValue placeholder={t('schedule.selectServer')} />
                      </SelectTrigger>
                      <SelectContent>
                        {servers.map(s => (
@@ -241,38 +260,38 @@ export default function Admin() {
                  </div>
                  <div className="grid grid-cols-2 gap-4">
                    <div className="space-y-2">
-                     <Label>Start Date</Label>
-                     <Input type="date" value={newPeriodStart} onChange={(e) => setNewPeriodStart(e.target.value)} />
+                     <Label>{t('admin.periods.startDate')}</Label>
+                     <Input type="date" value={newPeriodStart} onChange={(e) => setNewPeriodStart(e.target.value)} data-testid="input-period-start" />
                    </div>
                    <div className="space-y-2">
-                     <Label>End Date</Label>
-                     <Input type="date" value={newPeriodEnd} onChange={(e) => setNewPeriodEnd(e.target.value)} />
+                     <Label>{t('admin.periods.endDate')}</Label>
+                     <Input type="date" value={newPeriodEnd} onChange={(e) => setNewPeriodEnd(e.target.value)} data-testid="input-period-end" />
                    </div>
                  </div>
-                 <Button onClick={handleCreatePeriod} className="w-full mt-4">Create Period</Button>
+                 <Button onClick={handleCreatePeriod} className="w-full mt-4" data-testid="button-create-period">{t('admin.periods.createPeriod')}</Button>
                </CardContent>
              </Card>
 
              <Card className="bg-card/30 border-border/50">
                <CardHeader>
-                 <CardTitle>Active Periods</CardTitle>
+                 <CardTitle>{t('admin.periods.activePeriods')}</CardTitle>
                </CardHeader>
                <CardContent>
                  <ScrollArea className="h-[300px]">
                    <div className="space-y-3">
                      {periods.map(p => (
-                       <div key={p.id} className="flex items-center justify-between p-3 rounded border border-border/40 bg-muted/10">
+                       <div key={p.id} className="flex items-center justify-between p-3 rounded border border-border/40 bg-muted/10" data-testid={`period-item-${p.id}`}>
                          <div>
                            <span className="font-medium flex items-center gap-2">
                              {p.name}
-                             {p.isActive && <Badge className="text-[10px] bg-primary/20 text-primary hover:bg-primary/20">Active</Badge>}
+                             {p.isActive && <Badge className="text-[10px] bg-primary/20 text-primary hover:bg-primary/20">{t('common.active')}</Badge>}
                            </span>
                            <p className="text-xs text-muted-foreground">
                              {format(new Date(p.startDate), "MMM d")} - {format(new Date(p.endDate), "MMM d, yyyy")}
                            </p>
                          </div>
-                         <Button size="sm" variant="ghost" onClick={() => togglePeriod(p.id)}>
-                           {p.isActive ? "Deactivate" : "Activate"}
+                         <Button size="sm" variant="ghost" onClick={() => togglePeriod(p.id)} data-testid={`button-toggle-period-${p.id}`}>
+                           {p.isActive ? t('admin.periods.deactivate') : t('admin.periods.activate')}
                          </Button>
                        </div>
                      ))}
@@ -286,30 +305,30 @@ export default function Admin() {
         <TabsContent value="users">
           <Card className="bg-card/30 border-border/50">
             <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>Manage guild points and roles</CardDescription>
+              <CardTitle>{t('admin.users.title')}</CardTitle>
+              <CardDescription>{t('admin.users.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {users.map(user => (
-                  <div key={user.id} className="flex items-center justify-between p-4 border border-border/40 rounded-lg bg-card/40">
+                  <div key={user.id} className="flex items-center justify-between p-4 border border-border/40 rounded-lg bg-card/40" data-testid={`user-item-${user.id}`}>
                     <div className="flex items-center gap-4">
                       <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
                         {user.username[0]}
                       </div>
                       <div>
                         <p className="font-bold">{user.username}</p>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{getRoleName(user.roleId)}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{t(`roles.${getRoleName(user.roleId)}`)}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-4">
                       <div className="text-right mr-4">
-                        <p className="text-sm font-medium text-primary">{user.points} PTS</p>
+                        <p className="text-sm font-medium text-primary">{user.points} {t('common.points').toUpperCase()}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleAddPoints(user.id, -10)}>-</Button>
-                        <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleAddPoints(user.id, 10)}>+</Button>
+                        <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleAddPoints(user.id, -10)} data-testid={`button-remove-points-${user.id}`}>-</Button>
+                        <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleAddPoints(user.id, 10)} data-testid={`button-add-points-${user.id}`}>+</Button>
                       </div>
                     </div>
                   </div>
@@ -323,29 +342,29 @@ export default function Admin() {
            <Card className="bg-card/30 border-border/50">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Server Configuration</CardTitle>
-                <CardDescription>Manage respawn areas and global settings</CardDescription>
+                <CardTitle>{t('admin.respawns.serverConfig')}</CardTitle>
+                <CardDescription>{t('admin.respawns.manageRespawns')}</CardDescription>
               </div>
               
               <Dialog open={isAddRespawnOpen} onOpenChange={setIsAddRespawnOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={openAddRespawnDialog}><Plus className="h-4 w-4 mr-2" /> Add Respawn</Button>
+                  <Button onClick={openAddRespawnDialog} data-testid="button-add-respawn"><Plus className="h-4 w-4 mr-2" /> {t('admin.respawns.addRespawn')}</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add New Respawn</DialogTitle>
-                    <DialogDescription>Create a new hunting area for players to book.</DialogDescription>
+                    <DialogTitle>{t('admin.respawns.addNewRespawn')}</DialogTitle>
+                    <DialogDescription>{t('admin.respawns.createHuntingArea')}</DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="space-y-2">
-                      <Label>Respawn Name</Label>
-                      <Input placeholder="e.g. Library - Ice" value={newRespawnName} onChange={(e) => setNewRespawnName(e.target.value)} />
+                      <Label>{t('admin.respawns.respawnName')}</Label>
+                      <Input placeholder={t('admin.respawns.respawnNamePlaceholder')} value={newRespawnName} onChange={(e) => setNewRespawnName(e.target.value)} data-testid="input-respawn-name" />
                     </div>
                     <div className="space-y-2">
-                      <Label>Server</Label>
+                      <Label>{t('common.server')}</Label>
                       <Select value={newRespawnServer} onValueChange={setNewRespawnServer}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Server" />
+                        <SelectTrigger data-testid="select-respawn-server">
+                          <SelectValue placeholder={t('schedule.selectServer')} />
                         </SelectTrigger>
                         <SelectContent>
                           {servers.map(s => (
@@ -356,27 +375,27 @@ export default function Admin() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                        <div className="space-y-2">
-                        <Label>Difficulty</Label>
+                        <Label>{t('difficulty.medium')}</Label>
                         <Select value={newRespawnDifficulty} onValueChange={setNewRespawnDifficulty}>
-                          <SelectTrigger>
+                          <SelectTrigger data-testid="select-respawn-difficulty">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="1">Easy</SelectItem>
-                            <SelectItem value="2">Medium</SelectItem>
-                            <SelectItem value="3">Hard</SelectItem>
-                            <SelectItem value="4">Nightmare</SelectItem>
+                            <SelectItem value="1">{t('difficulty.easy')}</SelectItem>
+                            <SelectItem value="2">{t('difficulty.medium')}</SelectItem>
+                            <SelectItem value="3">{t('difficulty.hard')}</SelectItem>
+                            <SelectItem value="4">{t('difficulty.nightmare')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Max Players</Label>
-                        <Input type="number" min="1" max="10" value={newRespawnMaxPlayers} onChange={(e) => setNewRespawnMaxPlayers(e.target.value)} />
+                        <Label>{t('admin.respawns.maxPlayers')}</Label>
+                        <Input type="number" min="1" max="10" value={newRespawnMaxPlayers} onChange={(e) => setNewRespawnMaxPlayers(e.target.value)} data-testid="input-respawn-max-players" />
                       </div>
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button onClick={handleAddRespawn}>Create Respawn</Button>
+                    <Button onClick={handleAddRespawn} data-testid="button-confirm-add-respawn">{t('admin.respawns.createRespawn')}</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
@@ -384,19 +403,19 @@ export default function Admin() {
               <Dialog open={isEditRespawnOpen} onOpenChange={setIsEditRespawnOpen}>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Edit Respawn</DialogTitle>
-                    <DialogDescription>Update details for this hunting area.</DialogDescription>
+                    <DialogTitle>{t('admin.respawns.editRespawn')}</DialogTitle>
+                    <DialogDescription>{t('admin.respawns.updateDetails')}</DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="space-y-2">
-                      <Label>Respawn Name</Label>
-                      <Input placeholder="e.g. Library - Ice" value={newRespawnName} onChange={(e) => setNewRespawnName(e.target.value)} />
+                      <Label>{t('admin.respawns.respawnName')}</Label>
+                      <Input placeholder={t('admin.respawns.respawnNamePlaceholder')} value={newRespawnName} onChange={(e) => setNewRespawnName(e.target.value)} />
                     </div>
                     <div className="space-y-2">
-                      <Label>Server</Label>
+                      <Label>{t('common.server')}</Label>
                       <Select value={newRespawnServer} onValueChange={setNewRespawnServer}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select Server" />
+                          <SelectValue placeholder={t('schedule.selectServer')} />
                         </SelectTrigger>
                         <SelectContent>
                           {servers.map(s => (
@@ -407,27 +426,27 @@ export default function Admin() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                        <div className="space-y-2">
-                        <Label>Difficulty</Label>
+                        <Label>{t('difficulty.medium')}</Label>
                         <Select value={newRespawnDifficulty} onValueChange={setNewRespawnDifficulty}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="1">Easy</SelectItem>
-                            <SelectItem value="2">Medium</SelectItem>
-                            <SelectItem value="3">Hard</SelectItem>
-                            <SelectItem value="4">Nightmare</SelectItem>
+                            <SelectItem value="1">{t('difficulty.easy')}</SelectItem>
+                            <SelectItem value="2">{t('difficulty.medium')}</SelectItem>
+                            <SelectItem value="3">{t('difficulty.hard')}</SelectItem>
+                            <SelectItem value="4">{t('difficulty.nightmare')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Max Players</Label>
+                        <Label>{t('admin.respawns.maxPlayers')}</Label>
                         <Input type="number" min="1" max="10" value={newRespawnMaxPlayers} onChange={(e) => setNewRespawnMaxPlayers(e.target.value)} />
                       </div>
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button onClick={handleUpdateRespawn}>Save Changes</Button>
+                    <Button onClick={handleUpdateRespawn}>{t('admin.respawns.saveChanges')}</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
@@ -435,14 +454,14 @@ export default function Admin() {
             <CardContent>
               <div className="grid gap-4">
                  {respawns.map(r => (
-                   <div key={r.id} className="flex items-center justify-between p-3 border border-border/40 rounded bg-muted/10">
+                   <div key={r.id} className="flex items-center justify-between p-3 border border-border/40 rounded bg-muted/10" data-testid={`respawn-item-${r.id}`}>
                      <div>
                        <p className="font-medium">{r.name}</p>
-                       <p className="text-xs text-muted-foreground">Max Players: {r.maxPlayers} • Difficulty: {getDifficultyName(r.difficultyId)}</p>
+                       <p className="text-xs text-muted-foreground">{t('common.max')} {t('common.members')}: {r.maxPlayers} • {getTranslatedDifficulty(r.difficultyId)}</p>
                      </div>
                      <div className="flex gap-2">
-                       <Button size="sm" variant="ghost" onClick={() => openEditRespawnDialog(r)}>Edit</Button>
-                       <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleDeleteRespawn(r.id)}><Trash2 className="h-4 w-4"/></Button>
+                       <Button size="sm" variant="ghost" onClick={() => openEditRespawnDialog(r)} data-testid={`button-edit-respawn-${r.id}`}>{t('common.edit')}</Button>
+                       <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleDeleteRespawn(r.id)} data-testid={`button-delete-respawn-${r.id}`}><Trash2 className="h-4 w-4"/></Button>
                      </div>
                    </div>
                  ))}

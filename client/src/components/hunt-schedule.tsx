@@ -24,25 +24,24 @@ import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { CalendarIcon, Clock, Users, Sword, Plus, AlertCircle, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export function HuntSchedule() {
   const { servers, respawns, slots, requests, addRequest, currentUser, periods, getDifficultyName } = useStore();
   const [selectedServer, setSelectedServer] = useState(servers[0]?.id);
   const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useTranslation();
   
-  // Find active period or select the first one
   const activePeriod = periods.find(p => p.isActive) || periods[0];
   const [selectedPeriodId, setSelectedPeriodId] = useState<string>(activePeriod?.id);
 
   const currentPeriod = periods.find(p => p.id === selectedPeriodId);
   
-  // Filter data
   const activeRespawns = respawns.filter(r => 
     r.serverId === selectedServer && 
     r.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  // statusId: '1' = pending, '2' = approved, '3' = rejected
   const getRequestForSlot = (respawnId: string, slotId: string) => {
     if (!currentPeriod) return undefined;
     return requests.find(r => 
@@ -53,6 +52,16 @@ export function HuntSchedule() {
     );
   };
 
+  const getTranslatedDifficulty = (difficultyId: string) => {
+    const difficultyMap: Record<string, string> = {
+      '1': 'easy',
+      '2': 'medium', 
+      '3': 'hard',
+      '4': 'nightmare'
+    };
+    return t(`difficulty.${difficultyMap[difficultyId] || 'medium'}`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Filters */}
@@ -60,7 +69,7 @@ export function HuntSchedule() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Select value={selectedServer} onValueChange={setSelectedServer}>
             <SelectTrigger className="w-full border-primary/20 bg-background/50" data-testid="select-server">
-              <SelectValue placeholder="Select Server" />
+              <SelectValue placeholder={t('schedule.selectServer')} />
             </SelectTrigger>
             <SelectContent>
               {servers.map(s => (
@@ -71,7 +80,7 @@ export function HuntSchedule() {
 
           <Select value={selectedPeriodId} onValueChange={setSelectedPeriodId}>
              <SelectTrigger className="w-full border-primary/20 bg-background/50" data-testid="select-period">
-               <SelectValue placeholder="Select Period" />
+               <SelectValue placeholder={t('schedule.selectPeriod')} />
              </SelectTrigger>
              <SelectContent>
                {periods.map(p => (
@@ -85,7 +94,7 @@ export function HuntSchedule() {
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search respawn..."
+              placeholder={t('schedule.searchRespawn')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-8 w-full bg-background/50 border-primary/20"
@@ -108,7 +117,7 @@ export function HuntSchedule() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-muted-foreground uppercase bg-muted/30 border-b border-border/40">
               <tr>
-                <th className="px-6 py-4 font-display font-bold tracking-wider text-primary">Respawn Area</th>
+                <th className="px-6 py-4 font-display font-bold tracking-wider text-primary">{t('schedule.respawnArea')}</th>
                 {slots.map(slot => (
                   <th key={slot.id} className="px-6 py-4 text-center min-w-[180px]">
                     <div className="flex items-center justify-center gap-2">
@@ -121,12 +130,12 @@ export function HuntSchedule() {
             </thead>
             <tbody className="divide-y divide-border/20">
               {activeRespawns.map(respawn => (
-                <tr key={respawn.id} className="hover:bg-muted/10 transition-colors">
+                <tr key={respawn.id} className="hover:bg-muted/10 transition-colors" data-testid={`respawn-row-${respawn.id}`}>
                   <td className="px-6 py-4 font-medium">
                     <div className="flex flex-col gap-1">
                       <span className="text-foreground font-semibold">{respawn.name}</span>
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Users className="h-3 w-3" /> Max {respawn.maxPlayers}
+                        <Users className="h-3 w-3" /> {t('common.max')} {respawn.maxPlayers}
                         <span className="mx-1">•</span>
                         <span className={cn(
                           "px-1.5 py-0.5 rounded text-[10px] border",
@@ -134,7 +143,7 @@ export function HuntSchedule() {
                           respawn.difficultyId === '2' ? "border-yellow-500/30 text-yellow-400 bg-yellow-500/10" :
                           respawn.difficultyId === '3' ? "border-orange-500/30 text-orange-400 bg-orange-500/10" :
                           "border-red-500/30 text-red-400 bg-red-500/10"
-                        )}>{getDifficultyName(respawn.difficultyId)}</span>
+                        )}>{getTranslatedDifficulty(respawn.difficultyId)}</span>
                       </span>
                     </div>
                   </td>
@@ -149,7 +158,7 @@ export function HuntSchedule() {
                               ? "bg-green-500/10 border-green-500/30 text-green-300" 
                               : "bg-primary/10 border-primary/30 text-primary"
                           )}>
-                            <span className="font-bold">{request.statusId === '2' ? 'BOOKED' : 'PENDING'}</span>
+                            <span className="font-bold">{request.statusId === '2' ? t('status.booked') : t('status.pending').toUpperCase()}</span>
                             <span className="opacity-70">User #{request.userId}</span>
                           </div>
                         ) : (
@@ -160,7 +169,7 @@ export function HuntSchedule() {
                               slot={slot} 
                               period={currentPeriod}
                             />
-                          ) : <span className="text-muted-foreground text-xs">No Active Period</span>
+                          ) : <span className="text-muted-foreground text-xs">{t('schedule.noActivePeriod')}</span>
                         )}
                       </td>
                     );
@@ -179,6 +188,7 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
   const { addRequest, currentUser } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [party, setParty] = useState(['', '', '', '']);
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     const filteredParty = party.filter(p => p.trim() !== '');
@@ -206,21 +216,22 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
           variant="outline" 
           size="sm" 
           className="w-full h-full min-h-[45px] border-dashed border-primary/30 hover:border-primary hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all group"
+          data-testid={`button-request-${respawn.id}-${slot.id}`}
         >
           <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider group-hover:scale-105 transition-transform">
             <Plus className="h-3 w-3" />
-            Request
+            {t('schedule.request')}
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="font-display text-primary">Request Hunt</DialogTitle>
+          <DialogTitle className="font-display text-primary">{t('schedule.requestHunt')}</DialogTitle>
           <DialogDescription>
             {respawn.name} • {slot.startTime} - {slot.endTime}
             <br/>
             <span className="text-xs text-primary mt-1 block font-semibold">
-              Period: {period.name} ({format(new Date(period.startDate), "MMM d")} - {format(new Date(period.endDate), "MMM d")})
+              {t('common.period')}: {period.name} ({format(new Date(period.startDate), "MMM d")} - {format(new Date(period.endDate), "MMM d")})
             </span>
           </DialogDescription>
         </DialogHeader>
@@ -228,33 +239,34 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
           <div className="bg-muted/20 p-3 rounded-md border border-border/50 flex items-start gap-2">
              <AlertCircle className="h-4 w-4 text-primary mt-0.5" />
              <p className="text-xs text-muted-foreground">
-               You are requesting this slot for the entire duration of the selected period. Ensure your team can commit to this schedule.
+               {t('schedule.requestWarning')}
              </p>
           </div>
 
           <div className="space-y-2">
-            <Label>Party Leader</Label>
+            <Label>{t('schedule.partyLeader')}</Label>
             <Input value={currentUser?.username} disabled className="bg-muted/50" />
           </div>
           <div className="space-y-2">
-            <Label>Party Members (Optional)</Label>
+            <Label>{t('schedule.partyMembersOptional')}</Label>
             {party.map((member, i) => (
               <Input 
                 key={i} 
-                placeholder={`Member ${i + 1} Name`}
+                placeholder={t('schedule.memberPlaceholder', { number: i + 1 })}
                 value={member}
                 onChange={(e) => {
                   const newParty = [...party];
                   newParty[i] = e.target.value;
                   setParty(newParty);
                 }}
+                data-testid={`input-party-member-${i}`}
               />
             ))}
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit} className="bg-primary text-primary-foreground hover:bg-primary/90">
-            Confirm Request
+          <Button type="submit" onClick={handleSubmit} className="bg-primary text-primary-foreground hover:bg-primary/90" data-testid="button-confirm-request">
+            {t('schedule.confirmRequest')}
           </Button>
         </DialogFooter>
       </DialogContent>

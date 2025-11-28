@@ -11,6 +11,7 @@ import Admin from "@/pages/admin";
 import { HuntSchedule } from "@/components/hunt-schedule";
 import { Layout } from "@/components/layout";
 import { useStore } from "@/lib/mockData";
+import { useTranslation } from "react-i18next";
 
 function ProtectedRoute({ component: Component, adminOnly = false }: { component: React.ComponentType, adminOnly?: boolean }) {
   const { currentUser, getRoleName } = useStore();
@@ -19,6 +20,16 @@ function ProtectedRoute({ component: Component, adminOnly = false }: { component
   if (adminOnly && getRoleName(currentUser.roleId) !== 'admin') return <Redirect to="/" />;
 
   return <Component />;
+}
+
+function SchedulePage() {
+  const { t } = useTranslation();
+  return (
+    <Layout>
+      <h1 className="text-3xl font-display font-bold text-primary mb-6">{t('schedule.title')}</h1>
+      <HuntSchedule />
+    </Layout>
+  );
 }
 
 function Router() {
@@ -37,10 +48,7 @@ function Router() {
       </Route>
       
       <Route path="/schedule">
-        <Layout>
-           <h1 className="text-3xl font-display font-bold text-primary mb-6">Hunt Schedule</h1>
-           <HuntSchedule />
-        </Layout>
+        <SchedulePage />
       </Route>
       
       <Route path="/admin">
