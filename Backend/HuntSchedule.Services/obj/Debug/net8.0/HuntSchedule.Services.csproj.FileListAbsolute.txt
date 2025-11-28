@@ -1,0 +1,16 @@
+/home/runner/workspace/Backend/HuntSchedule.Services/bin/Debug/net8.0/HuntSchedule.Services.deps.json
+/home/runner/workspace/Backend/HuntSchedule.Services/bin/Debug/net8.0/HuntSchedule.Services.dll
+/home/runner/workspace/Backend/HuntSchedule.Services/bin/Debug/net8.0/HuntSchedule.Services.pdb
+/home/runner/workspace/Backend/HuntSchedule.Services/bin/Debug/net8.0/HuntSchedule.Persistence.dll
+/home/runner/workspace/Backend/HuntSchedule.Services/bin/Debug/net8.0/HuntSchedule.Persistence.pdb
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSchedule.Services.csproj.AssemblyReference.cache
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSchedule.Services.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSchedule.Services.AssemblyInfoInputs.cache
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSchedule.Services.AssemblyInfo.cs
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSchedule.Services.csproj.CoreCompileInputs.cache
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSchedule.Services.sourcelink.json
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSche.D4356CFC.Up2Date
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSchedule.Services.dll
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/refint/HuntSchedule.Services.dll
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/HuntSchedule.Services.pdb
+/home/runner/workspace/Backend/HuntSchedule.Services/obj/Debug/net8.0/ref/HuntSchedule.Services.dll

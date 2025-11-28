@@ -1090,7 +1090,8 @@
     "net8.0": [
       "HuntSchedule.Persistence >= 1.0.0",
       "Microsoft.Extensions.Caching.Memory >= 8.0.0",
-      "Microsoft.Extensions.Http >= 8.0.0"
+      "Microsoft.Extensions.Http >= 8.0.0",
+      "Microsoft.Extensions.Logging.Abstractions >= 8.0.0"
     ]
   },
   "packageFolders": {
@@ -1144,6 +1145,10 @@
             "version": "[8.0.0, )"
           },
           "Microsoft.Extensions.Http": {
+            "target": "Package",
+            "version": "[8.0.0, )"
+          },
+          "Microsoft.Extensions.Logging.Abstractions": {
             "target": "Package",
             "version": "[8.0.0, )"
           }

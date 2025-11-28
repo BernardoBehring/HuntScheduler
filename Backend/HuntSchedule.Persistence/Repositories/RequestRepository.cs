@@ -52,4 +52,10 @@ public class RequestRepository : Repository<Request>, IRequestRepository
                 && r.StatusId == statusId)
             .ToListAsync();
     }
+
+    public async Task AddPartyMemberAsync(int requestId, RequestPartyMember partyMember)
+    {
+        partyMember.RequestId = requestId;
+        await _context.RequestPartyMembers.AddAsync(partyMember);
+    }
 }
