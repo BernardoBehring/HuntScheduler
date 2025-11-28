@@ -35,7 +35,8 @@
     "server": "Server",
     "active": "Active",
     "inactive": "Inactive",
-    "user": "User"
+    "user": "User",
+    "allServers": "All Servers"
   },
   "status": {
     "pending": "Pending",

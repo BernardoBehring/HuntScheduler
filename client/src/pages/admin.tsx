@@ -38,6 +38,12 @@ export default function Admin() {
   
   const [newPeriodServer, setNewPeriodServer] = useState(servers[0]?.id || "");
 
+  const [respawnFilterServer, setRespawnFilterServer] = useState<string>("all");
+
+  const filteredRespawns = respawnFilterServer === "all" 
+    ? respawns 
+    : respawns.filter(r => r.serverId === respawnFilterServer);
+
   const getTranslatedStatus = (statusId: string) => {
     const statusMap: Record<string, string> = {
       '1': 'pending',
@@ -346,6 +352,19 @@ export default function Admin() {
                 <CardDescription>{t('admin.respawns.manageRespawns')}</CardDescription>
               </div>
               
+              <div className="flex items-center gap-3">
+                <Select value={respawnFilterServer} onValueChange={setRespawnFilterServer}>
+                  <SelectTrigger className="w-[180px]" data-testid="select-filter-server">
+                    <SelectValue placeholder={t('common.allServers')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.allServers')}</SelectItem>
+                    {servers.map(s => (
+                      <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
               <Dialog open={isAddRespawnOpen} onOpenChange={setIsAddRespawnOpen}>
                 <DialogTrigger asChild>
                   <Button onClick={openAddRespawnDialog} data-testid="button-add-respawn"><Plus className="h-4 w-4 mr-2" /> {t('admin.respawns.addRespawn')}</Button>
@@ -450,10 +469,11 @@ export default function Admin() {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                 {respawns.map(r => {
+                 {filteredRespawns.map(r => {
                    const server = servers.find(s => s.id === r.serverId);
                    return (
                    <div key={r.id} className="flex items-center justify-between p-3 border border-border/40 rounded bg-muted/10" data-testid={`respawn-item-${r.id}`}>
