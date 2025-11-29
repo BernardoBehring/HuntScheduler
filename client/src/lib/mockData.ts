@@ -228,18 +228,18 @@ interface AppState {
 
 export const useStore = create<AppState>((set, get) => ({
   currentUser: null,
-  users: MOCK_USERS,
-  roles: MOCK_ROLES,
-  characters: MOCK_CHARACTERS,
-  servers: MOCK_SERVERS,
-  statuses: MOCK_STATUSES,
-  difficulties: MOCK_DIFFICULTIES,
-  respawns: MOCK_RESPAWNS,
-  slots: MOCK_SLOTS,
-  periods: MOCK_PERIODS,
-  requests: MOCK_REQUESTS,
-  isLoading: false,
-  useApi: false,
+  users: [],
+  roles: [],
+  characters: [],
+  servers: [],
+  statuses: [],
+  difficulties: [],
+  respawns: [],
+  slots: [],
+  periods: [],
+  requests: [],
+  isLoading: true,
+  useApi: true,
 
   setCurrentUser: (user: any) => {
     if (user) {

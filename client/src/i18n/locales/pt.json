@@ -72,19 +72,27 @@
     "pendingApproval": "Aguardando aprovação",
     "upcomingHunts": "Próximas Hunts",
     "approvedSessions": "Sessões aprovadas",
+    "myHistory": "Meu Histórico",
     "myRequestsHistory": "Histórico dos Meus Pedidos",
-    "trackStatus": "Acompanhe o status das suas solicitações de hunt",
+    "trackStatus": "Acompanhe o status das suas solicitações de hunt e reivindicações de pontos",
+    "huntRequests": "Pedidos de Hunt",
+    "pointClaims": "Reivindicações de Pontos",
     "noRequests": "Nenhum pedido encontrado.",
+    "noClaims": "Nenhuma reivindicação enviada ainda.",
+    "submitFirstClaim": "Envie sua primeira reivindicação",
     "goToSchedule": "Ir para Agenda",
     "claimPoints": "Reivindicar Pontos",
     "claimGuildPoints": "Reivindicar Pontos da Guild",
-    "uploadScreenshot": "Envie uma captura de tela da sua hunt ou participação em evento.",
+    "uploadScreenshot": "Envie uma reivindicação com evidência para revisão do admin.",
+    "pointsRequested": "Pontos Solicitados",
+    "screenshotUrl": "URL da Captura de Tela",
     "screenshotEvidence": "Evidência em Captura de Tela",
     "clickToUpload": "Clique para enviar ou arraste e solte",
     "noteOptional": "Nota (Opcional)",
     "submitClaim": "Enviar Reivindicação",
     "claimSubmitted": "Reivindicação Enviada",
-    "claimDescription": "Sua captura de tela foi enviada para revisão do admin."
+    "claimDescription": "Sua reivindicação foi enviada para revisão do admin.",
+    "invalidPoints": "Por favor, digite um número válido de pontos"
   },
   "schedule": {
     "title": "Agenda de Hunts",
@@ -110,7 +118,8 @@
       "respawns": "Respawns e Horários",
       "users": "Usuários e Pontos",
       "servers": "Servidores",
-      "pointsHistory": "Histórico de Pontos"
+      "pointsHistory": "Histórico de Pontos",
+      "claims": "Reivindicações de Pontos"
     },
     "requests": {
       "pendingApproval": "Aprovação Pendente",
@@ -204,6 +213,27 @@
       "serverDeletedDesc": "O servidor foi removido.",
       "confirmDelete": "Tem certeza que deseja excluir este servidor? Isso pode afetar respawns e agendamentos existentes.",
       "noServers": "Nenhum servidor configurado."
+    },
+    "claims": {
+      "title": "Revisão de Reivindicações de Pontos",
+      "description": "Revise e aprove reivindicações de pontos enviadas por usuários",
+      "allStatuses": "Todos os Status",
+      "noClaims": "Nenhuma reivindicação encontrada.",
+      "viewScreenshot": "Ver Captura de Tela",
+      "adminResponse": "Resposta do Admin",
+      "review": "Revisar",
+      "reviewClaim": "Revisar Reivindicação de Pontos",
+      "reviewClaimDesc": "Revise a reivindicação de {{username}} solicitando {{points}} pontos",
+      "response": "Resposta",
+      "responsePlaceholder": "Explique sua decisão...",
+      "responseRequired": "Por favor, forneça uma resposta",
+      "approve": "Aprovar",
+      "reject": "Rejeitar",
+      "claimApproved": "Reivindicação Aprovada",
+      "pointsAwarded": "{{points}} pontos foram concedidos.",
+      "claimRejected": "Reivindicação Rejeitada",
+      "claimRejectedDesc": "A reivindicação foi rejeitada.",
+      "submittedOn": "Enviado em"
     }
   },
   "errors": {

@@ -19,7 +19,7 @@ import { api, PointTransaction, PointClaim } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function Admin() {
-  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, addServer, updateServer, deleteServer, getStatusName, getDifficultyName, getRoleName, characters, slots } = useStore();
+  const { requests, users, updateRequestStatus, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, addServer, updateServer, deleteServer, getStatusName, getDifficultyName, getRoleName, characters, slots, loadFromApi } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
   const { t } = useTranslation();
 
@@ -100,10 +100,11 @@ export default function Admin() {
       const adminId = currentUser ? (typeof currentUser.id === 'string' ? parseInt(currentUser.id) : currentUser.id) : 1;
       return api.pointClaims.approve(claimId, { adminId, adminResponse });
     },
-    onSuccess: (claim) => {
+    onSuccess: async (claim) => {
       queryClient.invalidateQueries({ queryKey: ['pointClaims'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       api.pointTransactions.getAll().then(setPointTransactions);
-      addPoints(claim.userId.toString(), claim.pointsRequested);
+      await loadFromApi();
       setIsClaimReviewOpen(false);
       setSelectedClaim(null);
       setClaimResponse("");
@@ -250,7 +251,7 @@ export default function Admin() {
         reason: pointsReason.trim()
       });
       
-      addPoints(selectedUserForPoints.id, finalAmount);
+      await loadFromApi();
       setPointTransactions(prev => [transaction, ...prev]);
       setIsPointsDialogOpen(false);
       

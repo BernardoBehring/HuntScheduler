@@ -72,19 +72,27 @@
     "pendingApproval": "Pending approval",
     "upcomingHunts": "Upcoming Hunts",
     "approvedSessions": "Approved sessions",
+    "myHistory": "My History",
     "myRequestsHistory": "My Requests History",
-    "trackStatus": "Track the status of your hunt applications",
+    "trackStatus": "Track the status of your hunt applications and point claims",
+    "huntRequests": "Hunt Requests",
+    "pointClaims": "Point Claims",
     "noRequests": "No requests found.",
+    "noClaims": "No claims submitted yet.",
+    "submitFirstClaim": "Submit your first claim",
     "goToSchedule": "Go to Schedule",
     "claimPoints": "Claim Points",
     "claimGuildPoints": "Claim Guild Points",
-    "uploadScreenshot": "Upload a screenshot of your hunt or event participation.",
+    "uploadScreenshot": "Submit a claim with evidence for admin review.",
+    "pointsRequested": "Points Requested",
+    "screenshotUrl": "Screenshot URL",
     "screenshotEvidence": "Screenshot Evidence",
     "clickToUpload": "Click to upload or drag and drop",
     "noteOptional": "Note (Optional)",
     "submitClaim": "Submit Claim",
     "claimSubmitted": "Claim Submitted",
-    "claimDescription": "Your screenshot has been uploaded for admin review."
+    "claimDescription": "Your claim has been submitted for admin review.",
+    "invalidPoints": "Please enter a valid number of points"
   },
   "schedule": {
     "title": "Hunt Schedule",
@@ -110,7 +118,8 @@
       "respawns": "Respawns & Slots",
       "users": "Users & Points",
       "servers": "Servers",
-      "pointsHistory": "Points History"
+      "pointsHistory": "Points History",
+      "claims": "Point Claims"
     },
     "requests": {
       "pendingApproval": "Pending Approval",
@@ -204,6 +213,27 @@
       "serverDeletedDesc": "Server has been removed.",
       "confirmDelete": "Are you sure you want to delete this server? This may affect existing respawns and schedules.",
       "noServers": "No servers configured."
+    },
+    "claims": {
+      "title": "Point Claims Review",
+      "description": "Review and approve point claims submitted by users",
+      "allStatuses": "All Statuses",
+      "noClaims": "No claims found.",
+      "viewScreenshot": "View Screenshot",
+      "adminResponse": "Admin Response",
+      "review": "Review",
+      "reviewClaim": "Review Point Claim",
+      "reviewClaimDesc": "Review claim from {{username}} requesting {{points}} points",
+      "response": "Response",
+      "responsePlaceholder": "Explain your decision...",
+      "responseRequired": "Please provide a response",
+      "approve": "Approve",
+      "reject": "Reject",
+      "claimApproved": "Claim Approved",
+      "pointsAwarded": "{{points}} points have been awarded.",
+      "claimRejected": "Claim Rejected",
+      "claimRejectedDesc": "The claim has been rejected.",
+      "submittedOn": "Submitted on"
     }
   },
   "errors": {

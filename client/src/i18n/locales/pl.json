@@ -72,19 +72,27 @@
     "pendingApproval": "Oczekujące na zatwierdzenie",
     "upcomingHunts": "Nadchodzące Hunty",
     "approvedSessions": "Zatwierdzone sesje",
+    "myHistory": "Moja Historia",
     "myRequestsHistory": "Historia Moich Wniosków",
-    "trackStatus": "Śledź status swoich zgłoszeń huntowych",
+    "trackStatus": "Śledź status swoich zgłoszeń huntowych i wniosków o punkty",
+    "huntRequests": "Zgłoszenia Huntów",
+    "pointClaims": "Wnioski o Punkty",
     "noRequests": "Nie znaleziono wniosków.",
+    "noClaims": "Jeszcze nie wysłano wniosków.",
+    "submitFirstClaim": "Wyślij swój pierwszy wniosek",
     "goToSchedule": "Idź do Harmonogramu",
     "claimPoints": "Odbierz Punkty",
     "claimGuildPoints": "Odbierz Punkty Gildii",
-    "uploadScreenshot": "Prześlij zrzut ekranu ze swojego hunta lub udziału w wydarzeniu.",
+    "uploadScreenshot": "Wyślij wniosek z dowodem do weryfikacji przez admina.",
+    "pointsRequested": "Wnioskowane Punkty",
+    "screenshotUrl": "URL Zrzutu Ekranu",
     "screenshotEvidence": "Dowód Zrzutu Ekranu",
     "clickToUpload": "Kliknij, aby przesłać lub przeciągnij i upuść",
     "noteOptional": "Notatka (Opcjonalnie)",
     "submitClaim": "Wyślij Wniosek",
     "claimSubmitted": "Wniosek Wysłany",
-    "claimDescription": "Twój zrzut ekranu został przesłany do weryfikacji przez admina."
+    "claimDescription": "Twój wniosek został przesłany do weryfikacji przez admina.",
+    "invalidPoints": "Proszę wpisać prawidłową liczbę punktów"
   },
   "schedule": {
     "title": "Harmonogram Huntów",
@@ -110,7 +118,8 @@
       "respawns": "Respawny i Sloty",
       "users": "Użytkownicy i Punkty",
       "servers": "Serwery",
-      "pointsHistory": "Historia Punktów"
+      "pointsHistory": "Historia Punktów",
+      "claims": "Wnioski o Punkty"
     },
     "requests": {
       "pendingApproval": "Oczekujące Zatwierdzenie",
@@ -204,6 +213,27 @@
       "serverDeletedDesc": "Serwer został usunięty.",
       "confirmDelete": "Czy na pewno chcesz usunąć ten serwer? Może to wpłynąć na istniejące respawny i harmonogramy.",
       "noServers": "Brak skonfigurowanych serwerów."
+    },
+    "claims": {
+      "title": "Przegląd Wniosków o Punkty",
+      "description": "Przeglądaj i zatwierdzaj wnioski o punkty od użytkowników",
+      "allStatuses": "Wszystkie Statusy",
+      "noClaims": "Nie znaleziono wniosków.",
+      "viewScreenshot": "Zobacz Zrzut Ekranu",
+      "adminResponse": "Odpowiedź Admina",
+      "review": "Przejrzyj",
+      "reviewClaim": "Przejrzyj Wniosek o Punkty",
+      "reviewClaimDesc": "Przejrzyj wniosek od {{username}} o {{points}} punktów",
+      "response": "Odpowiedź",
+      "responsePlaceholder": "Wyjaśnij swoją decyzję...",
+      "responseRequired": "Proszę podać odpowiedź",
+      "approve": "Zatwierdź",
+      "reject": "Odrzuć",
+      "claimApproved": "Wniosek Zatwierdzony",
+      "pointsAwarded": "Przyznano {{points}} punktów.",
+      "claimRejected": "Wniosek Odrzucony",
+      "claimRejectedDesc": "Wniosek został odrzucony.",
+      "submittedOn": "Wysłano dnia"
     }
   },
   "errors": {

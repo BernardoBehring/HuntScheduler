@@ -72,19 +72,27 @@
     "pendingApproval": "Genehmigung ausstehend",
     "upcomingHunts": "Kommende Hunts",
     "approvedSessions": "Genehmigte Sitzungen",
+    "myHistory": "Meine Historie",
     "myRequestsHistory": "Meine Anfragenhistorie",
-    "trackStatus": "Verfolge den Status deiner Hunt-Anfragen",
+    "trackStatus": "Verfolge den Status deiner Hunt-Anfragen und Punkteanträge",
+    "huntRequests": "Hunt-Anfragen",
+    "pointClaims": "Punkteanträge",
     "noRequests": "Keine Anfragen gefunden.",
+    "noClaims": "Noch keine Anträge eingereicht.",
+    "submitFirstClaim": "Reiche deinen ersten Antrag ein",
     "goToSchedule": "Zum Zeitplan",
     "claimPoints": "Punkte beanspruchen",
     "claimGuildPoints": "Gildenpunkte beanspruchen",
-    "uploadScreenshot": "Lade einen Screenshot deiner Hunt oder Eventteilnahme hoch.",
+    "uploadScreenshot": "Reiche einen Antrag mit Nachweis zur Admin-Überprüfung ein.",
+    "pointsRequested": "Beantragte Punkte",
+    "screenshotUrl": "Screenshot-URL",
     "screenshotEvidence": "Screenshot-Nachweis",
     "clickToUpload": "Klicke zum Hochladen oder ziehe und lege ab",
     "noteOptional": "Notiz (Optional)",
     "submitClaim": "Antrag einreichen",
     "claimSubmitted": "Antrag eingereicht",
-    "claimDescription": "Dein Screenshot wurde zur Admin-Überprüfung hochgeladen."
+    "claimDescription": "Dein Antrag wurde zur Admin-Überprüfung eingereicht.",
+    "invalidPoints": "Bitte gib eine gültige Punktezahl ein"
   },
   "schedule": {
     "title": "Hunt Zeitplan",
@@ -110,7 +118,8 @@
       "respawns": "Respawns & Slots",
       "users": "Benutzer & Punkte",
       "servers": "Server",
-      "pointsHistory": "Punktehistorie"
+      "pointsHistory": "Punktehistorie",
+      "claims": "Punkteanträge"
     },
     "requests": {
       "pendingApproval": "Ausstehende Genehmigung",
@@ -204,6 +213,27 @@
       "serverDeletedDesc": "Server wurde entfernt.",
       "confirmDelete": "Bist du sicher, dass du diesen Server löschen möchtest? Dies kann bestehende Respawns und Zeitpläne beeinflussen.",
       "noServers": "Keine Server konfiguriert."
+    },
+    "claims": {
+      "title": "Punkteanträge überprüfen",
+      "description": "Überprüfe und genehmige Punkteanträge von Benutzern",
+      "allStatuses": "Alle Status",
+      "noClaims": "Keine Anträge gefunden.",
+      "viewScreenshot": "Screenshot ansehen",
+      "adminResponse": "Admin-Antwort",
+      "review": "Überprüfen",
+      "reviewClaim": "Punkteantrag überprüfen",
+      "reviewClaimDesc": "Überprüfe Antrag von {{username}} mit {{points}} beantragten Punkten",
+      "response": "Antwort",
+      "responsePlaceholder": "Erkläre deine Entscheidung...",
+      "responseRequired": "Bitte gib eine Antwort an",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "claimApproved": "Antrag genehmigt",
+      "pointsAwarded": "{{points}} Punkte wurden vergeben.",
+      "claimRejected": "Antrag abgelehnt",
+      "claimRejectedDesc": "Der Antrag wurde abgelehnt.",
+      "submittedOn": "Eingereicht am"
     }
   },
   "errors": {

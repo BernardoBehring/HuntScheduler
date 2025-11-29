@@ -23,7 +23,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { setCurrentUser } = useStore();
+  const { setCurrentUser, loadFromApi } = useStore();
   const [, setLocation] = useLocation();
   const { t, i18n } = useTranslation();
   const resolvedLang = i18n.resolvedLanguage || i18n.language?.split('-')[0] || 'en';
@@ -36,6 +36,7 @@ export default function Login() {
     try {
       const user = await api.auth.login(username, password);
       setCurrentUser(user);
+      await loadFromApi();
       setLocation("/");
     } catch (err: any) {
       setError(err.message || t('auth.invalidCredentials'));
