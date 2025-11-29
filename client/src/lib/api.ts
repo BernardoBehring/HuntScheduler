@@ -123,6 +123,33 @@ export interface CreatePointTransactionDto {
   reason: string;
 }
 
+export interface PointClaim {
+  id: number;
+  userId: number;
+  user?: User;
+  pointsRequested: number;
+  note?: string;
+  screenshotUrl?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewedByAdminId?: number;
+  reviewedByAdmin?: User;
+  adminResponse?: string;
+  reviewedAt?: string;
+  createdAt: string;
+}
+
+export interface CreatePointClaimDto {
+  userId: number;
+  pointsRequested: number;
+  note?: string;
+  screenshotUrl?: string;
+}
+
+export interface ReviewPointClaimDto {
+  adminId: number;
+  adminResponse: string;
+}
+
 export interface CreateRequestDto {
   userId: number;
   serverId: number;
@@ -330,6 +357,35 @@ export const api = {
       fetch(`${API_BASE}/point-transactions/admin/${adminId}`).then(r => handleResponse(r)),
     create: (dto: CreatePointTransactionDto): Promise<PointTransaction> =>
       fetch(`${API_BASE}/point-transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dto),
+      }).then(r => handleResponse(r)),
+  },
+
+  pointClaims: {
+    getAll: (): Promise<PointClaim[]> =>
+      fetch(`${API_BASE}/point-claims`).then(r => handleResponse(r)),
+    getPending: (): Promise<PointClaim[]> =>
+      fetch(`${API_BASE}/point-claims/pending`).then(r => handleResponse(r)),
+    getByUser: (userId: number): Promise<PointClaim[]> =>
+      fetch(`${API_BASE}/point-claims/user/${userId}`).then(r => handleResponse(r)),
+    get: (id: number): Promise<PointClaim> =>
+      fetch(`${API_BASE}/point-claims/${id}`).then(r => handleResponse(r)),
+    create: (dto: CreatePointClaimDto): Promise<PointClaim> =>
+      fetch(`${API_BASE}/point-claims`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dto),
+      }).then(r => handleResponse(r)),
+    approve: (id: number, dto: ReviewPointClaimDto): Promise<PointClaim> =>
+      fetch(`${API_BASE}/point-claims/${id}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dto),
+      }).then(r => handleResponse(r)),
+    reject: (id: number, dto: ReviewPointClaimDto): Promise<PointClaim> =>
+      fetch(`${API_BASE}/point-claims/${id}/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dto),
