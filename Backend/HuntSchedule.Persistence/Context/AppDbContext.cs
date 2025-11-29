@@ -18,6 +18,7 @@ public class AppDbContext : DbContext
     public DbSet<RequestPartyMember> RequestPartyMembers { get; set; }
     public DbSet<RequestStatus> RequestStatuses { get; set; }
     public DbSet<Difficulty> Difficulties { get; set; }
+    public DbSet<PointTransaction> PointTransactions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -137,6 +138,28 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.Color).HasColumnName("color");
             entity.Property(e => e.SortOrder).HasColumnName("sort_order");
+        });
+
+        modelBuilder.Entity<PointTransaction>().ToTable("point_transactions");
+        modelBuilder.Entity<PointTransaction>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.AdminId).HasColumnName("admin_id");
+            entity.Property(e => e.Amount).HasColumnName("amount");
+            entity.Property(e => e.Reason).HasColumnName("reason");
+            entity.Property(e => e.BalanceAfter).HasColumnName("balance_after");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.PointTransactions)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+                
+            entity.HasOne(e => e.Admin)
+                .WithMany()
+                .HasForeignKey(e => e.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<RequestPartyMember>()

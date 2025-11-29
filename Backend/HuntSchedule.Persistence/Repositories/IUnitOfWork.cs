@@ -14,6 +14,7 @@ public interface IUnitOfWork : IDisposable
     IRequestRepository Requests { get; }
     IRequestStatusRepository RequestStatuses { get; }
     IDifficultyRepository Difficulties { get; }
+    IPointTransactionRepository PointTransactions { get; }
     
     Task<int> SaveChangesAsync();
     Task<IDbContextTransaction> BeginTransactionAsync();

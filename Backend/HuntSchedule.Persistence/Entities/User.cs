@@ -29,4 +29,6 @@ public class User
     public ICollection<Request> Requests { get; set; } = new List<Request>();
     
     public ICollection<Character> Characters { get; set; } = new List<Character>();
+    
+    public ICollection<PointTransaction> PointTransactions { get; set; } = new List<PointTransaction>();
 }

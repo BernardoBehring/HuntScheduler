@@ -65,6 +65,7 @@ builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IRequestStatusService, RequestStatusService>();
 builder.Services.AddScoped<IDifficultyService, DifficultyService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPointTransactionService, PointTransactionService>();
 
 builder.Services.AddCors(options =>
 {
