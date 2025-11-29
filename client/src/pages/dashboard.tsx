@@ -2,7 +2,6 @@ import { Layout } from "@/components/layout";
 import { useStore } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trophy, Clock, AlertCircle, Swords, Upload, FileText, CheckCircle, XCircle } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -242,109 +241,103 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <TabsContent value="requests" className="mt-0">
-              <ScrollArea className="h-[400px] pr-4">
-                <div className="space-y-4">
-                  {myRequests.length === 0 && (
-                    <div className="text-center py-10 text-muted-foreground">
-                      <p>{t('dashboard.noRequests')}</p>
-                      <Link href="/schedule">
-                        <Button variant="link" className="text-primary" data-testid="link-go-to-schedule">{t('dashboard.goToSchedule')}</Button>
-                      </Link>
-                    </div>
-                  )}
-                  {myRequests.map(req => {
-                    const statusName = getTranslatedStatus(req.statusId);
-                    return (
-                      <div key={req.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 rounded-lg border border-border/40 bg-card/40 hover:bg-card/60 transition-colors gap-4" data-testid={`request-item-${req.id}`}>
-                        <div className="space-y-1">
-                          <h4 className="font-semibold text-foreground flex items-center gap-2">
-                            {getRespawnName(req.respawnId)}
-                            <Badge variant="outline" className="text-[10px] h-5 border-border/50 text-muted-foreground">
-                              {getPeriodName(req.periodId)}
-                            </Badge>
-                          </h4>
-                          <div className="text-sm text-muted-foreground flex items-center gap-4">
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {getSlotTime(req.slotId)}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Swords className="h-3 w-3" />
-                              {req.partyMembers.length + 1} {t('common.members')}
-                            </span>
-                          </div>
-                          {req.statusId === '3' && req.rejectionReason && (
-                            <p className="text-xs text-destructive flex items-center gap-1 mt-1">
-                              <AlertCircle className="h-3 w-3" />
-                              {req.rejectionReason}
-                            </p>
-                          )}
-                        </div>
-                        
-                        <Badge className={
-                          req.statusId === '2' ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/20" :
-                          req.statusId === '3' ? "bg-destructive/20 text-destructive hover:bg-destructive/30 border-destructive/20" :
-                          "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/20"
-                        }>
-                          {statusName.toUpperCase()}
-                        </Badge>
-                      </div>
-                    );
-                  })}
-                </div>
-              </ScrollArea>
-            </TabsContent>
-            
-            <TabsContent value="claims" className="mt-0">
-              <ScrollArea className="h-[400px] pr-4">
-                <div className="space-y-4">
-                  {claimsLoading && (
-                    <div className="text-center py-10 text-muted-foreground">
-                      <p>{t('common.loading')}</p>
-                    </div>
-                  )}
-                  {!claimsLoading && sortedClaims.length === 0 && (
-                    <div className="text-center py-10 text-muted-foreground">
-                      <p>{t('dashboard.noClaims')}</p>
-                      <Button variant="link" className="text-primary" onClick={() => setIsClaimOpen(true)} data-testid="link-submit-claim">
-                        {t('dashboard.submitFirstClaim')}
-                      </Button>
-                    </div>
-                  )}
-                  {sortedClaims.map(claim => (
-                    <div key={claim.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 rounded-lg border border-border/40 bg-card/40 hover:bg-card/60 transition-colors gap-4" data-testid={`claim-item-${claim.id}`}>
-                      <div className="space-y-1 flex-1">
-                        <h4 className="font-semibold text-foreground flex items-center gap-2">
-                          <Trophy className="h-4 w-4 text-primary" />
-                          {claim.pointsRequested} {t('common.points')}
+              <div className="space-y-3">
+                {myRequests.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>{t('dashboard.noRequests')}</p>
+                    <Link href="/schedule">
+                      <Button variant="link" className="text-primary" data-testid="link-go-to-schedule">{t('dashboard.goToSchedule')}</Button>
+                    </Link>
+                  </div>
+                )}
+                {myRequests.map(req => {
+                  const statusName = getTranslatedStatus(req.statusId);
+                  return (
+                    <div key={req.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 rounded-lg border border-border/40 bg-card/40 hover:bg-card/60 transition-colors gap-3" data-testid={`request-item-${req.id}`}>
+                      <div className="space-y-1">
+                        <h4 className="font-semibold text-foreground flex items-center gap-2 text-sm">
+                          {getRespawnName(req.respawnId)}
+                          <Badge variant="outline" className="text-[10px] h-5 border-border/50 text-muted-foreground">
+                            {getPeriodName(req.periodId)}
+                          </Badge>
                         </h4>
-                        <div className="text-sm text-muted-foreground flex items-center gap-4">
+                        <div className="text-xs text-muted-foreground flex items-center gap-3">
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {new Date(claim.createdAt).toLocaleDateString()}
+                            {getSlotTime(req.slotId)}
                           </span>
-                          {claim.note && (
-                            <span className="flex items-center gap-1">
-                              <FileText className="h-3 w-3" />
-                              {claim.note}
-                            </span>
-                          )}
+                          <span className="flex items-center gap-1">
+                            <Swords className="h-3 w-3" />
+                            {req.partyMembers.length + 1} {t('common.members')}
+                          </span>
                         </div>
-                        {claim.adminResponse && (
-                          <p className={`text-xs flex items-center gap-1 mt-1 ${claim.status === 'rejected' ? 'text-destructive' : 'text-green-400'}`}>
-                            {claim.status === 'approved' ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                            {claim.adminResponse}
+                        {req.statusId === '3' && req.rejectionReason && (
+                          <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+                            <AlertCircle className="h-3 w-3" />
+                            {req.rejectionReason}
                           </p>
                         )}
                       </div>
-                      
-                      <Badge className={getClaimStatusBadge(claim.status)}>
-                        {t(`status.${claim.status}`).toUpperCase()}
+                      <Badge className={
+                        req.statusId === '2' ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/20" :
+                        req.statusId === '3' ? "bg-destructive/20 text-destructive hover:bg-destructive/30 border-destructive/20" :
+                        "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/20"
+                      }>
+                        {statusName.toUpperCase()}
                       </Badge>
                     </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                  );
+                })}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="claims" className="mt-0">
+              <div className="space-y-3">
+                {claimsLoading && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>{t('common.loading')}</p>
+                  </div>
+                )}
+                {!claimsLoading && sortedClaims.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>{t('dashboard.noClaims')}</p>
+                    <Button variant="link" className="text-primary" onClick={() => setIsClaimOpen(true)} data-testid="link-submit-claim">
+                      {t('dashboard.submitFirstClaim')}
+                    </Button>
+                  </div>
+                )}
+                {sortedClaims.map(claim => (
+                  <div key={claim.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 rounded-lg border border-border/40 bg-card/40 hover:bg-card/60 transition-colors gap-3" data-testid={`claim-item-${claim.id}`}>
+                    <div className="space-y-1 flex-1">
+                      <h4 className="font-semibold text-foreground flex items-center gap-2 text-sm">
+                        <Trophy className="h-4 w-4 text-primary" />
+                        {claim.pointsRequested} {t('common.points')}
+                      </h4>
+                      <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-3">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {new Date(claim.createdAt).toLocaleDateString()}
+                        </span>
+                        {claim.note && (
+                          <span className="flex items-center gap-1 truncate max-w-[200px]">
+                            <FileText className="h-3 w-3 shrink-0" />
+                            {claim.note}
+                          </span>
+                        )}
+                      </div>
+                      {claim.adminResponse && (
+                        <p className={`text-xs flex items-center gap-1 mt-1 ${claim.status === 'rejected' ? 'text-destructive' : 'text-green-400'}`}>
+                          {claim.status === 'approved' ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                          {claim.adminResponse}
+                        </p>
+                      )}
+                    </div>
+                    <Badge className={getClaimStatusBadge(claim.status)}>
+                      {t(`status.${claim.status}`).toUpperCase()}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
             </TabsContent>
           </CardContent>
         </Tabs>

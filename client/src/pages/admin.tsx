@@ -390,18 +390,20 @@ export default function Admin() {
         </Badge>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-card/50 border border-border/50 p-1">
-          <TabsTrigger value="requests" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-requests">{t('admin.tabs.requests')}</TabsTrigger>
-          <TabsTrigger value="periods" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-periods">{t('admin.tabs.periods')}</TabsTrigger>
-          <TabsTrigger value="respawns" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-respawns">{t('admin.tabs.respawns')}</TabsTrigger>
-          <TabsTrigger value="servers" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-servers">{t('admin.tabs.servers')}</TabsTrigger>
-          <TabsTrigger value="users" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-users">{t('admin.tabs.users')}</TabsTrigger>
-          <TabsTrigger value="points-history" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-points-history">
-            <History className="h-4 w-4 mr-1" />
-            {t('admin.tabs.pointsHistory')}
-          </TabsTrigger>
-          <TabsTrigger value="claims" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary relative" data-testid="tab-claims">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <TabsList className="bg-card/50 border border-border/50 p-1 inline-flex min-w-max">
+            <TabsTrigger value="requests" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs md:text-sm px-2 md:px-3" data-testid="tab-requests">{t('admin.tabs.requests')}</TabsTrigger>
+            <TabsTrigger value="periods" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs md:text-sm px-2 md:px-3" data-testid="tab-periods">{t('admin.tabs.periods')}</TabsTrigger>
+            <TabsTrigger value="respawns" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs md:text-sm px-2 md:px-3" data-testid="tab-respawns">{t('admin.tabs.respawns')}</TabsTrigger>
+            <TabsTrigger value="servers" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs md:text-sm px-2 md:px-3" data-testid="tab-servers">{t('admin.tabs.servers')}</TabsTrigger>
+            <TabsTrigger value="users" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs md:text-sm px-2 md:px-3" data-testid="tab-users">{t('admin.tabs.users')}</TabsTrigger>
+            <TabsTrigger value="points-history" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs md:text-sm px-2 md:px-3" data-testid="tab-points-history">
+              <History className="h-3 w-3 md:h-4 md:w-4 mr-1" />
+              <span className="hidden md:inline">{t('admin.tabs.pointsHistory')}</span>
+              <span className="md:hidden">{t('admin.tabs.history')}</span>
+            </TabsTrigger>
+            <TabsTrigger value="claims" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs md:text-sm px-2 md:px-3 relative" data-testid="tab-claims">
             <FileCheck className="h-4 w-4 mr-1" />
             {t('admin.tabs.claims')}
             {pointClaims.filter(c => c.status === 'pending').length > 0 && (
@@ -410,7 +412,8 @@ export default function Admin() {
               </Badge>
             )}
           </TabsTrigger>
-        </TabsList>
+          </TabsList>
+        </div>
 
         <TabsContent value="requests" className="space-y-6">
           <div className="flex justify-end mb-4">
