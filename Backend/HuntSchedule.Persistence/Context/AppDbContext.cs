@@ -23,6 +23,122 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Configure table names to match existing Node.js/Drizzle schema (lowercase)
+        modelBuilder.Entity<User>().ToTable("users");
+        modelBuilder.Entity<Role>().ToTable("roles");
+        modelBuilder.Entity<Character>().ToTable("characters");
+        modelBuilder.Entity<Server>().ToTable("servers");
+        modelBuilder.Entity<Respawn>().ToTable("respawns");
+        modelBuilder.Entity<Slot>().ToTable("slots");
+        modelBuilder.Entity<SchedulePeriod>().ToTable("schedule_periods");
+        modelBuilder.Entity<Request>().ToTable("requests");
+        modelBuilder.Entity<RequestPartyMember>().ToTable("request_party_members");
+        modelBuilder.Entity<RequestStatus>().ToTable("request_statuses");
+        modelBuilder.Entity<Difficulty>().ToTable("difficulties");
+
+        // Configure column names to match existing schema (snake_case)
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Username).HasColumnName("username");
+            entity.Property(e => e.Password).HasColumnName("password");
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.Points).HasColumnName("points");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Description).HasColumnName("description");
+        });
+
+        modelBuilder.Entity<Character>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.ServerId).HasColumnName("server_id");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Vocation).HasColumnName("vocation");
+            entity.Property(e => e.Level).HasColumnName("level");
+            entity.Property(e => e.IsMain).HasColumnName("is_main");
+            entity.Property(e => e.IsExternal).HasColumnName("is_external");
+            entity.Property(e => e.ExternalVerifiedAt).HasColumnName("external_verified_at");
+        });
+
+        modelBuilder.Entity<Server>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Region).HasColumnName("region");
+        });
+
+        modelBuilder.Entity<Respawn>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ServerId).HasColumnName("server_id");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.DifficultyId).HasColumnName("difficulty_id");
+            entity.Property(e => e.MaxPlayers).HasColumnName("max_players");
+        });
+
+        modelBuilder.Entity<Slot>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ServerId).HasColumnName("server_id");
+            entity.Property(e => e.StartTime).HasColumnName("start_time");
+            entity.Property(e => e.EndTime).HasColumnName("end_time");
+        });
+
+        modelBuilder.Entity<SchedulePeriod>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ServerId).HasColumnName("server_id");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.StartDate).HasColumnName("start_date");
+            entity.Property(e => e.EndDate).HasColumnName("end_date");
+            entity.Property(e => e.IsActive).HasColumnName("is_active");
+        });
+
+        modelBuilder.Entity<Request>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.ServerId).HasColumnName("server_id");
+            entity.Property(e => e.PeriodId).HasColumnName("period_id");
+            entity.Property(e => e.SlotId).HasColumnName("slot_id");
+            entity.Property(e => e.RespawnId).HasColumnName("respawn_id");
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+            entity.Property(e => e.RejectionReason).HasColumnName("rejection_reason");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+        });
+
+        modelBuilder.Entity<RequestPartyMember>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.RequestId).HasColumnName("request_id");
+            entity.Property(e => e.CharacterId).HasColumnName("character_id");
+            entity.Property(e => e.CharacterName).HasColumnName("character_name");
+            entity.Property(e => e.RoleInParty).HasColumnName("role_in_party");
+        });
+
+        modelBuilder.Entity<RequestStatus>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Color).HasColumnName("color");
+        });
+
+        modelBuilder.Entity<Difficulty>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Color).HasColumnName("color");
+            entity.Property(e => e.SortOrder).HasColumnName("sort_order");
+        });
+
         modelBuilder.Entity<RequestPartyMember>()
             .HasIndex(rpm => new { rpm.RequestId, rpm.CharacterId })
             .IsUnique();

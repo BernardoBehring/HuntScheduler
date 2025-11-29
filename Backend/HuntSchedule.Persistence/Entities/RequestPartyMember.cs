@@ -15,11 +15,13 @@ public class RequestPartyMember
     [ForeignKey("RequestId")]
     public Request? Request { get; set; }
     
-    [Required]
-    public int CharacterId { get; set; }
+    public int? CharacterId { get; set; }
     
     [ForeignKey("CharacterId")]
     public Character? Character { get; set; }
+
+    [MaxLength(100)]
+    public string? CharacterName { get; set; }
     
     [MaxLength(50)]
     public string? RoleInParty { get; set; }
