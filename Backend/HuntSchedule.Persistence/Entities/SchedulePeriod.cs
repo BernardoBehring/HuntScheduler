@@ -19,10 +19,12 @@ public class SchedulePeriod
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public DateTime StartDate { get; set; }
+    [MaxLength(20)]
+    public string StartDate { get; set; } = string.Empty;
 
     [Required]
-    public DateTime EndDate { get; set; }
+    [MaxLength(20)]
+    public string EndDate { get; set; } = string.Empty;
 
     public bool IsActive { get; set; } = true;
 }

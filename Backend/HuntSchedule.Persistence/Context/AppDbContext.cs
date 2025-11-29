@@ -205,9 +205,9 @@ public class AppDbContext : DbContext
         );
 
         modelBuilder.Entity<SchedulePeriod>().HasData(
-            new SchedulePeriod { Id = 1, ServerId = 1, Name = "Week 48 - Nov Rotation", StartDate = new DateTime(2024, 11, 27, 0, 0, 0, DateTimeKind.Utc), EndDate = new DateTime(2024, 12, 4, 0, 0, 0, DateTimeKind.Utc), IsActive = true },
-            new SchedulePeriod { Id = 2, ServerId = 1, Name = "Week 49 - Dec Rotation", StartDate = new DateTime(2024, 12, 4, 0, 0, 0, DateTimeKind.Utc), EndDate = new DateTime(2024, 12, 11, 0, 0, 0, DateTimeKind.Utc), IsActive = false },
-            new SchedulePeriod { Id = 3, ServerId = 2, Name = "Week 48 - Wintera", StartDate = new DateTime(2024, 11, 27, 0, 0, 0, DateTimeKind.Utc), EndDate = new DateTime(2024, 12, 4, 0, 0, 0, DateTimeKind.Utc), IsActive = true }
+            new SchedulePeriod { Id = 1, ServerId = 1, Name = "Week 48 - Nov Rotation", StartDate = "2024-11-27", EndDate = "2024-12-04", IsActive = true },
+            new SchedulePeriod { Id = 2, ServerId = 1, Name = "Week 49 - Dec Rotation", StartDate = "2024-12-04", EndDate = "2024-12-11", IsActive = false },
+            new SchedulePeriod { Id = 3, ServerId = 2, Name = "Week 48 - Wintera", StartDate = "2024-11-27", EndDate = "2024-12-04", IsActive = true }
         );
     }
 }
