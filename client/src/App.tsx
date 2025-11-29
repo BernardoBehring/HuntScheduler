@@ -7,7 +7,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Login from "@/pages/login";
-import Admin from "@/pages/admin";
+import AdminRequests from "@/pages/admin/requests";
+import AdminPeriods from "@/pages/admin/periods";
+import AdminRespawns from "@/pages/admin/respawns";
+import AdminServers from "@/pages/admin/servers";
+import AdminUsers from "@/pages/admin/users";
+import AdminHistory from "@/pages/admin/history";
+import AdminClaims from "@/pages/admin/claims";
 import { HuntSchedule } from "@/components/hunt-schedule";
 import { Layout } from "@/components/layout";
 import { useStore } from "@/lib/mockData";
@@ -73,7 +79,31 @@ function Router() {
       </Route>
       
       <Route path="/admin">
-        <ProtectedRoute component={Admin} adminOnly />
+        <ProtectedRoute component={AdminRequests} adminOnly />
+      </Route>
+      
+      <Route path="/admin/periods">
+        <ProtectedRoute component={AdminPeriods} adminOnly />
+      </Route>
+      
+      <Route path="/admin/respawns">
+        <ProtectedRoute component={AdminRespawns} adminOnly />
+      </Route>
+      
+      <Route path="/admin/servers">
+        <ProtectedRoute component={AdminServers} adminOnly />
+      </Route>
+      
+      <Route path="/admin/users">
+        <ProtectedRoute component={AdminUsers} adminOnly />
+      </Route>
+      
+      <Route path="/admin/history">
+        <ProtectedRoute component={AdminHistory} adminOnly />
+      </Route>
+      
+      <Route path="/admin/claims">
+        <ProtectedRoute component={AdminClaims} adminOnly />
       </Route>
       
       <Route component={NotFound} />
