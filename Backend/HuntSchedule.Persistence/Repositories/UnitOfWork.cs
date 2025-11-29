@@ -18,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
     private IRequestStatusRepository? _requestStatuses;
     private IDifficultyRepository? _difficulties;
     private IPointTransactionRepository? _pointTransactions;
+    private IPointClaimRepository? _pointClaims;
 
     public UnitOfWork(AppDbContext context)
     {
@@ -35,6 +36,7 @@ public class UnitOfWork : IUnitOfWork
     public IRequestStatusRepository RequestStatuses => _requestStatuses ??= new RequestStatusRepository(_context);
     public IDifficultyRepository Difficulties => _difficulties ??= new DifficultyRepository(_context);
     public IPointTransactionRepository PointTransactions => _pointTransactions ??= new PointTransactionRepository(_context);
+    public IPointClaimRepository PointClaims => _pointClaims ??= new PointClaimRepository(_context);
 
     public async Task<int> SaveChangesAsync()
     {

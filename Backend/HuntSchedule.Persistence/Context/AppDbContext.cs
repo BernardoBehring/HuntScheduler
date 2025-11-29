@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<RequestStatus> RequestStatuses { get; set; }
     public DbSet<Difficulty> Difficulties { get; set; }
     public DbSet<PointTransaction> PointTransactions { get; set; }
+    public DbSet<PointClaim> PointClaims { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -159,6 +160,31 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Admin)
                 .WithMany()
                 .HasForeignKey(e => e.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<PointClaim>().ToTable("point_claims");
+        modelBuilder.Entity<PointClaim>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.PointsRequested).HasColumnName("points_requested");
+            entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.ScreenshotUrl).HasColumnName("screenshot_url");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.ReviewedByAdminId).HasColumnName("reviewed_by_admin_id");
+            entity.Property(e => e.AdminResponse).HasColumnName("admin_response");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            entity.Property(e => e.ReviewedAt).HasColumnName("reviewed_at");
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+                
+            entity.HasOne(e => e.ReviewedByAdmin)
+                .WithMany()
+                .HasForeignKey(e => e.ReviewedByAdminId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
