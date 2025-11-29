@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Check, X, Plus, Trash2, Edit, History, TrendingUp, TrendingDown } from "lucide-react";
+import { Check, X, Plus, Trash2, Edit, History, TrendingUp, TrendingDown, FileCheck, Clock, Trophy, Eye, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -15,7 +15,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
 import { Textarea } from "@/components/ui/textarea";
-import { api, PointTransaction } from "@/lib/api";
+import { api, PointTransaction, PointClaim } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function Admin() {
   const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, addServer, updateServer, deleteServer, getStatusName, getDifficultyName, getRoleName, characters, slots } = useStore();
@@ -82,6 +83,93 @@ export default function Admin() {
   const [pointsOperation, setPointsOperation] = useState<"add" | "remove">("add");
   const [transactionFilterUser, setTransactionFilterUser] = useState<string>("all");
   const { currentUser } = useStore();
+  const queryClient = useQueryClient();
+
+  const [isClaimReviewOpen, setIsClaimReviewOpen] = useState(false);
+  const [selectedClaim, setSelectedClaim] = useState<PointClaim | null>(null);
+  const [claimResponse, setClaimResponse] = useState("");
+  const [claimFilterStatus, setClaimFilterStatus] = useState<string>("pending");
+
+  const { data: pointClaims = [], isLoading: claimsLoading } = useQuery({
+    queryKey: ['pointClaims', 'all'],
+    queryFn: () => api.pointClaims.getAll(),
+  });
+
+  const approveClaimMutation = useMutation({
+    mutationFn: ({ claimId, adminResponse }: { claimId: number; adminResponse: string }) => {
+      const adminId = currentUser ? (typeof currentUser.id === 'string' ? parseInt(currentUser.id) : currentUser.id) : 1;
+      return api.pointClaims.approve(claimId, { adminId, adminResponse });
+    },
+    onSuccess: (claim) => {
+      queryClient.invalidateQueries({ queryKey: ['pointClaims'] });
+      api.pointTransactions.getAll().then(setPointTransactions);
+      addPoints(claim.userId.toString(), claim.pointsRequested);
+      setIsClaimReviewOpen(false);
+      setSelectedClaim(null);
+      setClaimResponse("");
+      toast({
+        title: t('admin.claims.claimApproved'),
+        description: t('admin.claims.pointsAwarded', { points: claim.pointsRequested }),
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t('common.error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const rejectClaimMutation = useMutation({
+    mutationFn: ({ claimId, adminResponse }: { claimId: number; adminResponse: string }) => {
+      const adminId = currentUser ? (typeof currentUser.id === 'string' ? parseInt(currentUser.id) : currentUser.id) : 1;
+      return api.pointClaims.reject(claimId, { adminId, adminResponse });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pointClaims'] });
+      setIsClaimReviewOpen(false);
+      setSelectedClaim(null);
+      setClaimResponse("");
+      toast({
+        title: t('admin.claims.claimRejected'),
+        description: t('admin.claims.claimRejectedDesc'),
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t('common.error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const filteredClaims = claimFilterStatus === "all"
+    ? pointClaims
+    : pointClaims.filter(c => c.status === claimFilterStatus);
+
+  const openClaimReview = (claim: PointClaim) => {
+    setSelectedClaim(claim);
+    setClaimResponse("");
+    setIsClaimReviewOpen(true);
+  };
+
+  const handleApproveClaim = () => {
+    if (!selectedClaim || !claimResponse.trim()) {
+      toast({ title: t('admin.claims.responseRequired'), variant: 'destructive' });
+      return;
+    }
+    approveClaimMutation.mutate({ claimId: selectedClaim.id, adminResponse: claimResponse.trim() });
+  };
+
+  const handleRejectClaim = () => {
+    if (!selectedClaim || !claimResponse.trim()) {
+      toast({ title: t('admin.claims.responseRequired'), variant: 'destructive' });
+      return;
+    }
+    rejectClaimMutation.mutate({ claimId: selectedClaim.id, adminResponse: claimResponse.trim() });
+  };
 
   useEffect(() => {
     api.pointTransactions.getAll()
@@ -311,6 +399,15 @@ export default function Admin() {
           <TabsTrigger value="points-history" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-points-history">
             <History className="h-4 w-4 mr-1" />
             {t('admin.tabs.pointsHistory')}
+          </TabsTrigger>
+          <TabsTrigger value="claims" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary relative" data-testid="tab-claims">
+            <FileCheck className="h-4 w-4 mr-1" />
+            {t('admin.tabs.claims')}
+            {pointClaims.filter(c => c.status === 'pending').length > 0 && (
+              <Badge variant="destructive" className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs absolute -top-1 -right-1">
+                {pointClaims.filter(c => c.status === 'pending').length}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
@@ -894,7 +991,185 @@ export default function Admin() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="claims">
+          <Card className="bg-card/30 border-border/50">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>{t('admin.claims.title')}</CardTitle>
+                <CardDescription>{t('admin.claims.description')}</CardDescription>
+              </div>
+              <Select value={claimFilterStatus} onValueChange={setClaimFilterStatus}>
+                <SelectTrigger className="w-[180px]" data-testid="select-filter-claims-status">
+                  <SelectValue placeholder={t('admin.claims.allStatuses')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('admin.claims.allStatuses')}</SelectItem>
+                  <SelectItem value="pending">{t('status.pending')}</SelectItem>
+                  <SelectItem value="approved">{t('status.approved')}</SelectItem>
+                  <SelectItem value="rejected">{t('status.rejected')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[500px]">
+                <div className="space-y-3">
+                  {claimsLoading && (
+                    <p className="text-muted-foreground text-center py-10">{t('common.loading')}</p>
+                  )}
+                  {!claimsLoading && filteredClaims.length === 0 && (
+                    <p className="text-muted-foreground text-center py-10">{t('admin.claims.noClaims')}</p>
+                  )}
+                  {filteredClaims.map(claim => (
+                    <div 
+                      key={claim.id} 
+                      className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border border-border/40 rounded-lg bg-muted/10 gap-4"
+                      data-testid={`claim-item-${claim.id}`}
+                    >
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                          claim.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500' :
+                          claim.status === 'approved' ? 'bg-green-500/20 text-green-500' :
+                          'bg-red-500/20 text-red-500'
+                        }`}>
+                          {claim.status === 'pending' ? <Clock className="h-5 w-5" /> :
+                           claim.status === 'approved' ? <Check className="h-5 w-5" /> :
+                           <X className="h-5 w-5" />}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium">
+                            {claim.user?.username || t('common.unknown')}
+                            <Badge className="ml-2" variant="outline">
+                              <Trophy className="h-3 w-3 mr-1" />
+                              {claim.pointsRequested} {t('common.points')}
+                            </Badge>
+                          </p>
+                          {claim.note && (
+                            <p className="text-sm text-muted-foreground">{claim.note}</p>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            {format(new Date(claim.createdAt), "PPp")}
+                          </p>
+                          {claim.screenshotUrl && (
+                            <a 
+                              href={claim.screenshotUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary hover:underline flex items-center gap-1 mt-1"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              {t('admin.claims.viewScreenshot')}
+                            </a>
+                          )}
+                          {claim.adminResponse && (
+                            <p className="text-xs mt-1 text-muted-foreground">
+                              <span className="font-medium">{t('admin.claims.adminResponse')}:</span> {claim.adminResponse}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className={
+                          claim.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/20' :
+                          claim.status === 'approved' ? 'bg-green-500/20 text-green-400 border-green-500/20' :
+                          'bg-red-500/20 text-red-400 border-red-500/20'
+                        }>
+                          {t(`status.${claim.status}`).toUpperCase()}
+                        </Badge>
+                        {claim.status === 'pending' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openClaimReview(claim)}
+                            data-testid={`button-review-claim-${claim.id}`}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            {t('admin.claims.review')}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
+
+      <Dialog open={isClaimReviewOpen} onOpenChange={setIsClaimReviewOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('admin.claims.reviewClaim')}</DialogTitle>
+            <DialogDescription>
+              {t('admin.claims.reviewClaimDesc', { 
+                username: selectedClaim?.user?.username || t('common.unknown'),
+                points: selectedClaim?.pointsRequested || 0
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedClaim && (
+            <div className="space-y-4">
+              <div className="p-4 bg-muted/20 rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-primary" />
+                  <span className="font-bold text-lg">{selectedClaim.pointsRequested} {t('common.points')}</span>
+                </div>
+                {selectedClaim.note && (
+                  <p className="text-sm text-muted-foreground">{selectedClaim.note}</p>
+                )}
+                {selectedClaim.screenshotUrl && (
+                  <a 
+                    href={selectedClaim.screenshotUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline flex items-center gap-1"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {t('admin.claims.viewScreenshot')}
+                  </a>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {t('admin.claims.submittedOn')}: {format(new Date(selectedClaim.createdAt), "PPp")}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label>{t('admin.claims.response')} <span className="text-red-500">*</span></Label>
+                <Textarea
+                  placeholder={t('admin.claims.responsePlaceholder')}
+                  value={claimResponse}
+                  onChange={(e) => setClaimResponse(e.target.value)}
+                  rows={3}
+                  data-testid="input-claim-response"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={() => setIsClaimReviewOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleRejectClaim}
+              disabled={rejectClaimMutation.isPending}
+              data-testid="button-reject-claim"
+            >
+              <X className="h-4 w-4 mr-1" />
+              {rejectClaimMutation.isPending ? t('common.loading') : t('admin.claims.reject')}
+            </Button>
+            <Button 
+              className="bg-green-600 hover:bg-green-700"
+              onClick={handleApproveClaim}
+              disabled={approveClaimMutation.isPending}
+              data-testid="button-approve-claim"
+            >
+              <Check className="h-4 w-4 mr-1" />
+              {approveClaimMutation.isPending ? t('common.loading') : t('admin.claims.approve')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isPointsDialogOpen} onOpenChange={setIsPointsDialogOpen}>
         <DialogContent>
