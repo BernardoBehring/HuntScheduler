@@ -109,7 +109,8 @@
       "periods": "Okresy i Rotacje",
       "respawns": "Respawny i Sloty",
       "users": "Użytkownicy i Punkty",
-      "servers": "Serwery"
+      "servers": "Serwery",
+      "pointsHistory": "Historia Punktów"
     },
     "requests": {
       "pendingApproval": "Oczekujące Zatwierdzenie",
@@ -161,6 +162,25 @@
       "description": "Zarządzaj punktami i rolami gildii",
       "pointsUpdated": "Punkty Zaktualizowane",
       "pointsUpdatedDesc": "Dodano {{amount}} punktów użytkownikowi."
+    },
+    "points": {
+      "add": "Dodaj",
+      "remove": "Usuń",
+      "addPoints": "Dodaj Punkty",
+      "removePoints": "Usuń Punkty",
+      "adjustPointsFor": "Dostosuj punkty dla {{username}}",
+      "amount": "Ilość",
+      "amountPlaceholder": "Wpisz ilość",
+      "reason": "Powód",
+      "reasonPlaceholder": "Wyjaśnij, dlaczego dostosowujesz punkty...",
+      "reasonRequired": "Proszę podać powód tej zmiany",
+      "invalidAmount": "Proszę wpisać prawidłową ilość",
+      "historyTitle": "Historia Punktów",
+      "historyDescription": "Zobacz wszystkie transakcje punktów z odpowiedzialnością admina",
+      "allUsers": "Wszyscy Użytkownicy",
+      "noTransactions": "Nie znaleziono transakcji punktów.",
+      "by": "przez",
+      "balanceAfter": "Saldo"
     },
     "servers": {
       "title": "Zarządzanie Serwerami",

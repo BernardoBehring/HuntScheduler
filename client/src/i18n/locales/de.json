@@ -109,7 +109,8 @@
       "periods": "Zeiträume & Rotationen",
       "respawns": "Respawns & Slots",
       "users": "Benutzer & Punkte",
-      "servers": "Server"
+      "servers": "Server",
+      "pointsHistory": "Punktehistorie"
     },
     "requests": {
       "pendingApproval": "Ausstehende Genehmigung",
@@ -161,6 +162,25 @@
       "description": "Verwalte Gildenpunkte und Rollen",
       "pointsUpdated": "Punkte aktualisiert",
       "pointsUpdatedDesc": "{{amount}} Punkte zum Benutzer hinzugefügt."
+    },
+    "points": {
+      "add": "Hinzufügen",
+      "remove": "Entfernen",
+      "addPoints": "Punkte hinzufügen",
+      "removePoints": "Punkte entfernen",
+      "adjustPointsFor": "Punkte für {{username}} anpassen",
+      "amount": "Menge",
+      "amountPlaceholder": "Menge eingeben",
+      "reason": "Grund",
+      "reasonPlaceholder": "Erkläre, warum du die Punkte anpasst...",
+      "reasonRequired": "Bitte gib einen Grund für diese Anpassung an",
+      "invalidAmount": "Bitte gib eine gültige Menge ein",
+      "historyTitle": "Punktehistorie",
+      "historyDescription": "Alle Punktetransaktionen mit Admin-Verantwortlichkeit anzeigen",
+      "allUsers": "Alle Benutzer",
+      "noTransactions": "Keine Punktetransaktionen gefunden.",
+      "by": "von",
+      "balanceAfter": "Kontostand"
     },
     "servers": {
       "title": "Serververwaltung",

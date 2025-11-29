@@ -104,6 +104,25 @@ export interface Request {
   createdAt: string;
 }
 
+export interface PointTransaction {
+  id: number;
+  userId: number;
+  user?: User;
+  adminId: number;
+  admin?: User;
+  amount: number;
+  reason: string;
+  balanceAfter: number;
+  createdAt: string;
+}
+
+export interface CreatePointTransactionDto {
+  userId: number;
+  adminId: number;
+  amount: number;
+  reason: string;
+}
+
 export interface CreateRequestDto {
   userId: number;
   serverId: number;
@@ -299,6 +318,21 @@ export const api = {
     me: (): Promise<User> =>
       fetch(`${API_BASE}/auth/me`, {
         credentials: 'include',
+      }).then(r => handleResponse(r)),
+  },
+
+  pointTransactions: {
+    getAll: (): Promise<PointTransaction[]> =>
+      fetch(`${API_BASE}/point-transactions`).then(r => handleResponse(r)),
+    getByUser: (userId: number): Promise<PointTransaction[]> =>
+      fetch(`${API_BASE}/point-transactions/user/${userId}`).then(r => handleResponse(r)),
+    getByAdmin: (adminId: number): Promise<PointTransaction[]> =>
+      fetch(`${API_BASE}/point-transactions/admin/${adminId}`).then(r => handleResponse(r)),
+    create: (dto: CreatePointTransactionDto): Promise<PointTransaction> =>
+      fetch(`${API_BASE}/point-transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dto),
       }).then(r => handleResponse(r)),
   },
 };

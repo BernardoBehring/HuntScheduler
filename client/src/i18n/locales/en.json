@@ -109,7 +109,8 @@
       "periods": "Periods & Rotations",
       "respawns": "Respawns & Slots",
       "users": "Users & Points",
-      "servers": "Servers"
+      "servers": "Servers",
+      "pointsHistory": "Points History"
     },
     "requests": {
       "pendingApproval": "Pending Approval",
@@ -161,6 +162,25 @@
       "description": "Manage guild points and roles",
       "pointsUpdated": "Points Updated",
       "pointsUpdatedDesc": "Added {{amount}} points to user."
+    },
+    "points": {
+      "add": "Add",
+      "remove": "Remove",
+      "addPoints": "Add Points",
+      "removePoints": "Remove Points",
+      "adjustPointsFor": "Adjust points for {{username}}",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "reason": "Reason",
+      "reasonPlaceholder": "Explain why you are adjusting points...",
+      "reasonRequired": "Please provide a reason for this adjustment",
+      "invalidAmount": "Please enter a valid amount",
+      "historyTitle": "Points History",
+      "historyDescription": "View all point transactions with admin accountability",
+      "allUsers": "All Users",
+      "noTransactions": "No point transactions found.",
+      "by": "by",
+      "balanceAfter": "Balance"
     },
     "servers": {
       "title": "Server Management",

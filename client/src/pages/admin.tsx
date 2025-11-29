@@ -1,19 +1,21 @@
 import { Layout } from "@/components/layout";
-import { useStore, Respawn, Server } from "@/lib/mockData";
+import { useStore, Respawn, Server, User } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Check, X, Plus, Trash2, Edit } from "lucide-react";
-import { useState } from "react";
+import { Check, X, Plus, Trash2, Edit, History, TrendingUp, TrendingDown } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
+import { Textarea } from "@/components/ui/textarea";
+import { api, PointTransaction } from "@/lib/api";
 
 export default function Admin() {
   const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, addServer, updateServer, deleteServer, getStatusName, getDifficultyName, getRoleName, characters, slots } = useStore();
@@ -72,6 +74,25 @@ export default function Admin() {
   const [newServerName, setNewServerName] = useState("");
   const [newServerRegion, setNewServerRegion] = useState("");
 
+  const [pointTransactions, setPointTransactions] = useState<PointTransaction[]>([]);
+  const [isPointsDialogOpen, setIsPointsDialogOpen] = useState(false);
+  const [selectedUserForPoints, setSelectedUserForPoints] = useState<User | null>(null);
+  const [pointsAmount, setPointsAmount] = useState("");
+  const [pointsReason, setPointsReason] = useState("");
+  const [pointsOperation, setPointsOperation] = useState<"add" | "remove">("add");
+  const [transactionFilterUser, setTransactionFilterUser] = useState<string>("all");
+  const { currentUser } = useStore();
+
+  useEffect(() => {
+    api.pointTransactions.getAll()
+      .then(setPointTransactions)
+      .catch(err => console.error('Failed to load point transactions:', err));
+  }, []);
+
+  const filteredTransactions = transactionFilterUser === "all"
+    ? pointTransactions
+    : pointTransactions.filter(pt => pt.userId.toString() === transactionFilterUser);
+
   const getTranslatedStatus = (statusId: string) => {
     const statusMap: Record<string, string> = {
       '1': 'pending',
@@ -111,12 +132,47 @@ export default function Admin() {
     });
   };
 
-  const handleAddPoints = (userId: string, amount: number) => {
-    addPoints(userId, amount);
-    toast({ 
-      title: t('admin.users.pointsUpdated'), 
-      description: t('admin.users.pointsUpdatedDesc', { amount: Math.abs(amount) })
-    });
+  const openPointsDialog = (user: User, operation: "add" | "remove") => {
+    setSelectedUserForPoints(user);
+    setPointsOperation(operation);
+    setPointsAmount("");
+    setPointsReason("");
+    setIsPointsDialogOpen(true);
+  };
+
+  const handleAddPoints = async () => {
+    if (!selectedUserForPoints || !pointsAmount || !pointsReason.trim()) {
+      toast({ title: t('admin.points.reasonRequired'), variant: 'destructive' });
+      return;
+    }
+    
+    const amount = parseInt(pointsAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast({ title: t('admin.points.invalidAmount'), variant: 'destructive' });
+      return;
+    }
+    
+    const finalAmount = pointsOperation === "remove" ? -amount : amount;
+    
+    try {
+      const transaction = await api.pointTransactions.create({
+        userId: parseInt(selectedUserForPoints.id),
+        adminId: currentUser ? parseInt(currentUser.id) : 1,
+        amount: finalAmount,
+        reason: pointsReason.trim()
+      });
+      
+      addPoints(selectedUserForPoints.id, finalAmount);
+      setPointTransactions(prev => [transaction, ...prev]);
+      setIsPointsDialogOpen(false);
+      
+      toast({ 
+        title: t('admin.users.pointsUpdated'), 
+        description: t('admin.users.pointsUpdatedDesc', { amount: Math.abs(finalAmount) })
+      });
+    } catch (error) {
+      toast({ title: t('errors.saveFailed'), variant: 'destructive' });
+    }
   };
 
   const handleCreatePeriod = () => {
@@ -252,6 +308,10 @@ export default function Admin() {
           <TabsTrigger value="respawns" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-respawns">{t('admin.tabs.respawns')}</TabsTrigger>
           <TabsTrigger value="servers" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-servers">{t('admin.tabs.servers')}</TabsTrigger>
           <TabsTrigger value="users" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-users">{t('admin.tabs.users')}</TabsTrigger>
+          <TabsTrigger value="points-history" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-points-history">
+            <History className="h-4 w-4 mr-1" />
+            {t('admin.tabs.pointsHistory')}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="requests" className="space-y-6">
@@ -478,8 +538,12 @@ export default function Admin() {
                         <p className="text-sm font-medium text-primary">{user.points} {t('common.points').toUpperCase()}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleAddPoints(user.id, -10)} data-testid={`button-remove-points-${user.id}`}>-</Button>
-                        <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleAddPoints(user.id, 10)} data-testid={`button-add-points-${user.id}`}>+</Button>
+                        <Button size="sm" variant="outline" className="h-8" onClick={() => openPointsDialog(user, "remove")} data-testid={`button-remove-points-${user.id}`}>
+                          <TrendingDown className="h-4 w-4 mr-1" /> {t('admin.points.remove')}
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-8" onClick={() => openPointsDialog(user, "add")} data-testid={`button-add-points-${user.id}`}>
+                          <TrendingUp className="h-4 w-4 mr-1" /> {t('admin.points.add')}
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -766,7 +830,119 @@ export default function Admin() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="points-history">
+          <Card className="bg-card/30 border-border/50">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>{t('admin.points.historyTitle')}</CardTitle>
+                <CardDescription>{t('admin.points.historyDescription')}</CardDescription>
+              </div>
+              <Select value={transactionFilterUser} onValueChange={setTransactionFilterUser}>
+                <SelectTrigger className="w-[180px]" data-testid="select-filter-transactions-user">
+                  <SelectValue placeholder={t('admin.points.allUsers')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('admin.points.allUsers')}</SelectItem>
+                  {users.map(u => (
+                    <SelectItem key={u.id} value={u.id}>{u.username}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[500px]">
+                <div className="space-y-3">
+                  {filteredTransactions.length === 0 && (
+                    <p className="text-muted-foreground text-center py-10">{t('admin.points.noTransactions')}</p>
+                  )}
+                  {filteredTransactions.map(tx => (
+                    <div 
+                      key={tx.id} 
+                      className="flex items-center justify-between p-4 border border-border/40 rounded-lg bg-muted/10"
+                      data-testid={`transaction-item-${tx.id}`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`h-10 w-10 rounded-full flex items-center justify-center ${tx.amount >= 0 ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
+                          {tx.amount >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {tx.user?.username || t('common.unknown')}
+                            <span className="text-muted-foreground text-sm ml-2">
+                              {t('admin.points.by')} {tx.admin?.username || t('common.unknown')}
+                            </span>
+                          </p>
+                          <p className="text-sm text-muted-foreground">{tx.reason}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {format(new Date(tx.createdAt), "PPp")}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className={`text-lg font-bold ${tx.amount >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                          {tx.amount >= 0 ? '+' : ''}{tx.amount} {t('common.points').toUpperCase()}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('admin.points.balanceAfter')}: {tx.balanceAfter}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
+
+      <Dialog open={isPointsDialogOpen} onOpenChange={setIsPointsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {pointsOperation === "add" ? t('admin.points.addPoints') : t('admin.points.removePoints')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('admin.points.adjustPointsFor', { username: selectedUserForPoints?.username || '' })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label>{t('admin.points.amount')}</Label>
+              <Input 
+                type="number" 
+                min="1"
+                placeholder={t('admin.points.amountPlaceholder')}
+                value={pointsAmount}
+                onChange={(e) => setPointsAmount(e.target.value)}
+                data-testid="input-points-amount"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('admin.points.reason')} <span className="text-red-500">*</span></Label>
+              <Textarea 
+                placeholder={t('admin.points.reasonPlaceholder')}
+                value={pointsReason}
+                onChange={(e) => setPointsReason(e.target.value)}
+                rows={3}
+                data-testid="input-points-reason"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPointsDialogOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button 
+              onClick={handleAddPoints}
+              className={pointsOperation === "remove" ? "bg-red-600 hover:bg-red-700" : ""}
+              data-testid="button-confirm-points"
+            >
+              {pointsOperation === "add" ? t('admin.points.addPoints') : t('admin.points.removePoints')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }

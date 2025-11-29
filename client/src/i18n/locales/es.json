@@ -109,7 +109,8 @@
       "periods": "Períodos y Rotaciones",
       "respawns": "Respawns y Horarios",
       "users": "Usuarios y Puntos",
-      "servers": "Servidores"
+      "servers": "Servidores",
+      "pointsHistory": "Historial de Puntos"
     },
     "requests": {
       "pendingApproval": "Aprobación Pendiente",
@@ -161,6 +162,25 @@
       "description": "Gestiona puntos y roles de la guild",
       "pointsUpdated": "Puntos Actualizados",
       "pointsUpdatedDesc": "Añadidos {{amount}} puntos al usuario."
+    },
+    "points": {
+      "add": "Añadir",
+      "remove": "Quitar",
+      "addPoints": "Añadir Puntos",
+      "removePoints": "Quitar Puntos",
+      "adjustPointsFor": "Ajustar puntos para {{username}}",
+      "amount": "Cantidad",
+      "amountPlaceholder": "Introduce la cantidad",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Explica por qué estás ajustando los puntos...",
+      "reasonRequired": "Por favor, proporciona un motivo para este ajuste",
+      "invalidAmount": "Por favor, introduce una cantidad válida",
+      "historyTitle": "Historial de Puntos",
+      "historyDescription": "Ver todas las transacciones de puntos con responsabilidad del admin",
+      "allUsers": "Todos los Usuarios",
+      "noTransactions": "No se encontraron transacciones de puntos.",
+      "by": "por",
+      "balanceAfter": "Saldo"
     },
     "servers": {
       "title": "Gestión de Servidores",
