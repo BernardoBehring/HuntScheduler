@@ -108,7 +108,8 @@
       "requests": "Revisión de Solicitudes",
       "periods": "Períodos y Rotaciones",
       "respawns": "Respawns y Horarios",
-      "users": "Usuarios y Puntos"
+      "users": "Usuarios y Puntos",
+      "servers": "Servidores"
     },
     "requests": {
       "pendingApproval": "Aprobación Pendiente",
@@ -160,6 +161,29 @@
       "description": "Gestiona puntos y roles de la guild",
       "pointsUpdated": "Puntos Actualizados",
       "pointsUpdatedDesc": "Añadidos {{amount}} puntos al usuario."
+    },
+    "servers": {
+      "title": "Gestión de Servidores",
+      "description": "Gestiona los servidores de juego disponibles para programación",
+      "addServer": "Añadir Servidor",
+      "addNewServer": "Añadir Nuevo Servidor",
+      "createServer": "Crea un nuevo servidor de juego para programación.",
+      "editServer": "Editar Servidor",
+      "updateDetails": "Actualiza los detalles del servidor.",
+      "serverName": "Nombre del Servidor",
+      "serverNamePlaceholder": "ej: Antica",
+      "region": "Región",
+      "regionPlaceholder": "ej: EU",
+      "createServerBtn": "Crear Servidor",
+      "saveChanges": "Guardar Cambios",
+      "serverAdded": "Servidor Añadido",
+      "serverAddedDesc": "Nuevo servidor ha sido creado.",
+      "serverUpdated": "Servidor Actualizado",
+      "serverUpdatedDesc": "Los detalles del servidor han sido actualizados.",
+      "serverDeleted": "Servidor Eliminado",
+      "serverDeletedDesc": "El servidor ha sido eliminado.",
+      "confirmDelete": "¿Estás seguro de que quieres eliminar este servidor? Esto puede afectar respawns y programaciones existentes.",
+      "noServers": "No hay servidores configurados."
     }
   },
   "errors": {

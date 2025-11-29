@@ -1,12 +1,12 @@
 import { Layout } from "@/components/layout";
-import { useStore, Respawn } from "@/lib/mockData";
+import { useStore, Respawn, Server } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Check, X, Plus, Trash2 } from "lucide-react";
+import { Check, X, Plus, Trash2, Edit } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "react-i18next";
 
 export default function Admin() {
-  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, getStatusName, getDifficultyName, getRoleName, characters, slots } = useStore();
+  const { requests, users, updateRequestStatus, addPoints, servers, respawns, periods, addPeriod, togglePeriod, addRespawn, updateRespawn, deleteRespawn, addServer, updateServer, deleteServer, getStatusName, getDifficultyName, getRoleName, characters, slots } = useStore();
   const [activeTab, setActiveTab] = useState("requests");
   const { t } = useTranslation();
 
@@ -65,6 +65,12 @@ export default function Admin() {
   const filteredRespawns = respawnFilterServer === "all" 
     ? respawns 
     : respawns.filter(r => r.serverId === respawnFilterServer);
+
+  const [isAddServerOpen, setIsAddServerOpen] = useState(false);
+  const [isEditServerOpen, setIsEditServerOpen] = useState(false);
+  const [editingServerId, setEditingServerId] = useState<string | null>(null);
+  const [newServerName, setNewServerName] = useState("");
+  const [newServerRegion, setNewServerRegion] = useState("");
 
   const getTranslatedStatus = (statusId: string) => {
     const statusMap: Record<string, string> = {
@@ -177,6 +183,59 @@ export default function Admin() {
     }
   };
 
+  const openAddServerDialog = () => {
+    setNewServerName("");
+    setNewServerRegion("");
+    setIsAddServerOpen(true);
+  };
+
+  const openEditServerDialog = (server: Server) => {
+    setEditingServerId(server.id);
+    setNewServerName(server.name);
+    setNewServerRegion(server.region);
+    setIsEditServerOpen(true);
+  };
+
+  const handleAddServer = async () => {
+    if (!newServerName || !newServerRegion) return;
+    try {
+      await addServer({
+        name: newServerName,
+        region: newServerRegion,
+      });
+      toast({ title: t('admin.servers.serverAdded'), description: t('admin.servers.serverAddedDesc') });
+      setIsAddServerOpen(false);
+    } catch (error) {
+      toast({ title: t('errors.saveFailed'), variant: 'destructive' });
+    }
+  };
+
+  const handleUpdateServer = async () => {
+    if (!editingServerId || !newServerName || !newServerRegion) return;
+    try {
+      await updateServer(editingServerId, {
+        name: newServerName,
+        region: newServerRegion,
+      });
+      toast({ title: t('admin.servers.serverUpdated'), description: t('admin.servers.serverUpdatedDesc') });
+      setIsEditServerOpen(false);
+      setEditingServerId(null);
+    } catch (error) {
+      toast({ title: t('errors.saveFailed'), variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteServer = async (id: string) => {
+    if (confirm(t('admin.servers.confirmDelete'))) {
+      try {
+        await deleteServer(id);
+        toast({ title: t('admin.servers.serverDeleted'), description: t('admin.servers.serverDeletedDesc') });
+      } catch (error) {
+        toast({ title: t('errors.saveFailed'), variant: 'destructive' });
+      }
+    }
+  };
+
   return (
     <Layout>
       <div className="flex items-center justify-between mb-6">
@@ -191,6 +250,7 @@ export default function Admin() {
           <TabsTrigger value="requests" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-requests">{t('admin.tabs.requests')}</TabsTrigger>
           <TabsTrigger value="periods" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-periods">{t('admin.tabs.periods')}</TabsTrigger>
           <TabsTrigger value="respawns" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-respawns">{t('admin.tabs.respawns')}</TabsTrigger>
+          <TabsTrigger value="servers" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-servers">{t('admin.tabs.servers')}</TabsTrigger>
           <TabsTrigger value="users" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary" data-testid="tab-users">{t('admin.tabs.users')}</TabsTrigger>
         </TabsList>
 
@@ -578,6 +638,133 @@ export default function Admin() {
               </div>
             </CardContent>
            </Card>
+        </TabsContent>
+
+        <TabsContent value="servers">
+          <Card className="bg-card/30 border-border/50">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>{t('admin.servers.title')}</CardTitle>
+                <CardDescription>{t('admin.servers.description')}</CardDescription>
+              </div>
+              
+              <Dialog open={isAddServerOpen} onOpenChange={setIsAddServerOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={openAddServerDialog} data-testid="button-add-server">
+                    <Plus className="h-4 w-4 mr-2" /> {t('admin.servers.addServer')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t('admin.servers.addNewServer')}</DialogTitle>
+                    <DialogDescription>{t('admin.servers.createServer')}</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                      <Label>{t('admin.servers.serverName')}</Label>
+                      <Input 
+                        placeholder={t('admin.servers.serverNamePlaceholder')} 
+                        value={newServerName} 
+                        onChange={(e) => setNewServerName(e.target.value)} 
+                        data-testid="input-server-name" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t('admin.servers.region')}</Label>
+                      <Input 
+                        placeholder={t('admin.servers.regionPlaceholder')} 
+                        value={newServerRegion} 
+                        onChange={(e) => setNewServerRegion(e.target.value)} 
+                        data-testid="input-server-region" 
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleAddServer} data-testid="button-confirm-add-server">
+                      {t('admin.servers.createServerBtn')}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog open={isEditServerOpen} onOpenChange={setIsEditServerOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t('admin.servers.editServer')}</DialogTitle>
+                    <DialogDescription>{t('admin.servers.updateDetails')}</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                      <Label>{t('admin.servers.serverName')}</Label>
+                      <Input 
+                        placeholder={t('admin.servers.serverNamePlaceholder')} 
+                        value={newServerName} 
+                        onChange={(e) => setNewServerName(e.target.value)} 
+                        data-testid="input-edit-server-name" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t('admin.servers.region')}</Label>
+                      <Input 
+                        placeholder={t('admin.servers.regionPlaceholder')} 
+                        value={newServerRegion} 
+                        onChange={(e) => setNewServerRegion(e.target.value)} 
+                        data-testid="input-edit-server-region" 
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleUpdateServer} data-testid="button-confirm-edit-server">
+                      {t('admin.servers.saveChanges')}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                {servers.length === 0 && (
+                  <p className="text-muted-foreground text-center py-10">{t('admin.servers.noServers')}</p>
+                )}
+                {servers.map(server => (
+                  <div 
+                    key={server.id} 
+                    className="flex items-center justify-between p-4 border border-border/40 rounded-lg bg-muted/10" 
+                    data-testid={`server-item-${server.id}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                        {server.name[0]}
+                      </div>
+                      <div>
+                        <p className="font-bold">{server.name}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{server.region}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => openEditServerDialog(server)} 
+                        data-testid={`button-edit-server-${server.id}`}
+                      >
+                        <Edit className="h-4 w-4 mr-1" /> {t('common.edit')}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="text-destructive" 
+                        onClick={() => handleDeleteServer(server.id)} 
+                        data-testid={`button-delete-server-${server.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </Layout>

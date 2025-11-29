@@ -108,7 +108,8 @@
       "requests": "Requests Review",
       "periods": "Periods & Rotations",
       "respawns": "Respawns & Slots",
-      "users": "Users & Points"
+      "users": "Users & Points",
+      "servers": "Servers"
     },
     "requests": {
       "pendingApproval": "Pending Approval",
@@ -160,6 +161,29 @@
       "description": "Manage guild points and roles",
       "pointsUpdated": "Points Updated",
       "pointsUpdatedDesc": "Added {{amount}} points to user."
+    },
+    "servers": {
+      "title": "Server Management",
+      "description": "Manage game servers available for scheduling",
+      "addServer": "Add Server",
+      "addNewServer": "Add New Server",
+      "createServer": "Create a new game server for scheduling.",
+      "editServer": "Edit Server",
+      "updateDetails": "Update server details.",
+      "serverName": "Server Name",
+      "serverNamePlaceholder": "e.g. Antica",
+      "region": "Region",
+      "regionPlaceholder": "e.g. EU",
+      "createServerBtn": "Create Server",
+      "saveChanges": "Save Changes",
+      "serverAdded": "Server Added",
+      "serverAddedDesc": "New server has been created.",
+      "serverUpdated": "Server Updated",
+      "serverUpdatedDesc": "Server details have been updated.",
+      "serverDeleted": "Server Deleted",
+      "serverDeletedDesc": "Server has been removed.",
+      "confirmDelete": "Are you sure you want to delete this server? This may affect existing respawns and schedules.",
+      "noServers": "No servers configured."
     }
   },
   "errors": {

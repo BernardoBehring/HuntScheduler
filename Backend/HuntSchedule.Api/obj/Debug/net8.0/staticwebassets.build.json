@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "T/iOUMrc8NqmFa/mFN/EGrwXwIbGe2OV1R1Geft/YZY=",
+  "Hash": "457Y1X7vFfjltFnW6u+iYhnn3M158p2pp5T7kMfudb8=",
   "Source": "HuntSchedule.Api",
   "BasePath": "_content/HuntSchedule.Api",
   "Mode": "Default",
@@ -55,12 +55,12 @@
       "OriginalItemSpec": "wwwroot/assets/index-BggB6qWi.css"
     },
     {
-      "Identity": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/assets/index-DxAlD7um.js",
+      "Identity": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/assets/index-Ih11s7f-.js",
       "SourceId": "HuntSchedule.Api",
       "SourceType": "Discovered",
       "ContentRoot": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/",
       "BasePath": "_content/HuntSchedule.Api",
-      "RelativePath": "assets/index-DxAlD7um.js",
+      "RelativePath": "assets/index-Ih11s7f-.js",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -71,7 +71,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/assets/index-DxAlD7um.js"
+      "OriginalItemSpec": "wwwroot/assets/index-Ih11s7f-.js"
     },
     {
       "Identity": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/favicon.png",

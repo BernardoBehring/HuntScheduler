@@ -108,7 +108,8 @@
       "requests": "Anfragen-Prüfung",
       "periods": "Zeiträume & Rotationen",
       "respawns": "Respawns & Slots",
-      "users": "Benutzer & Punkte"
+      "users": "Benutzer & Punkte",
+      "servers": "Server"
     },
     "requests": {
       "pendingApproval": "Ausstehende Genehmigung",
@@ -160,6 +161,29 @@
       "description": "Verwalte Gildenpunkte und Rollen",
       "pointsUpdated": "Punkte aktualisiert",
       "pointsUpdatedDesc": "{{amount}} Punkte zum Benutzer hinzugefügt."
+    },
+    "servers": {
+      "title": "Serververwaltung",
+      "description": "Verwalte Spielserver für die Terminplanung",
+      "addServer": "Server hinzufügen",
+      "addNewServer": "Neuen Server hinzufügen",
+      "createServer": "Erstelle einen neuen Spielserver für die Terminplanung.",
+      "editServer": "Server bearbeiten",
+      "updateDetails": "Serverdetails aktualisieren.",
+      "serverName": "Servername",
+      "serverNamePlaceholder": "z.B. Antica",
+      "region": "Region",
+      "regionPlaceholder": "z.B. EU",
+      "createServerBtn": "Server erstellen",
+      "saveChanges": "Änderungen speichern",
+      "serverAdded": "Server hinzugefügt",
+      "serverAddedDesc": "Neuer Server wurde erstellt.",
+      "serverUpdated": "Server aktualisiert",
+      "serverUpdatedDesc": "Serverdetails wurden aktualisiert.",
+      "serverDeleted": "Server gelöscht",
+      "serverDeletedDesc": "Server wurde entfernt.",
+      "confirmDelete": "Bist du sicher, dass du diesen Server löschen möchtest? Dies kann bestehende Respawns und Zeitpläne beeinflussen.",
+      "noServers": "Keine Server konfiguriert."
     }
   },
   "errors": {

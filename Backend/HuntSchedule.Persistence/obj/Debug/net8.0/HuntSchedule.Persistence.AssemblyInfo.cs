@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HuntSchedule.Persistence")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2cb31c793faed76a0b3cc24285ddbb0272efafeb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+01195df056821a2a62765a1dfb58008e9bcd0b6d")]
 [assembly: System.Reflection.AssemblyProductAttribute("HuntSchedule.Persistence")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HuntSchedule.Persistence")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

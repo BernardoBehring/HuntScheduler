@@ -217,6 +217,9 @@ interface AppState {
   addCharacter: (character: Omit<Character, 'id'>) => void;
   updateCharacter: (id: string, character: Partial<Omit<Character, 'id'>>) => void;
   deleteCharacter: (id: string) => void;
+  addServer: (server: Omit<Server, 'id'>) => void;
+  updateServer: (id: string, server: Partial<Omit<Server, 'id'>>) => void;
+  deleteServer: (id: string) => void;
   loadFromApi: () => Promise<void>;
   getStatusName: (statusId: string) => string;
   getDifficultyName: (difficultyId: string) => string;
@@ -698,6 +701,70 @@ export const useStore = create<AppState>((set, get) => ({
           ...u,
           characters: u.characters?.filter(c => c.id !== id)
         }))
+      }));
+    }
+  },
+
+  addServer: async (server) => {
+    const state = get();
+    if (state.useApi) {
+      try {
+        await api.servers.create({
+          name: server.name,
+          region: server.region,
+        });
+        await state.loadFromApi();
+      } catch (error) {
+        console.error('Failed to add server:', error);
+        throw error;
+      }
+    } else {
+      set((state) => ({
+        servers: [...state.servers, { 
+          ...server, 
+          id: Math.random().toString(36).substr(2, 9) 
+        }]
+      }));
+    }
+  },
+
+  updateServer: async (id, server) => {
+    const state = get();
+    if (state.useApi) {
+      try {
+        const existing = state.servers.find(s => s.id === id);
+        if (existing) {
+          await api.servers.update(parseInt(id), {
+            id: parseInt(id),
+            name: server.name || existing.name,
+            region: server.region || existing.region,
+          });
+          await state.loadFromApi();
+        }
+      } catch (error) {
+        console.error('Failed to update server:', error);
+        throw error;
+      }
+    } else {
+      set((state) => ({
+        servers: state.servers.map(s => s.id === id ? { ...s, ...server } : s)
+      }));
+    }
+  },
+
+  deleteServer: async (id) => {
+    const state = get();
+    if (state.useApi) {
+      try {
+        await api.servers.delete(parseInt(id));
+        await state.loadFromApi();
+      } catch (error) {
+        console.error('Failed to delete server:', error);
+        throw error;
+      }
+    } else {
+      set((state) => ({
+        servers: state.servers.filter(s => s.id !== id)
       }));
     }
   }

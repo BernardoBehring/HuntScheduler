@@ -108,7 +108,8 @@
       "requests": "Przegląd Wniosków",
       "periods": "Okresy i Rotacje",
       "respawns": "Respawny i Sloty",
-      "users": "Użytkownicy i Punkty"
+      "users": "Użytkownicy i Punkty",
+      "servers": "Serwery"
     },
     "requests": {
       "pendingApproval": "Oczekujące Zatwierdzenie",
@@ -160,6 +161,29 @@
       "description": "Zarządzaj punktami i rolami gildii",
       "pointsUpdated": "Punkty Zaktualizowane",
       "pointsUpdatedDesc": "Dodano {{amount}} punktów użytkownikowi."
+    },
+    "servers": {
+      "title": "Zarządzanie Serwerami",
+      "description": "Zarządzaj serwerami gry dostępnymi do harmonogramowania",
+      "addServer": "Dodaj Serwer",
+      "addNewServer": "Dodaj Nowy Serwer",
+      "createServer": "Utwórz nowy serwer gry do harmonogramowania.",
+      "editServer": "Edytuj Serwer",
+      "updateDetails": "Zaktualizuj szczegóły serwera.",
+      "serverName": "Nazwa Serwera",
+      "serverNamePlaceholder": "np. Antica",
+      "region": "Region",
+      "regionPlaceholder": "np. EU",
+      "createServerBtn": "Utwórz Serwer",
+      "saveChanges": "Zapisz Zmiany",
+      "serverAdded": "Serwer Dodany",
+      "serverAddedDesc": "Nowy serwer został utworzony.",
+      "serverUpdated": "Serwer Zaktualizowany",
+      "serverUpdatedDesc": "Szczegóły serwera zostały zaktualizowane.",
+      "serverDeleted": "Serwer Usunięty",
+      "serverDeletedDesc": "Serwer został usunięty.",
+      "confirmDelete": "Czy na pewno chcesz usunąć ten serwer? Może to wpłynąć na istniejące respawny i harmonogramy.",
+      "noServers": "Brak skonfigurowanych serwerów."
     }
   },
   "errors": {
