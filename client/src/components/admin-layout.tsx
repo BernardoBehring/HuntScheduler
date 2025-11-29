@@ -87,10 +87,10 @@ export function AdminLayout({ children, title, description }: AdminLayoutProps) 
       />
 
       <header className="fixed top-0 left-0 right-0 h-14 bg-card/90 backdrop-blur-md border-b border-border/40 z-50 md:hidden flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
-          <span className="font-display font-bold text-primary">{t('admin.title')}</span>
-        </div>
+        <Link href="/" className="flex items-center gap-2">
+          <Swords className="h-5 w-5 text-primary" />
+          <span className="font-display font-bold text-primary">{t('app.name')}</span>
+        </Link>
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -178,17 +178,17 @@ export function AdminLayout({ children, title, description }: AdminLayoutProps) 
       
       <aside className="w-64 border-r border-border/40 bg-card/50 backdrop-blur-sm z-10 hidden md:flex flex-col fixed h-full">
         <div className="p-4 border-b border-border/40">
-          <Link href="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-3">
-            <ChevronLeft className="h-4 w-4" />
-            {t('nav.dashboard')}
+          <Link href="/" className="flex items-center gap-2 mb-4 group">
+            <Swords className="h-6 w-6 text-primary" />
+            <span className="text-xl font-display font-bold text-primary">{t('app.name')}</span>
           </Link>
-          <h1 className="text-xl font-display font-bold text-primary flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            {t('admin.title')}
-          </h1>
-          <Badge variant="outline" className="mt-2 border-primary/50 text-primary text-xs">
-            {t('admin.accessGranted')}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium text-primary">{t('admin.title')}</span>
+            <Badge variant="outline" className="ml-auto border-primary/50 text-primary text-[10px]">
+              {t('admin.accessGranted')}
+            </Badge>
+          </div>
         </div>
 
         <ScrollArea className="flex-1 py-3">
