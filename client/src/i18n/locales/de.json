@@ -8,6 +8,7 @@
     "dashboard": "Dashboard",
     "huntSchedule": "Hunt Zeitplan",
     "myCharacters": "Meine Charaktere",
+    "profile": "Profil",
     "adminPanel": "Admin Panel"
   },
   "auth": {
@@ -246,6 +247,28 @@
       "claimRejectedDesc": "Der Antrag wurde abgelehnt.",
       "submittedOn": "Eingereicht am"
     }
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "description": "Sieh deine Kontoinformationen und Einstellungen",
+    "accountInfo": "Kontoinformationen",
+    "accountInfoDesc": "Deine persönlichen Kontodaten",
+    "preferences": "Einstellungen",
+    "preferencesDesc": "Passe deine Erfahrung an",
+    "language": "Sprache",
+    "guildPoints": "Gildenpunkte",
+    "mainCharacter": "Hauptcharakter",
+    "noMainCharacter": "Keiner gesetzt",
+    "activitySummary": "Aktivitätsübersicht",
+    "activitySummaryDesc": "Deine Aktivität auf der Plattform",
+    "characters": "Charaktere",
+    "huntRequests": "Hunt-Anfragen",
+    "pointsClaimed": "Beanspruchte Punkte",
+    "totalClaims": "Gesamtanträge",
+    "manageCharacters": "Charaktere verwalten",
+    "charactersLinked": "Charaktere verknüpft",
+    "viewSchedule": "Hunt Zeitplan ansehen",
+    "bookHuntSlots": "Buche deine Hunt-Slots"
   },
   "characters": {
     "title": "Meine Charaktere",

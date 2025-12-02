@@ -8,6 +8,7 @@
     "dashboard": "Panel",
     "huntSchedule": "Calendario de Hunts",
     "myCharacters": "Mis Personajes",
+    "profile": "Perfil",
     "adminPanel": "Panel Admin"
   },
   "auth": {
@@ -246,6 +247,28 @@
       "claimRejectedDesc": "La reclamación ha sido rechazada.",
       "submittedOn": "Enviado el"
     }
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "description": "Ve tu información de cuenta y preferencias",
+    "accountInfo": "Información de Cuenta",
+    "accountInfoDesc": "Tus detalles personales de cuenta",
+    "preferences": "Preferencias",
+    "preferencesDesc": "Personaliza tu experiencia",
+    "language": "Idioma",
+    "guildPoints": "Puntos de Guild",
+    "mainCharacter": "Personaje Principal",
+    "noMainCharacter": "Ninguno establecido",
+    "activitySummary": "Resumen de Actividad",
+    "activitySummaryDesc": "Tu actividad en la plataforma",
+    "characters": "Personajes",
+    "huntRequests": "Solicitudes de Hunt",
+    "pointsClaimed": "Puntos Reclamados",
+    "totalClaims": "Total de Reclamaciones",
+    "manageCharacters": "Gestionar Personajes",
+    "charactersLinked": "personajes vinculados",
+    "viewSchedule": "Ver Calendario de Hunts",
+    "bookHuntSlots": "Reserva tus horarios de hunt"
   },
   "characters": {
     "title": "Mis Personajes",

@@ -8,6 +8,7 @@
     "dashboard": "Panel",
     "huntSchedule": "Harmonogram Huntów",
     "myCharacters": "Moje Postacie",
+    "profile": "Profil",
     "adminPanel": "Panel Admina"
   },
   "auth": {
@@ -246,6 +247,28 @@
       "claimRejectedDesc": "Wniosek został odrzucony.",
       "submittedOn": "Wysłano dnia"
     }
+  },
+  "profile": {
+    "title": "Mój Profil",
+    "description": "Zobacz informacje o swoim koncie i preferencje",
+    "accountInfo": "Informacje o Koncie",
+    "accountInfoDesc": "Twoje osobiste dane konta",
+    "preferences": "Preferencje",
+    "preferencesDesc": "Dostosuj swoje doświadczenie",
+    "language": "Język",
+    "guildPoints": "Punkty Gildii",
+    "mainCharacter": "Główna Postać",
+    "noMainCharacter": "Nie ustawiono",
+    "activitySummary": "Podsumowanie Aktywności",
+    "activitySummaryDesc": "Twoja aktywność na platformie",
+    "characters": "Postacie",
+    "huntRequests": "Zgłoszenia Huntów",
+    "pointsClaimed": "Zdobyte Punkty",
+    "totalClaims": "Łączne Wnioski",
+    "manageCharacters": "Zarządzaj Postaciami",
+    "charactersLinked": "postaci połączonych",
+    "viewSchedule": "Zobacz Harmonogram Huntów",
+    "bookHuntSlots": "Zarezerwuj sloty na hunty"
   },
   "characters": {
     "title": "Moje Postacie",

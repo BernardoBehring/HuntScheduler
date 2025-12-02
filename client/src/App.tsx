@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Login from "@/pages/login";
 import CharactersPage from "@/pages/characters";
+import ProfilePage from "@/pages/profile";
 import AdminRequests from "@/pages/admin/requests";
 import AdminPeriods from "@/pages/admin/periods";
 import AdminRespawns from "@/pages/admin/respawns";
@@ -81,6 +82,10 @@ function Router() {
       
       <Route path="/characters">
         <ProtectedRoute component={CharactersPage} />
+      </Route>
+      
+      <Route path="/profile">
+        <ProtectedRoute component={ProfilePage} />
       </Route>
       
       <Route path="/admin">

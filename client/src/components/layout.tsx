@@ -45,6 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { href: "/", label: t('nav.dashboard'), icon: LayoutDashboard },
     { href: "/schedule", label: t('nav.huntSchedule'), icon: Scroll },
     { href: "/characters", label: t('nav.myCharacters'), icon: UserCircle },
+    { href: "/profile", label: t('nav.profile'), icon: Users },
   ];
 
   if (getRoleName(currentUser.roleId) === "admin") {
