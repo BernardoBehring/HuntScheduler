@@ -33,6 +33,8 @@ export interface User {
   roleId: string;
   role?: string;
   points: number;
+  email?: string;
+  whatsapp?: string;
   characters?: Character[];
 }
 

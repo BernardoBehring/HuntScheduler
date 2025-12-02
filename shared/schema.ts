@@ -15,6 +15,8 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   roleId: integer("role_id").notNull().references(() => roles.id).default(2),
   points: integer("points").notNull().default(0),
+  email: text("email"),
+  whatsapp: text("whatsapp"),
 });
 
 export const servers = pgTable("servers", {

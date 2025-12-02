@@ -65,4 +65,22 @@ public class UsersController : ControllerBase
         await _userService.UpdateAsync(user);
         return NoContent();
     }
+
+    [HttpPatch("{id}/profile")]
+    public async Task<IActionResult> UpdateProfile(int id, [FromBody] UpdateProfileDto dto)
+    {
+        var user = await _userService.GetByIdAsync(id);
+        if (user == null) return NotFound(_localization.GetString(UserNotFound));
+
+        user.Email = dto.Email;
+        user.Whatsapp = dto.Whatsapp;
+        await _userService.UpdateAsync(user);
+        return NoContent();
+    }
+}
+
+public class UpdateProfileDto
+{
+    public string? Email { get; set; }
+    public string? Whatsapp { get; set; }
 }

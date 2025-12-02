@@ -26,6 +26,14 @@ public class User
 
     public int Points { get; set; } = 0;
 
+    [MaxLength(255)]
+    [Column("email")]
+    public string? Email { get; set; }
+
+    [MaxLength(50)]
+    [Column("whatsapp")]
+    public string? Whatsapp { get; set; }
+
     public ICollection<Request> Requests { get; set; } = new List<Request>();
     
     public ICollection<Character> Characters { get; set; } = new List<Character>();

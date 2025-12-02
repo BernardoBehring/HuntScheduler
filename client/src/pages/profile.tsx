@@ -1,15 +1,19 @@
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout";
 import { useStore } from "@/lib/mockData";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "wouter";
 import { languages } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 import { 
   User, 
   Shield, 
@@ -19,14 +23,64 @@ import {
   ChevronRight,
   Star,
   Calendar,
-  Clock
+  Clock,
+  Mail,
+  Phone,
+  Pencil,
+  Save,
+  X
 } from "lucide-react";
 
 export default function ProfilePage() {
   const { t, i18n } = useTranslation();
-  const { currentUser, getRoleName } = useStore();
+  const { currentUser, getRoleName, setCurrentUser } = useStore();
+  const queryClient = useQueryClient();
 
   const userId = currentUser?.id ? parseInt(currentUser.id) : undefined;
+  
+  const [isEditing, setIsEditing] = useState(false);
+  const [email, setEmail] = useState(currentUser?.email || '');
+  const [whatsapp, setWhatsapp] = useState(currentUser?.whatsapp || '');
+
+  useEffect(() => {
+    if (currentUser) {
+      setEmail(currentUser.email || '');
+      setWhatsapp(currentUser.whatsapp || '');
+    }
+  }, [currentUser]);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: { email?: string; whatsapp?: string }) =>
+      userId ? api.users.updateProfile(userId, data) : Promise.reject(),
+    onSuccess: () => {
+      if (currentUser) {
+        setCurrentUser({ ...currentUser, email, whatsapp });
+      }
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setIsEditing(false);
+      toast({
+        title: t('profile.profileUpdated'),
+        description: t('profile.profileUpdatedDesc'),
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t('common.error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleSave = () => {
+    updateProfileMutation.mutate({ email: email || undefined, whatsapp: whatsapp || undefined });
+  };
+
+  const handleCancel = () => {
+    setEmail(currentUser?.email || '');
+    setWhatsapp(currentUser?.whatsapp || '');
+    setIsEditing(false);
+  };
 
   const { data: characters = [] } = useQuery({
     queryKey: ['characters', 'user', userId],
@@ -128,37 +182,131 @@ export default function ProfilePage() {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5 text-primary" />
-                {t('profile.preferences')}
-              </CardTitle>
-              <CardDescription>{t('profile.preferencesDesc')}</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-primary" />
+                  {t('profile.contactInfo')}
+                </CardTitle>
+                <CardDescription>{t('profile.contactInfoDesc')}</CardDescription>
+              </div>
+              {!isEditing ? (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setIsEditing(true)}
+                  data-testid="button-edit-profile"
+                >
+                  <Pencil className="h-4 w-4 mr-1" />
+                  {t('common.edit')}
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleCancel}
+                    data-testid="button-cancel-edit"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    {t('common.cancel')}
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={handleSave}
+                    disabled={updateProfileMutation.isPending}
+                    data-testid="button-save-profile"
+                  >
+                    <Save className="h-4 w-4 mr-1" />
+                    {t('common.save')}
+                  </Button>
+                </div>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">{t('profile.language')}</p>
-                <div className="flex flex-wrap gap-2">
-                  {languages.map((lang) => (
-                    <Button
-                      key={lang.code}
-                      variant={resolvedLang === lang.code ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => i18n.changeLanguage(lang.code)}
-                      className={cn(
-                        resolvedLang === lang.code && "bg-primary text-primary-foreground"
-                      )}
-                      data-testid={`button-language-${lang.code}`}
-                    >
-                      <span className="mr-1">{lang.flag}</span>
-                      {lang.name}
-                    </Button>
-                  ))}
+              {isEditing ? (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">{t('profile.email')}</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t('profile.emailPlaceholder')}
+                      data-testid="input-email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsapp">{t('profile.whatsapp')}</Label>
+                    <Input
+                      id="whatsapp"
+                      type="tel"
+                      value={whatsapp}
+                      onChange={(e) => setWhatsapp(e.target.value)}
+                      placeholder={t('profile.whatsappPlaceholder')}
+                      data-testid="input-whatsapp"
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t('profile.email')}</p>
+                      <p className="font-medium">
+                        {currentUser.email || <span className="text-muted-foreground italic">{t('profile.notProvided')}</span>}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t('profile.whatsapp')}</p>
+                      <p className="font-medium">
+                        {currentUser.whatsapp || <span className="text-muted-foreground italic">{t('profile.notProvided')}</span>}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
-        </div>
+
+          </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5 text-primary" />
+              {t('profile.preferences')}
+            </CardTitle>
+            <CardDescription>{t('profile.preferencesDesc')}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">{t('profile.language')}</p>
+              <div className="flex flex-wrap gap-2">
+                {languages.map((lang) => (
+                  <Button
+                    key={lang.code}
+                    variant={resolvedLang === lang.code ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => i18n.changeLanguage(lang.code)}
+                    className={cn(
+                      resolvedLang === lang.code && "bg-primary text-primary-foreground"
+                    )}
+                    data-testid={`button-language-${lang.code}`}
+                  >
+                    <span className="mr-1">{lang.flag}</span>
+                    {lang.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

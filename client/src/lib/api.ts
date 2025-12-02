@@ -33,6 +33,8 @@ export interface User {
   roleId: number;
   role?: Role;
   points: number;
+  email?: string;
+  whatsapp?: string;
   characters?: Character[];
 }
 
@@ -150,6 +152,11 @@ export interface ReviewPointClaimDto {
   adminResponse: string;
 }
 
+export interface UpdateProfileDto {
+  email?: string;
+  whatsapp?: string;
+}
+
 export interface CreateRequestDto {
   userId: number;
   serverId: number;
@@ -185,6 +192,12 @@ export const api = {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(amount),
+      }).then(r => handleResponse(r)),
+    updateProfile: (id: number, data: UpdateProfileDto): Promise<void> =>
+      fetch(`${API_BASE}/users/${id}/profile`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       }).then(r => handleResponse(r)),
   },
 
