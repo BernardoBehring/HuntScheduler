@@ -49,3 +49,4 @@ args = "bash start-backend.sh"
 
 [agent]
 mockupState = "FULLSTACK"
+integrations = ["google-mail:1.0.0"]
