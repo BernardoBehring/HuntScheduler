@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "v8WjKKXs3TqmSvY5+/HpkJiWbzC3Cy85+SRE9xXyOrk=",
+  "Hash": "FDimT/zcmLNrugAL17d9Eu/Vf2QYx91Zp9muzEepNwQ=",
   "Source": "HuntSchedule.Api",
   "BasePath": "_content/HuntSchedule.Api",
   "Mode": "Default",
@@ -36,12 +36,12 @@
       "OriginalItemSpec": "wwwroot/assets/dark_fantasy_map_texture_background-C3CofNuN.png"
     },
     {
-      "Identity": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/assets/index-C09o_9RU.js",
+      "Identity": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/assets/index-B5Q103R5.css",
       "SourceId": "HuntSchedule.Api",
       "SourceType": "Discovered",
       "ContentRoot": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/",
       "BasePath": "_content/HuntSchedule.Api",
-      "RelativePath": "assets/index-C09o_9RU.js",
+      "RelativePath": "assets/index-B5Q103R5.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -52,15 +52,15 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/assets/index-C09o_9RU.js"
+      "OriginalItemSpec": "wwwroot/assets/index-B5Q103R5.css"
     },
     {
-      "Identity": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/assets/index-IiMyZ-Vd.css",
+      "Identity": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/assets/index-Dye5ed4r.js",
       "SourceId": "HuntSchedule.Api",
       "SourceType": "Discovered",
       "ContentRoot": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/",
       "BasePath": "_content/HuntSchedule.Api",
-      "RelativePath": "assets/index-IiMyZ-Vd.css",
+      "RelativePath": "assets/index-Dye5ed4r.js",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -71,7 +71,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/assets/index-IiMyZ-Vd.css"
+      "OriginalItemSpec": "wwwroot/assets/index-Dye5ed4r.js"
     },
     {
       "Identity": "/home/runner/workspace/Backend/HuntSchedule.Api/wwwroot/favicon.png",

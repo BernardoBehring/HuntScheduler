@@ -7,6 +7,7 @@
   "nav": {
     "dashboard": "Panel",
     "huntSchedule": "Calendario de Hunts",
+    "myCharacters": "Mis Personajes",
     "adminPanel": "Panel Admin"
   },
   "auth": {
@@ -245,6 +246,30 @@
       "claimRejectedDesc": "La reclamación ha sido rechazada.",
       "submittedOn": "Enviado el"
     }
+  },
+  "characters": {
+    "title": "Mis Personajes",
+    "description": "Vincula tus personajes de Tibia a tu cuenta",
+    "addCharacter": "Añadir Personaje",
+    "addCharacterDesc": "Ingresa el nombre de tu personaje exactamente como aparece en Tibia.com. Verificaremos que existe y sincronizaremos los detalles.",
+    "characterName": "Nombre del Personaje",
+    "characterNamePlaceholder": "ej: Bubble",
+    "selectServer": "Seleccionar Servidor",
+    "verificationNote": "Tu personaje será verificado en Tibia.com. Asegúrate de que el nombre y el servidor coincidan exactamente.",
+    "verifying": "Verificando...",
+    "noCharacters": "Sin Personajes Vinculados",
+    "noCharactersDesc": "Añade tus personajes de Tibia para usarlos en solicitudes de hunt y formaciones de grupo.",
+    "addFirstCharacter": "Añade Tu Primer Personaje",
+    "main": "Principal",
+    "setAsMain": "Establecer como Principal",
+    "verified": "Verificado en Tibia.com",
+    "added": "Personaje Añadido",
+    "addedDesc": "Tu personaje ha sido verificado y vinculado a tu cuenta.",
+    "mainSet": "Personaje Principal Establecido",
+    "mainSetDesc": "Este personaje ahora es tu personaje principal.",
+    "deleted": "Personaje Eliminado",
+    "deletedDesc": "El personaje ha sido desvinculado de tu cuenta.",
+    "fillAllFields": "Por favor, completa todos los campos requeridos"
   },
   "errors": {
     "loadFailed": "Error al cargar datos",

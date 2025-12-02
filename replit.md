@@ -117,6 +117,7 @@ Located in `client/src/i18n/`:
 - `/` - Dashboard with user stats and requests
 - `/login` - User selection (demo mode)
 - `/schedule` - Hunt schedule grid view
+- `/characters` - My Characters page for linking Tibia characters to account
 - `/admin` - Admin panel for managing periods, users, respawns
 
 ## Running the Application

@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Login from "@/pages/login";
+import CharactersPage from "@/pages/characters";
 import AdminRequests from "@/pages/admin/requests";
 import AdminPeriods from "@/pages/admin/periods";
 import AdminRespawns from "@/pages/admin/respawns";
@@ -76,6 +77,10 @@ function Router() {
       
       <Route path="/schedule">
         <SchedulePage />
+      </Route>
+      
+      <Route path="/characters">
+        <ProtectedRoute component={CharactersPage} />
       </Route>
       
       <Route path="/admin">

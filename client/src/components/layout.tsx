@@ -12,7 +12,8 @@ import {
   Users,
   Menu,
   X,
-  Globe
+  Globe,
+  UserCircle
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -43,6 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: "/", label: t('nav.dashboard'), icon: LayoutDashboard },
     { href: "/schedule", label: t('nav.huntSchedule'), icon: Scroll },
+    { href: "/characters", label: t('nav.myCharacters'), icon: UserCircle },
   ];
 
   if (getRoleName(currentUser.roleId) === "admin") {

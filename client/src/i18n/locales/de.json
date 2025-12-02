@@ -7,6 +7,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "huntSchedule": "Hunt Zeitplan",
+    "myCharacters": "Meine Charaktere",
     "adminPanel": "Admin Panel"
   },
   "auth": {
@@ -245,6 +246,30 @@
       "claimRejectedDesc": "Der Antrag wurde abgelehnt.",
       "submittedOn": "Eingereicht am"
     }
+  },
+  "characters": {
+    "title": "Meine Charaktere",
+    "description": "Verknüpfe deine Tibia-Charaktere mit deinem Konto",
+    "addCharacter": "Charakter hinzufügen",
+    "addCharacterDesc": "Gib den Namen deines Charakters genau so ein, wie er auf Tibia.com erscheint. Wir überprüfen, ob er existiert und synchronisieren die Details.",
+    "characterName": "Charaktername",
+    "characterNamePlaceholder": "z.B. Bubble",
+    "selectServer": "Server auswählen",
+    "verificationNote": "Dein Charakter wird gegen Tibia.com verifiziert. Stelle sicher, dass Name und Server genau übereinstimmen.",
+    "verifying": "Verifiziere...",
+    "noCharacters": "Keine Charaktere verknüpft",
+    "noCharactersDesc": "Füge deine Tibia-Charaktere hinzu, um sie in Hunt-Anfragen und Gruppenformationen zu verwenden.",
+    "addFirstCharacter": "Füge deinen ersten Charakter hinzu",
+    "main": "Haupt",
+    "setAsMain": "Als Hauptcharakter setzen",
+    "verified": "Auf Tibia.com verifiziert",
+    "added": "Charakter hinzugefügt",
+    "addedDesc": "Dein Charakter wurde verifiziert und mit deinem Konto verknüpft.",
+    "mainSet": "Hauptcharakter gesetzt",
+    "mainSetDesc": "Dieser Charakter ist jetzt dein Hauptcharakter.",
+    "deleted": "Charakter entfernt",
+    "deletedDesc": "Der Charakter wurde von deinem Konto getrennt.",
+    "fillAllFields": "Bitte fülle alle erforderlichen Felder aus"
   },
   "errors": {
     "loadFailed": "Laden der Daten fehlgeschlagen",

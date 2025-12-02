@@ -7,6 +7,7 @@
   "nav": {
     "dashboard": "Panel",
     "huntSchedule": "Harmonogram Huntów",
+    "myCharacters": "Moje Postacie",
     "adminPanel": "Panel Admina"
   },
   "auth": {
@@ -245,6 +246,30 @@
       "claimRejectedDesc": "Wniosek został odrzucony.",
       "submittedOn": "Wysłano dnia"
     }
+  },
+  "characters": {
+    "title": "Moje Postacie",
+    "description": "Połącz swoje postacie z Tibii ze swoim kontem",
+    "addCharacter": "Dodaj Postać",
+    "addCharacterDesc": "Wpisz nazwę swojej postaci dokładnie tak, jak pojawia się na Tibia.com. Zweryfikujemy, czy istnieje i zsynchronizujemy szczegóły.",
+    "characterName": "Nazwa Postaci",
+    "characterNamePlaceholder": "np. Bubble",
+    "selectServer": "Wybierz Serwer",
+    "verificationNote": "Twoja postać zostanie zweryfikowana na Tibia.com. Upewnij się, że nazwa i serwer dokładnie się zgadzają.",
+    "verifying": "Weryfikuję...",
+    "noCharacters": "Brak Połączonych Postaci",
+    "noCharactersDesc": "Dodaj swoje postacie z Tibii, aby używać ich w zgłoszeniach huntów i formacjach grup.",
+    "addFirstCharacter": "Dodaj Swoją Pierwszą Postać",
+    "main": "Główna",
+    "setAsMain": "Ustaw jako Główną",
+    "verified": "Zweryfikowano na Tibia.com",
+    "added": "Postać Dodana",
+    "addedDesc": "Twoja postać została zweryfikowana i połączona z twoim kontem.",
+    "mainSet": "Główna Postać Ustawiona",
+    "mainSetDesc": "Ta postać jest teraz twoją główną postacią.",
+    "deleted": "Postać Usunięta",
+    "deletedDesc": "Postać została odłączona od twojego konta.",
+    "fillAllFields": "Proszę wypełnić wszystkie wymagane pola"
   },
   "errors": {
     "loadFailed": "Nie udało się załadować danych",

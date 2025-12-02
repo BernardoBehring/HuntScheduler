@@ -7,6 +7,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "huntSchedule": "Hunt Schedule",
+    "myCharacters": "My Characters",
     "adminPanel": "Admin Panel"
   },
   "auth": {
@@ -245,6 +246,30 @@
       "claimRejectedDesc": "The claim has been rejected.",
       "submittedOn": "Submitted on"
     }
+  },
+  "characters": {
+    "title": "My Characters",
+    "description": "Link your Tibia characters to your account",
+    "addCharacter": "Add Character",
+    "addCharacterDesc": "Enter your character name exactly as it appears on Tibia.com. We will verify it exists and sync the details.",
+    "characterName": "Character Name",
+    "characterNamePlaceholder": "e.g. Bubble",
+    "selectServer": "Select Server",
+    "verificationNote": "Your character will be verified against Tibia.com. Make sure the name and server match exactly.",
+    "verifying": "Verifying...",
+    "noCharacters": "No Characters Linked",
+    "noCharactersDesc": "Add your Tibia characters to use them in hunt requests and party formations.",
+    "addFirstCharacter": "Add Your First Character",
+    "main": "Main",
+    "setAsMain": "Set as Main",
+    "verified": "Verified on Tibia.com",
+    "added": "Character Added",
+    "addedDesc": "Your character has been verified and linked to your account.",
+    "mainSet": "Main Character Set",
+    "mainSetDesc": "This character is now your main character.",
+    "deleted": "Character Removed",
+    "deletedDesc": "The character has been unlinked from your account.",
+    "fillAllFields": "Please fill in all required fields"
   },
   "errors": {
     "loadFailed": "Failed to load data",
