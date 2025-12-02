@@ -193,6 +193,13 @@ export function AdminLayout({ children, title, description }: AdminLayoutProps) 
 
         <ScrollArea className="flex-1 py-3">
           <nav className="px-3 space-y-1">
+            <Link 
+              href="/"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 text-muted-foreground hover:bg-accent/5 hover:text-foreground mb-2 border-b border-border/40 pb-3"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="text-sm font-medium">{t('nav.dashboard')}</span>
+            </Link>
             {adminNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.href || (item.href !== "/admin" && location.startsWith(item.href));
