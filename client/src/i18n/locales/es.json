@@ -110,6 +110,9 @@
     "noActivePeriod": "Sin Período Activo",
     "partyLeader": "Líder del Grupo",
     "partyMembersOptional": "Miembros del Grupo (Opcional)",
+    "partyMembers": "Miembros del Grupo",
+    "minMaxPlayers": "Mín: {{min}}, Máx: {{max}} jugadores",
+    "minPlayersError": "Este respawn requiere al menos {{min}} jugadores. Actualmente tienes {{current}}.",
     "memberPlaceholder": "Nombre del Miembro {{number}}",
     "confirmRequest": "Confirmar Solicitud",
     "requestWarning": "Estás solicitando este horario para toda la duración del período seleccionado. Asegúrate de que tu equipo pueda comprometerse con este horario."

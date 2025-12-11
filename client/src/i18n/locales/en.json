@@ -110,6 +110,9 @@
     "noActivePeriod": "No Active Period",
     "partyLeader": "Party Leader",
     "partyMembersOptional": "Party Members (Optional)",
+    "partyMembers": "Party Members",
+    "minMaxPlayers": "Min: {{min}}, Max: {{max}} players",
+    "minPlayersError": "This respawn requires at least {{min}} players. You currently have {{current}}.",
     "memberPlaceholder": "Member {{number}} Name",
     "confirmRequest": "Confirm Request",
     "requestWarning": "You are requesting this slot for the entire duration of the selected period. Ensure your team can commit to this schedule."

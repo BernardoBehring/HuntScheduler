@@ -110,6 +110,9 @@
     "noActivePeriod": "Brak Aktywnego Okresu",
     "partyLeader": "Lider Grupy",
     "partyMembersOptional": "Członkowie Grupy (Opcjonalnie)",
+    "partyMembers": "Członkowie Grupy",
+    "minMaxPlayers": "Min: {{min}}, Maks: {{max}} graczy",
+    "minPlayersError": "Ten respawn wymaga co najmniej {{min}} graczy. Aktualnie masz {{current}}.",
     "memberPlaceholder": "Nazwa Członka {{number}}",
     "confirmRequest": "Potwierdź Zgłoszenie",
     "requestWarning": "Zgłaszasz się na ten slot na cały czas trwania wybranego okresu. Upewnij się, że twoja drużyna może zobowiązać się do tego harmonogramu."

@@ -110,6 +110,9 @@
     "noActivePeriod": "Kein aktiver Zeitraum",
     "partyLeader": "Gruppenleiter",
     "partyMembersOptional": "Gruppenmitglieder (Optional)",
+    "partyMembers": "Gruppenmitglieder",
+    "minMaxPlayers": "Min: {{min}}, Max: {{max}} Spieler",
+    "minPlayersError": "Dieser Respawn erfordert mindestens {{min}} Spieler. Du hast derzeit {{current}}.",
     "memberPlaceholder": "Name von Mitglied {{number}}",
     "confirmRequest": "Anfrage bestätigen",
     "requestWarning": "Du beantragst diesen Slot für die gesamte Dauer des ausgewählten Zeitraums. Stelle sicher, dass dein Team sich auf diesen Zeitplan festlegen kann."

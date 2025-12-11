@@ -202,10 +202,19 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
   const { addRequest, currentUser } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [party, setParty] = useState(['', '', '', '']);
+  const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
 
   const handleSubmit = () => {
     const filteredParty = party.filter(p => p.trim() !== '');
+    const totalPartySize = 1 + filteredParty.length; // Leader + members
+    
+    if (totalPartySize < respawn.minPlayers) {
+      setError(t('schedule.minPlayersError', { min: respawn.minPlayers, current: totalPartySize }));
+      return;
+    }
+    
+    setError(null);
     addRequest({
       userId: currentUser!.id,
       serverId: server,
@@ -262,7 +271,12 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
             <Input value={currentUser?.username} disabled className="bg-muted/50" />
           </div>
           <div className="space-y-2">
-            <Label>{t('schedule.partyMembersOptional')}</Label>
+            <Label>
+              {t('schedule.partyMembers')} 
+              <span className="text-xs text-muted-foreground ml-2">
+                ({t('schedule.minMaxPlayers', { min: respawn.minPlayers, max: respawn.maxPlayers })})
+              </span>
+            </Label>
             {party.map((member, i) => (
               <Input 
                 key={i} 
@@ -272,11 +286,19 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
                   const newParty = [...party];
                   newParty[i] = e.target.value;
                   setParty(newParty);
+                  setError(null);
                 }}
                 data-testid={`input-party-member-${i}`}
               />
             ))}
           </div>
+          
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-destructive">{error}</p>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleSubmit} className="bg-primary text-primary-foreground hover:bg-primary/90" data-testid="button-confirm-request">
