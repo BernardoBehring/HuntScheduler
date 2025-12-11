@@ -435,6 +435,7 @@ export const useStore = create<AppState>((set, get) => ({
         }));
       } catch (error) {
         console.error('Failed to add request:', error);
+        throw error;
       }
     } else {
       set((state) => ({

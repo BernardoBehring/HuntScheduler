@@ -1,4 +1,4 @@
-import { useStore, SchedulePeriod } from "@/lib/mockData";
+import { useStore, SchedulePeriod, Respawn } from "@/lib/mockData";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -198,38 +198,49 @@ export function HuntSchedule() {
   );
 }
 
-function RequestDialog({ server, respawn, slot, period }: { server: string, respawn: any, slot: any, period: SchedulePeriod }) {
+function RequestDialog({ server, respawn, slot, period }: { server: string, respawn: Respawn, slot: any, period: SchedulePeriod }) {
   const { addRequest, currentUser } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [party, setParty] = useState(['', '', '', '']);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useTranslation();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const filteredParty = party.filter(p => p.trim() !== '');
     const totalPartySize = 1 + filteredParty.length; // Leader + members
     
-    if (totalPartySize < respawn.minPlayers) {
-      setError(t('schedule.minPlayersError', { min: respawn.minPlayers, current: totalPartySize }));
+    const minRequired = respawn.minPlayers || 1;
+    if (totalPartySize < minRequired) {
+      setError(t('schedule.minPlayersError', { min: minRequired, current: totalPartySize }));
       return;
     }
     
     setError(null);
-    addRequest({
-      userId: currentUser!.id,
-      serverId: server,
-      respawnId: respawn.id,
-      slotId: slot.id,
-      periodId: period.id,
-      partyMembers: filteredParty.map((name, idx) => ({
-        id: `temp-${idx}`,
-        requestId: '',
-        characterId: '',
-        character: { id: '', name, serverId: server, level: 0, isMain: false },
-        roleInParty: 'member'
-      }))
-    });
-    setIsOpen(false);
+    setIsSubmitting(true);
+    
+    try {
+      await addRequest({
+        userId: currentUser!.id,
+        serverId: server,
+        respawnId: respawn.id,
+        slotId: slot.id,
+        periodId: period.id,
+        partyMembers: filteredParty.map((name, idx) => ({
+          id: `temp-${idx}`,
+          requestId: '',
+          characterId: '',
+          character: { id: '', name, serverId: server, level: 0, isMain: false },
+          roleInParty: 'member'
+        }))
+      });
+      setIsOpen(false);
+      setParty(['', '', '', '']);
+    } catch (err) {
+      setError(t('common.error') || 'Failed to submit request');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -301,8 +312,14 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
           )}
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit} className="bg-primary text-primary-foreground hover:bg-primary/90" data-testid="button-confirm-request">
-            {t('schedule.confirmRequest')}
+          <Button 
+            type="submit" 
+            onClick={handleSubmit} 
+            className="bg-primary text-primary-foreground hover:bg-primary/90" 
+            data-testid="button-confirm-request"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? t('common.loading') || 'Submitting...' : t('schedule.confirmRequest')}
           </Button>
         </DialogFooter>
       </DialogContent>
