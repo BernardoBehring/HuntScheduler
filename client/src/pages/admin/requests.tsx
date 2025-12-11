@@ -11,18 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "react-i18next";
 
 export default function AdminRequests() {
-  const { requests, users, updateRequestStatus, servers, respawns, periods, characters, slots } = useStore();
+  const { requests, users, updateRequestStatus, servers, respawns, periods, characters, slots, statuses } = useStore();
   const { t } = useTranslation();
   const [filterServer, setFilterServer] = useState<string>("all");
 
+  const pendingStatusId = statuses.find(s => s.name === 'pending')?.id;
+  const approvedStatusId = statuses.find(s => s.name === 'approved')?.id;
+  const rejectedStatusId = statuses.find(s => s.name === 'rejected')?.id;
+
   const filteredPendingRequests = (filterServer === "all" 
-    ? requests.filter(r => String(r.statusId) === '1')
-    : requests.filter(r => String(r.statusId) === '1' && String(r.serverId) === filterServer)
+    ? requests.filter(r => r.statusId === pendingStatusId)
+    : requests.filter(r => r.statusId === pendingStatusId && String(r.serverId) === filterServer)
   ).sort((a, b) => b.createdAt - a.createdAt);
 
   const filteredProcessedRequests = (filterServer === "all"
-    ? requests.filter(r => String(r.statusId) !== '1')
-    : requests.filter(r => String(r.statusId) !== '1' && String(r.serverId) === filterServer)
+    ? requests.filter(r => r.statusId !== pendingStatusId)
+    : requests.filter(r => r.statusId !== pendingStatusId && String(r.serverId) === filterServer)
   ).sort((a, b) => b.createdAt - a.createdAt);
 
   const getCharacterName = (userId: string, serverId: string) => {
@@ -35,22 +39,18 @@ export default function AdminRequests() {
   };
 
   const getTranslatedStatus = (statusId: string) => {
-    const statusMap: Record<string, string> = {
-      '1': 'pending',
-      '2': 'approved', 
-      '3': 'rejected',
-      '4': 'cancelled'
-    };
-    return t(`status.${statusMap[statusId] || 'pending'}`);
+    const status = statuses.find(s => s.id === statusId);
+    return t(`status.${status?.name || 'pending'}`);
   };
 
   const handleReview = (id: string, statusId: string, reason?: string) => {
     updateRequestStatus(id, statusId, reason);
-    const statusKey = statusId === '2' ? 'approved' : 'rejected';
+    const isApproval = statusId === approvedStatusId;
+    const statusKey = isApproval ? 'approved' : 'rejected';
     toast({
-      title: t(`admin.requests.request${statusId === '2' ? 'Approved' : 'Rejected'}`),
+      title: t(`admin.requests.request${isApproval ? 'Approved' : 'Rejected'}`),
       description: t('admin.requests.requestStatus', { status: t(`status.${statusKey}`).toLowerCase() }),
-      variant: statusId === '2' ? 'default' : 'destructive',
+      variant: isApproval ? 'default' : 'destructive',
     });
   };
 
@@ -106,10 +106,10 @@ export default function AdminRequests() {
                       </div>
 
                       <div className="flex gap-2 pt-1">
-                        <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white h-8" onClick={() => handleReview(req.id, '2')} data-testid={`button-approve-${req.id}`}>
+                        <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white h-8" onClick={() => approvedStatusId && handleReview(req.id, approvedStatusId)} data-testid={`button-approve-${req.id}`}>
                           <Check className="h-3 w-3 mr-1" /> {t('admin.requests.approve')}
                         </Button>
-                        <Button size="sm" variant="destructive" className="flex-1 h-8" onClick={() => handleReview(req.id, '3', 'Admin declined')} data-testid={`button-reject-${req.id}`}>
+                        <Button size="sm" variant="destructive" className="flex-1 h-8" onClick={() => rejectedStatusId && handleReview(req.id, rejectedStatusId, 'Admin declined')} data-testid={`button-reject-${req.id}`}>
                           <X className="h-3 w-3 mr-1" /> {t('admin.requests.reject')}
                         </Button>
                       </div>
@@ -142,7 +142,7 @@ export default function AdminRequests() {
                           <p className="text-xs text-muted-foreground">{respawnName}</p>
                           <p className="text-xs text-primary/70">{serverName}</p>
                         </div>
-                        <Badge variant={req.statusId === '2' ? 'default' : 'destructive'} className="text-xs">
+                        <Badge variant={req.statusId === approvedStatusId ? 'default' : 'destructive'} className="text-xs">
                           {statusName}
                         </Badge>
                       </div>
