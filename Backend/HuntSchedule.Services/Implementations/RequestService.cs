@@ -36,8 +36,21 @@ public class RequestService : IRequestService
 
     public async Task<ServiceResult<Request>> CreateAsync(CreateRequestDto dto)
     {
+        if (dto.PartyMembers == null || dto.PartyMembers.Count == 0)
+        {
+            return ServiceResult<Request>.Fail(_localization.GetString(PartyMembersRequired), Validation);
+        }
+
         var server = await _unitOfWork.Servers.GetByIdAsync(dto.ServerId);
         if (server == null) return ServiceResult<Request>.Fail(_localization.GetString(ServerNotFound), NotFound);
+
+        var respawn = await _unitOfWork.Respawns.GetByIdAsync(dto.RespawnId);
+        if (respawn == null) return ServiceResult<Request>.Fail(_localization.GetString(RespawnNotFound), NotFound);
+
+        if (dto.PartyMembers.Count < respawn.MinPlayers)
+        {
+            return ServiceResult<Request>.Fail(_localization.GetString(InsufficientPartyMembers, respawn.MinPlayers, dto.PartyMembers.Count), Validation);
+        }
 
         var pendingStatus = await _unitOfWork.RequestStatuses.GetByNameAsync("pending");
 

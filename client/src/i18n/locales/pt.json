@@ -47,7 +47,9 @@
     "inactive": "Inativo",
     "user": "Usuário",
     "allServers": "Todos os Servidores",
-    "error": "Erro"
+    "error": "Erro",
+    "players": "Jogadores",
+    "difficulty": "Dificuldade"
   },
   "status": {
     "pending": "Pendente",
@@ -159,6 +161,7 @@
       "updateDetails": "Atualize os detalhes desta área de caça.",
       "respawnName": "Nome do Respawn",
       "respawnNamePlaceholder": "ex: Library - Ice",
+      "minPlayers": "Mín de Jogadores",
       "maxPlayers": "Máx de Jogadores",
       "createRespawn": "Criar Respawn",
       "saveChanges": "Salvar Alterações",

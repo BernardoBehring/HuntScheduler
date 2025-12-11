@@ -17,4 +17,6 @@ public static class ErrorKeys
     public const string CharacterServerNotConfigured = "CharacterServerNotConfigured";
     public const string CharacterServerMismatch = "CharacterServerMismatch";
     public const string ConflictWithApprovedRequest = "ConflictWithApprovedRequest";
+    public const string PartyMembersRequired = "PartyMembersRequired";
+    public const string InsufficientPartyMembers = "InsufficientPartyMembers";
 }

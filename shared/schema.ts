@@ -57,6 +57,7 @@ export const respawns = pgTable("respawns", {
   serverId: integer("server_id").notNull().references(() => servers.id),
   name: text("name").notNull(),
   difficultyId: integer("difficulty_id").notNull().references(() => difficulties.id),
+  minPlayers: integer("min_players").notNull().default(1),
   maxPlayers: integer("max_players").notNull().default(4),
 });
 

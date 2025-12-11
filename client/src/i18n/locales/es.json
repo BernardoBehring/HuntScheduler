@@ -47,6 +47,8 @@
     "inactive": "Inactivo",
     "user": "Usuario",
     "allServers": "Todos los Servidores",
+    "players": "Jugadores",
+    "difficulty": "Dificultad",
     "error": "Error"
   },
   "status": {
@@ -159,6 +161,7 @@
       "updateDetails": "Actualiza los detalles de esta área de caza.",
       "respawnName": "Nombre del Respawn",
       "respawnNamePlaceholder": "ej: Library - Ice",
+      "minPlayers": "Mín Jugadores",
       "maxPlayers": "Máx Jugadores",
       "createRespawn": "Crear Respawn",
       "saveChanges": "Guardar Cambios",

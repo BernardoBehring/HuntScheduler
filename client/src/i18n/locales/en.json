@@ -47,7 +47,9 @@
     "inactive": "Inactive",
     "user": "User",
     "allServers": "All Servers",
-    "error": "Error"
+    "error": "Error",
+    "players": "Players",
+    "difficulty": "Difficulty"
   },
   "status": {
     "pending": "Pending",
@@ -159,6 +161,7 @@
       "updateDetails": "Update details for this hunting area.",
       "respawnName": "Respawn Name",
       "respawnNamePlaceholder": "e.g. Library - Ice",
+      "minPlayers": "Min Players",
       "maxPlayers": "Max Players",
       "createRespawn": "Create Respawn",
       "saveChanges": "Save Changes",

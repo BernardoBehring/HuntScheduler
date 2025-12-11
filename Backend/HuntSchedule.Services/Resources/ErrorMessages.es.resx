@@ -84,4 +84,10 @@
   <data name="DifficultyNotFound" xml:space="preserve">
     <value>Dificultad no encontrada</value>
   </data>
+  <data name="PartyMembersRequired" xml:space="preserve">
+    <value>Se requiere al menos un miembro del grupo</value>
+  </data>
+  <data name="InsufficientPartyMembers" xml:space="preserve">
+    <value>Este respawn requiere al menos {0} miembros del grupo, pero solo se proporcionaron {1}</value>
+  </data>
 </root>

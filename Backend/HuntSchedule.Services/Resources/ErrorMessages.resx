@@ -84,4 +84,10 @@
   <data name="DifficultyNotFound" xml:space="preserve">
     <value>Difficulty not found</value>
   </data>
+  <data name="PartyMembersRequired" xml:space="preserve">
+    <value>At least one party member is required</value>
+  </data>
+  <data name="InsufficientPartyMembers" xml:space="preserve">
+    <value>This respawn requires at least {0} party members, but only {1} were provided</value>
+  </data>
 </root>

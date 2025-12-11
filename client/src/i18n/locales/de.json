@@ -47,6 +47,8 @@
     "inactive": "Inaktiv",
     "user": "Benutzer",
     "allServers": "Alle Server",
+    "players": "Spieler",
+    "difficulty": "Schwierigkeit",
     "error": "Fehler"
   },
   "status": {
@@ -159,6 +161,7 @@
       "updateDetails": "Aktualisiere Details für diesen Jagdbereich.",
       "respawnName": "Respawn-Name",
       "respawnNamePlaceholder": "z.B. Library - Ice",
+      "minPlayers": "Min Spieler",
       "maxPlayers": "Max Spieler",
       "createRespawn": "Respawn erstellen",
       "saveChanges": "Änderungen speichern",

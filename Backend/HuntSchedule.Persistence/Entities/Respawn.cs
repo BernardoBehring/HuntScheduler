@@ -24,5 +24,7 @@ public class Respawn
     [ForeignKey("DifficultyId")]
     public Difficulty? Difficulty { get; set; }
 
+    public int MinPlayers { get; set; } = 1;
+    
     public int MaxPlayers { get; set; } = 4;
 }

@@ -16,13 +16,13 @@ export default function AdminRequests() {
   const [filterServer, setFilterServer] = useState<string>("all");
 
   const filteredPendingRequests = (filterServer === "all" 
-    ? requests.filter(r => r.statusId === '1')
-    : requests.filter(r => r.statusId === '1' && r.serverId === filterServer)
+    ? requests.filter(r => String(r.statusId) === '1')
+    : requests.filter(r => String(r.statusId) === '1' && String(r.serverId) === filterServer)
   ).sort((a, b) => b.createdAt - a.createdAt);
 
   const filteredProcessedRequests = (filterServer === "all"
-    ? requests.filter(r => r.statusId !== '1')
-    : requests.filter(r => r.statusId !== '1' && r.serverId === filterServer)
+    ? requests.filter(r => String(r.statusId) !== '1')
+    : requests.filter(r => String(r.statusId) !== '1' && String(r.serverId) === filterServer)
   ).sort((a, b) => b.createdAt - a.createdAt);
 
   const getCharacterName = (userId: string, serverId: string) => {
@@ -64,7 +64,7 @@ export default function AdminRequests() {
           <SelectContent>
             <SelectItem value="all">{t('common.allServers')}</SelectItem>
             {servers.map(s => (
-              <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+              <SelectItem key={s.id} value={String(s.id)}>{s.name} ({s.region})</SelectItem>
             ))}
           </SelectContent>
         </Select>

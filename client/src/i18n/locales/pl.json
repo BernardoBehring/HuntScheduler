@@ -47,6 +47,8 @@
     "inactive": "Nieaktywny",
     "user": "Użytkownik",
     "allServers": "Wszystkie Serwery",
+    "players": "Gracze",
+    "difficulty": "Trudność",
     "error": "Błąd"
   },
   "status": {
@@ -159,6 +161,7 @@
       "updateDetails": "Zaktualizuj szczegóły tego obszaru łowieckiego.",
       "respawnName": "Nazwa Respawnu",
       "respawnNamePlaceholder": "np. Library - Ice",
+      "minPlayers": "Min Graczy",
       "maxPlayers": "Maks Graczy",
       "createRespawn": "Utwórz Respawn",
       "saveChanges": "Zapisz Zmiany",

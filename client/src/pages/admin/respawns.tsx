@@ -23,6 +23,7 @@ export default function AdminRespawns() {
   const [respawnName, setRespawnName] = useState("");
   const [respawnServer, setRespawnServer] = useState(servers[0]?.id || "");
   const [respawnDifficulty, setRespawnDifficulty] = useState("2");
+  const [respawnMinPlayers, setRespawnMinPlayers] = useState("1");
   const [respawnMaxPlayers, setRespawnMaxPlayers] = useState("4");
 
   const filteredRespawns = filterServer === "all" 
@@ -43,6 +44,7 @@ export default function AdminRespawns() {
     setRespawnName("");
     setRespawnServer(servers[0]?.id || "");
     setRespawnDifficulty("2");
+    setRespawnMinPlayers("1");
     setRespawnMaxPlayers("4");
     setIsAddOpen(true);
   };
@@ -52,6 +54,7 @@ export default function AdminRespawns() {
     setRespawnName(respawn.name);
     setRespawnServer(respawn.serverId);
     setRespawnDifficulty(respawn.difficultyId);
+    setRespawnMinPlayers((respawn.minPlayers || 1).toString());
     setRespawnMaxPlayers(respawn.maxPlayers.toString());
     setIsEditOpen(true);
   };
@@ -62,6 +65,7 @@ export default function AdminRespawns() {
       name: respawnName,
       serverId: respawnServer,
       difficultyId: respawnDifficulty,
+      minPlayers: parseInt(respawnMinPlayers) || 1,
       maxPlayers: parseInt(respawnMaxPlayers) || 4
     });
     toast({ title: t('admin.respawns.respawnAdded'), description: t('admin.respawns.respawnAddedDesc') });
@@ -74,6 +78,7 @@ export default function AdminRespawns() {
       name: respawnName,
       serverId: respawnServer,
       difficultyId: respawnDifficulty,
+      minPlayers: parseInt(respawnMinPlayers) || 1,
       maxPlayers: parseInt(respawnMaxPlayers) || 4
     });
     toast({ title: t('admin.respawns.respawnUpdated'), description: t('admin.respawns.respawnUpdatedDesc') });
@@ -139,20 +144,24 @@ export default function AdminRespawns() {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label>{t('common.difficulty')}</Label>
+                    <Select value={respawnDifficulty} onValueChange={setRespawnDifficulty}>
+                      <SelectTrigger data-testid="select-respawn-difficulty">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">{t('difficulty.easy')}</SelectItem>
+                        <SelectItem value="2">{t('difficulty.medium')}</SelectItem>
+                        <SelectItem value="3">{t('difficulty.hard')}</SelectItem>
+                        <SelectItem value="4">{t('difficulty.nightmare')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>{t('difficulty.medium')}</Label>
-                      <Select value={respawnDifficulty} onValueChange={setRespawnDifficulty}>
-                        <SelectTrigger data-testid="select-respawn-difficulty">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">{t('difficulty.easy')}</SelectItem>
-                          <SelectItem value="2">{t('difficulty.medium')}</SelectItem>
-                          <SelectItem value="3">{t('difficulty.hard')}</SelectItem>
-                          <SelectItem value="4">{t('difficulty.nightmare')}</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>{t('admin.respawns.minPlayers')}</Label>
+                      <Input type="number" min="1" max="10" value={respawnMinPlayers} onChange={(e) => setRespawnMinPlayers(e.target.value)} data-testid="input-respawn-min-players" />
                     </div>
                     <div className="space-y-2">
                       <Label>{t('admin.respawns.maxPlayers')}</Label>
@@ -190,20 +199,24 @@ export default function AdminRespawns() {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label>{t('common.difficulty')}</Label>
+                    <Select value={respawnDifficulty} onValueChange={setRespawnDifficulty}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">{t('difficulty.easy')}</SelectItem>
+                        <SelectItem value="2">{t('difficulty.medium')}</SelectItem>
+                        <SelectItem value="3">{t('difficulty.hard')}</SelectItem>
+                        <SelectItem value="4">{t('difficulty.nightmare')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>{t('difficulty.medium')}</Label>
-                      <Select value={respawnDifficulty} onValueChange={setRespawnDifficulty}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">{t('difficulty.easy')}</SelectItem>
-                          <SelectItem value="2">{t('difficulty.medium')}</SelectItem>
-                          <SelectItem value="3">{t('difficulty.hard')}</SelectItem>
-                          <SelectItem value="4">{t('difficulty.nightmare')}</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>{t('admin.respawns.minPlayers')}</Label>
+                      <Input type="number" min="1" max="10" value={respawnMinPlayers} onChange={(e) => setRespawnMinPlayers(e.target.value)} />
                     </div>
                     <div className="space-y-2">
                       <Label>{t('admin.respawns.maxPlayers')}</Label>
@@ -230,7 +243,7 @@ export default function AdminRespawns() {
                   <div>
                     <p className="font-medium text-sm">{r.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      <span className="text-primary">{server?.name || t('common.unknown')}</span> • {t('common.max')} {t('common.members')}: {r.maxPlayers} • {getTranslatedDifficulty(r.difficultyId)}
+                      <span className="text-primary">{server?.name || t('common.unknown')}</span> • {t('common.players')}: {r.minPlayers || 1}-{r.maxPlayers} • {getTranslatedDifficulty(r.difficultyId)}
                     </p>
                   </div>
                   <div className="flex gap-2">

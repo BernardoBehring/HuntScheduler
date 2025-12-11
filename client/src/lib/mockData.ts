@@ -65,6 +65,7 @@ export interface Respawn {
   name: string;
   difficultyId: string;
   difficulty?: string;
+  minPlayers: number;
   maxPlayers: number;
 }
 
@@ -139,10 +140,10 @@ const MOCK_SERVERS: Server[] = [
 ];
 
 const MOCK_RESPAWNS: Respawn[] = [
-  { id: 'r1', serverId: 's1', name: 'Library - Fire', difficultyId: '3', difficulty: 'hard', maxPlayers: 5 },
-  { id: 'r2', serverId: 's1', name: 'Soul War - Crater', difficultyId: '4', difficulty: 'nightmare', maxPlayers: 5 },
-  { id: 'r3', serverId: 's1', name: 'Cobras', difficultyId: '2', difficulty: 'medium', maxPlayers: 4 },
-  { id: 'r4', serverId: 's2', name: 'Rotten Blood - Jaded', difficultyId: '4', difficulty: 'nightmare', maxPlayers: 5 },
+  { id: 'r1', serverId: 's1', name: 'Library - Fire', difficultyId: '3', difficulty: 'hard', minPlayers: 4, maxPlayers: 5 },
+  { id: 'r2', serverId: 's1', name: 'Soul War - Crater', difficultyId: '4', difficulty: 'nightmare', minPlayers: 4, maxPlayers: 5 },
+  { id: 'r3', serverId: 's1', name: 'Cobras', difficultyId: '2', difficulty: 'medium', minPlayers: 1, maxPlayers: 4 },
+  { id: 'r4', serverId: 's2', name: 'Rotten Blood - Jaded', difficultyId: '4', difficulty: 'nightmare', minPlayers: 4, maxPlayers: 5 },
 ];
 
 const MOCK_SLOTS: Slot[] = [
@@ -315,12 +316,14 @@ export const useStore = create<AppState>((set, get) => ({
         servers: servers.map(s => ({ ...s, id: String(s.id) })),
         statuses: statuses.map(s => ({ ...s, id: String(s.id) })),
         difficulties: difficulties.map(d => ({ ...d, id: String(d.id) })),
-        respawns: respawns.map(r => ({ 
+        respawns: respawns.map((r: any) => ({ 
           ...r, 
           id: String(r.id), 
           serverId: String(r.serverId),
           difficultyId: String(r.difficultyId),
-          difficulty: r.difficulty?.name
+          difficulty: r.difficulty?.name,
+          minPlayers: r.minPlayers || 1,
+          maxPlayers: r.maxPlayers || 4
         })),
         slots: slots.map(s => ({ ...s, id: String(s.id), serverId: String(s.serverId) })),
         periods: periods.map(p => ({ 
