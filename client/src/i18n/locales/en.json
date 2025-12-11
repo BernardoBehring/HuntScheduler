@@ -115,7 +115,8 @@
     "minPlayersError": "This respawn requires at least {{min}} players. You currently have {{current}}.",
     "memberPlaceholder": "Member {{number}} Name",
     "confirmRequest": "Confirm Request",
-    "requestWarning": "You are requesting this slot for the entire duration of the selected period. Ensure your team can commit to this schedule."
+    "requestWarning": "You are requesting this slot for the entire duration of the selected period. Ensure your team can commit to this schedule.",
+    "submitError": "Failed to submit request. Please try again."
   },
   "admin": {
     "title": "Admin Command",

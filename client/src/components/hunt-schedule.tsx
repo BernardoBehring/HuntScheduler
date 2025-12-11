@@ -236,8 +236,9 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
       });
       setIsOpen(false);
       setParty(['', '', '', '']);
-    } catch (err) {
-      setError(t('common.error') || 'Failed to submit request');
+    } catch (err: any) {
+      const errorMessage = err?.message || t('schedule.submitError') || 'Failed to submit request. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

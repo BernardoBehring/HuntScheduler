@@ -115,7 +115,8 @@
     "minPlayersError": "Ten respawn wymaga co najmniej {{min}} graczy. Aktualnie masz {{current}}.",
     "memberPlaceholder": "Nazwa Członka {{number}}",
     "confirmRequest": "Potwierdź Zgłoszenie",
-    "requestWarning": "Zgłaszasz się na ten slot na cały czas trwania wybranego okresu. Upewnij się, że twoja drużyna może zobowiązać się do tego harmonogramu."
+    "requestWarning": "Zgłaszasz się na ten slot na cały czas trwania wybranego okresu. Upewnij się, że twoja drużyna może zobowiązać się do tego harmonogramu.",
+    "submitError": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie."
   },
   "admin": {
     "title": "Polecenie Admina",

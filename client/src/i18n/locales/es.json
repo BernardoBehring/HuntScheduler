@@ -115,7 +115,8 @@
     "minPlayersError": "Este respawn requiere al menos {{min}} jugadores. Actualmente tienes {{current}}.",
     "memberPlaceholder": "Nombre del Miembro {{number}}",
     "confirmRequest": "Confirmar Solicitud",
-    "requestWarning": "Estás solicitando este horario para toda la duración del período seleccionado. Asegúrate de que tu equipo pueda comprometerse con este horario."
+    "requestWarning": "Estás solicitando este horario para toda la duración del período seleccionado. Asegúrate de que tu equipo pueda comprometerse con este horario.",
+    "submitError": "Error al enviar la solicitud. Por favor, inténtalo de nuevo."
   },
   "admin": {
     "title": "Comando Admin",

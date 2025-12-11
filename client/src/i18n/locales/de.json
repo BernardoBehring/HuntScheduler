@@ -115,7 +115,8 @@
     "minPlayersError": "Dieser Respawn erfordert mindestens {{min}} Spieler. Du hast derzeit {{current}}.",
     "memberPlaceholder": "Name von Mitglied {{number}}",
     "confirmRequest": "Anfrage bestätigen",
-    "requestWarning": "Du beantragst diesen Slot für die gesamte Dauer des ausgewählten Zeitraums. Stelle sicher, dass dein Team sich auf diesen Zeitplan festlegen kann."
+    "requestWarning": "Du beantragst diesen Slot für die gesamte Dauer des ausgewählten Zeitraums. Stelle sicher, dass dein Team sich auf diesen Zeitplan festlegen kann.",
+    "submitError": "Fehler beim Senden der Anfrage. Bitte versuche es erneut."
   },
   "admin": {
     "title": "Admin-Kommando",
