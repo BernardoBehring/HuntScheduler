@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 export function HuntSchedule() {
-  const { servers, respawns, slots, requests, addRequest, currentUser, periods, getDifficultyName, characters, users } = useStore();
+  const { servers, respawns, slots, requests, addRequest, currentUser, periods, getDifficultyName, characters, users, statuses } = useStore();
   const [selectedServer, setSelectedServer] = useState(servers[0]?.id);
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
@@ -36,6 +36,9 @@ export function HuntSchedule() {
   const [selectedPeriodId, setSelectedPeriodId] = useState<string>(activePeriod?.id);
 
   const currentPeriod = periods.find(p => p.id === selectedPeriodId);
+  
+  const rejectedStatusId = statuses.find(s => s.name === 'rejected')?.id;
+  const approvedStatusId = statuses.find(s => s.name === 'approved')?.id;
 
   const getCharacterName = (userId: string, serverId: string) => {
     const character = characters.find(c => c.userId === userId && c.serverId === serverId && c.isMain);
@@ -59,7 +62,7 @@ export function HuntSchedule() {
       r.respawnId === respawnId && 
       r.slotId === slotId && 
       r.periodId === currentPeriod.id &&
-      r.statusId !== '3'
+      r.statusId !== rejectedStatusId
     );
   };
 
@@ -165,11 +168,11 @@ export function HuntSchedule() {
                         {request ? (
                           <div className={cn(
                             "p-3 rounded-md border flex flex-col gap-1 text-xs items-center shadow-sm",
-                            request.statusId === '2' 
+                            request.statusId === approvedStatusId 
                               ? "bg-green-500/10 border-green-500/30 text-green-300" 
                               : "bg-primary/10 border-primary/30 text-primary"
                           )}>
-                            <span className="font-bold">{request.statusId === '2' ? t('status.booked') : t('status.pending').toUpperCase()}</span>
+                            <span className="font-bold">{request.statusId === approvedStatusId ? t('status.booked') : t('status.pending').toUpperCase()}</span>
                             <span className="opacity-70">{getCharacterName(request.userId, request.serverId)}</span>
                           </div>
                         ) : (

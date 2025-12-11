@@ -17,13 +17,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, PointClaim } from "@/lib/api";
 
 export default function Dashboard() {
-  const { currentUser, requests, respawns, slots, periods, getStatusName } = useStore();
+  const { currentUser, requests, respawns, slots, periods, getStatusName, statuses } = useStore();
   const [isClaimOpen, setIsClaimOpen] = useState(false);
   const [claimPoints, setClaimPoints] = useState('');
   const [claimNote, setClaimNote] = useState('');
   const [claimScreenshotUrl, setClaimScreenshotUrl] = useState('');
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  
+  const pendingStatusId = statuses.find(s => s.name === 'pending')?.id;
+  const approvedStatusId = statuses.find(s => s.name === 'approved')?.id;
+  const rejectedStatusId = statuses.find(s => s.name === 'rejected')?.id;
   
   const myRequests = requests
     .filter(r => r.userId === currentUser?.id)
@@ -68,13 +72,8 @@ export default function Dashboard() {
   const getPeriodName = (id: string) => periods.find(p => p.id === id)?.name || t('common.unknown');
 
   const getTranslatedStatus = (statusId: string) => {
-    const statusMap: Record<string, string> = {
-      '1': 'pending',
-      '2': 'approved', 
-      '3': 'rejected',
-      '4': 'cancelled'
-    };
-    return t(`status.${statusMap[statusId] || 'pending'}`);
+    const status = statuses.find(s => s.id === statusId);
+    return t(`status.${status?.name || 'pending'}`);
   };
 
   const getClaimStatusBadge = (status: string) => {
@@ -198,7 +197,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="text-pending-count">
-              {myRequests.filter(r => r.statusId === '1').length}
+              {myRequests.filter(r => r.statusId === pendingStatusId).length}
             </div>
             <p className="text-xs text-muted-foreground mt-1">{t('dashboard.pendingApproval')}</p>
           </CardContent>
@@ -211,7 +210,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="text-approved-count">
-              {myRequests.filter(r => r.statusId === '2').length}
+              {myRequests.filter(r => r.statusId === approvedStatusId).length}
             </div>
             <p className="text-xs text-muted-foreground mt-1">{t('dashboard.approvedSessions')}</p>
           </CardContent>
@@ -271,7 +270,7 @@ export default function Dashboard() {
                             {req.partyMembers.length + 1} {t('common.members')}
                           </span>
                         </div>
-                        {req.statusId === '3' && req.rejectionReason && (
+                        {req.statusId === rejectedStatusId && req.rejectionReason && (
                           <p className="text-xs text-destructive flex items-center gap-1 mt-1">
                             <AlertCircle className="h-3 w-3" />
                             {req.rejectionReason}
@@ -279,8 +278,8 @@ export default function Dashboard() {
                         )}
                       </div>
                       <Badge className={
-                        req.statusId === '2' ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/20" :
-                        req.statusId === '3' ? "bg-destructive/20 text-destructive hover:bg-destructive/30 border-destructive/20" :
+                        req.statusId === approvedStatusId ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/20" :
+                        req.statusId === rejectedStatusId ? "bg-destructive/20 text-destructive hover:bg-destructive/30 border-destructive/20" :
                         "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/20"
                       }>
                         {statusName.toUpperCase()}
