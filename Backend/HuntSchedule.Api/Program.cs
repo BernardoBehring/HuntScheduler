@@ -26,6 +26,12 @@ builder.Services.AddSession(options =>
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
 builder.Services.AddHttpClient<ITibiaCharacterValidator, TibiaDataValidator>();
+builder.Services.AddHttpClient("Notifications", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5000");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (string.IsNullOrEmpty(databaseUrl))

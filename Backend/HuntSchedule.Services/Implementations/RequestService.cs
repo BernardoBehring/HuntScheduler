@@ -14,12 +14,14 @@ public class RequestService : IRequestService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITibiaCharacterValidator _tibiaValidator;
     private readonly ILocalizationService _localization;
+    private readonly INotificationService _notificationService;
 
-    public RequestService(IUnitOfWork unitOfWork, ITibiaCharacterValidator tibiaValidator, ILocalizationService localization)
+    public RequestService(IUnitOfWork unitOfWork, ITibiaCharacterValidator tibiaValidator, ILocalizationService localization, INotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
         _tibiaValidator = tibiaValidator;
         _localization = localization;
+        _notificationService = notificationService;
     }
 
     public async Task<IEnumerable<Request>> GetAllAsync()
@@ -145,9 +147,10 @@ public class RequestService : IRequestService
 
     public async Task<ServiceResult> UpdateStatusAsync(int id, StatusUpdateDto dto)
     {
-        var request = await _unitOfWork.Requests.GetByIdAsync(id);
+        var request = await _unitOfWork.Requests.GetByIdWithDetailsAsync(id);
         if (request == null) return ServiceResult.Fail(_localization.GetString(RequestNotFound), NotFound);
 
+        var previousStatusId = request.StatusId;
         request.StatusId = dto.StatusId;
         request.RejectionReason = dto.Reason;
 
@@ -164,10 +167,53 @@ public class RequestService : IRequestService
             {
                 conflict.StatusId = rejectedStatus.Id;
                 conflict.RejectionReason = _localization.GetString(ConflictWithApprovedRequest, id);
+                
+                var conflictWithDetails = await _unitOfWork.Requests.GetByIdWithDetailsAsync(conflict.Id);
+                if (conflictWithDetails?.User != null)
+                {
+                    _ = _notificationService.SendRequestRejectionNotificationAsync(
+                        conflictWithDetails.User.Email,
+                        conflictWithDetails.User.Whatsapp,
+                        conflictWithDetails.User.Username,
+                        conflictWithDetails.Respawn?.Name ?? "Unknown",
+                        conflictWithDetails.Slot != null ? $"{conflictWithDetails.Slot.StartTime} - {conflictWithDetails.Slot.EndTime}" : "Unknown",
+                        conflictWithDetails.Period?.Name ?? "Unknown",
+                        conflict.RejectionReason);
+                }
             }
         }
 
         await _unitOfWork.SaveChangesAsync();
+
+        if (request.User != null && previousStatusId != dto.StatusId)
+        {
+            var slotTime = request.Slot != null ? $"{request.Slot.StartTime} - {request.Slot.EndTime}" : "Unknown";
+            var respawnName = request.Respawn?.Name ?? "Unknown";
+            var periodName = request.Period?.Name ?? "Unknown";
+
+            if (approvedStatus != null && dto.StatusId == approvedStatus.Id)
+            {
+                _ = _notificationService.SendRequestApprovalNotificationAsync(
+                    request.User.Email,
+                    request.User.Whatsapp,
+                    request.User.Username,
+                    respawnName,
+                    slotTime,
+                    periodName);
+            }
+            else if (rejectedStatus != null && dto.StatusId == rejectedStatus.Id)
+            {
+                _ = _notificationService.SendRequestRejectionNotificationAsync(
+                    request.User.Email,
+                    request.User.Whatsapp,
+                    request.User.Username,
+                    respawnName,
+                    slotTime,
+                    periodName,
+                    dto.Reason);
+            }
+        }
+
         return ServiceResult.Ok();
     }
 
