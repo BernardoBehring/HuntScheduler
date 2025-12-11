@@ -196,6 +196,22 @@ Seed data is automatically created on first run.
 - Display: Cinzel font for headings
 - Body: System font stack
 
+## Email Notifications
+
+### Gmail Integration (Configured)
+- Gmail connector is set up for sending transactional emails
+- Notification service created in `server/gmail.ts`
+- Functions available: `sendRequestApprovalEmail()`, `sendRequestRejectionEmail()`
+
+### WhatsApp Integration (Pending)
+- Twilio integration was dismissed - can be set up later for WhatsApp messaging
+- When ready, set up the Twilio connector and create a similar notification service
+
+### Integration Notes
+- Users must have email in their profile to receive notifications
+- Email notifications include: respawn name, time slot, period name
+- Styled HTML emails matching the Dark Fantasy theme
+
 ## User Preferences
 - Dark Fantasy aesthetic theme
 - Period-based scheduling (weekly rotations)
