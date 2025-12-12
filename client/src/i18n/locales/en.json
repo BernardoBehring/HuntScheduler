@@ -126,7 +126,13 @@
     "mustIncludeOwnCharacter": "You must include one of your own characters in the party.",
     "validationError": "Failed to validate characters. Please try again.",
     "validating": "Validating...",
-    "validatedMembers": "Validated party members"
+    "validatedMembers": "Validated party members",
+    "yourCharacter": "Your Character",
+    "selectYourCharacter": "Select your character",
+    "noCharactersLinked": "You have no characters linked to this server. Please add a character first.",
+    "guestMembers": "Guest Party Members",
+    "guestPlaceholder": "Guest {{number}} character name",
+    "guestNote": "Guest characters will be validated against Tibia.com"
   },
   "admin": {
     "title": "Admin Command",

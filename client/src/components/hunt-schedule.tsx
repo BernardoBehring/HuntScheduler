@@ -222,7 +222,8 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
   const { addRequest, currentUser, characters, servers } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
-  const [party, setParty] = useState(['', '', '', '']);
+  const [selectedUserCharacterId, setSelectedUserCharacterId] = useState<string>('');
+  const [guestNames, setGuestNames] = useState(['', '', '']);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
@@ -232,21 +233,43 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
 
   const userCharacters = characters.filter(c => c.userId === currentUser?.id && c.serverId === server);
   const currentServer = servers.find(s => s.id === server);
+  const selectedUserCharacter = userCharacters.find(c => c.id === selectedUserCharacterId);
 
   const handleOpen = (open: boolean) => {
     setIsOpen(open);
     if (!open) {
       setStep(1);
-      setParty(['', '', '', '']);
+      setSelectedUserCharacterId('');
+      setGuestNames(['', '', '']);
       setSelectedLeaderName('');
       setError(null);
       setValidatedCharacters([]);
+    } else {
+      if (userCharacters.length === 1) {
+        setSelectedUserCharacterId(userCharacters[0].id);
+      }
     }
   };
 
-  const filteredParty = party.filter(p => p.trim() !== '');
+  const getAllPartyNames = () => {
+    const names: string[] = [];
+    if (selectedUserCharacter) {
+      names.push(selectedUserCharacter.name);
+    }
+    guestNames.forEach(name => {
+      if (name.trim()) names.push(name.trim());
+    });
+    return names;
+  };
+
+  const filteredParty = getAllPartyNames();
 
   const handleNextStep = async () => {
+    if (!selectedUserCharacter) {
+      setError(t('schedule.selectYourCharacter') || 'Please select your character first.');
+      return;
+    }
+
     const totalPartySize = filteredParty.length;
     
     const minRequired = respawn.minPlayers || 1;
@@ -254,48 +277,60 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
       setError(t('schedule.minPlayersError', { min: minRequired, current: totalPartySize }));
       return;
     }
-
-    const userCharacterNames = userCharacters.map(c => c.name.toLowerCase());
-    const hasUserCharacter = filteredParty.some(name => 
-      userCharacterNames.includes(name.toLowerCase())
-    );
-    
-    if (!hasUserCharacter) {
-      setError(t('schedule.mustIncludeOwnCharacter') || 'You must include one of your own characters in the party.');
-      return;
-    }
     
     setError(null);
     setIsValidating(true);
     
     try {
-      const response = await fetch('/api/characters/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          characterNames: filteredParty,
-          expectedWorld: currentServer?.name
-        })
-      });
+      const guestNamesToValidate = guestNames.filter(n => n.trim() !== '');
       
-      if (!response.ok) {
-        throw new Error('Validation failed');
-      }
-      
-      const data = await response.json();
-      setValidatedCharacters(data.results);
-      
-      if (!data.allValid) {
-        const invalidChars = data.results.filter((r: ValidatedCharacter) => !r.isValid);
-        const errorMessages = invalidChars.map((r: ValidatedCharacter) => `${r.name}: ${r.errorMessage}`).join('\n');
-        setError(errorMessages);
-        return;
+      if (guestNamesToValidate.length > 0) {
+        const response = await fetch('/api/characters/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            characterNames: guestNamesToValidate,
+            expectedWorld: currentServer?.name
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Validation failed');
+        }
+        
+        const data = await response.json();
+        
+        if (!data.allValid) {
+          const invalidChars = data.results.filter((r: ValidatedCharacter) => !r.isValid);
+          const errorMessages = invalidChars.map((r: ValidatedCharacter) => `${r.name}: ${r.errorMessage}`).join('\n');
+          setError(errorMessages);
+          setIsValidating(false);
+          return;
+        }
+        
+        const userCharValidated: ValidatedCharacter = {
+          name: selectedUserCharacter.name,
+          isValid: true,
+          world: currentServer?.name,
+          vocation: selectedUserCharacter.vocation,
+          level: selectedUserCharacter.level
+        };
+        
+        setValidatedCharacters([userCharValidated, ...data.results]);
+      } else {
+        const userCharValidated: ValidatedCharacter = {
+          name: selectedUserCharacter.name,
+          isValid: true,
+          world: currentServer?.name,
+          vocation: selectedUserCharacter.vocation,
+          level: selectedUserCharacter.level
+        };
+        setValidatedCharacters([userCharValidated]);
       }
       
       setStep(2);
-      const validNames = data.results.map((r: ValidatedCharacter) => r.name);
-      if (validNames.length > 0 && !selectedLeaderName) {
-        setSelectedLeaderName(validNames[0]);
+      if (!selectedLeaderName) {
+        setSelectedLeaderName(selectedUserCharacter.name);
       }
     } catch (err: any) {
       setError(t('schedule.validationError') || 'Failed to validate characters. Please try again.');
@@ -352,7 +387,8 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
       });
       setIsOpen(false);
       setStep(1);
-      setParty(['', '', '', '']);
+      setSelectedUserCharacterId('');
+      setGuestNames(['', '', '']);
       setSelectedLeaderName('');
       setValidatedCharacters([]);
     } catch (err: any) {
@@ -400,27 +436,55 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
           </div>
 
           {step === 1 ? (
-            <div className="space-y-2">
-              <Label>
-                {t('schedule.partyMembers')} 
-                <span className="text-xs text-muted-foreground ml-2">
-                  ({t('schedule.minMaxPlayers', { min: respawn.minPlayers, max: respawn.maxPlayers })})
-                </span>
-              </Label>
-              {party.map((member, i) => (
-                <Input 
-                  key={i} 
-                  placeholder={t('schedule.memberPlaceholder', { number: i + 1 })}
-                  value={member}
-                  onChange={(e) => {
-                    const newParty = [...party];
-                    newParty[i] = e.target.value;
-                    setParty(newParty);
-                    setError(null);
-                  }}
-                  data-testid={`input-party-member-${i}`}
-                />
-              ))}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>{t('schedule.yourCharacter') || 'Your Character'}</Label>
+                {userCharacters.length === 0 ? (
+                  <div className="text-sm text-muted-foreground bg-muted/20 p-3 rounded-md border border-border/50">
+                    {t('schedule.noCharactersLinked') || 'You have no characters linked to this server. Please add a character first.'}
+                  </div>
+                ) : (
+                  <Select value={selectedUserCharacterId} onValueChange={setSelectedUserCharacterId}>
+                    <SelectTrigger className="w-full" data-testid="select-your-character">
+                      <SelectValue placeholder={t('schedule.selectYourCharacter') || 'Select your character'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {userCharacters.map((char) => (
+                        <SelectItem key={char.id} value={char.id} data-testid={`your-character-option-${char.id}`}>
+                          {char.name} {char.vocation && char.level ? `(${char.vocation}, Lvl ${char.level})` : ''}
+                          {char.isMain && ' ⭐'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label>
+                  {t('schedule.guestMembers') || 'Guest Party Members'} 
+                  <span className="text-xs text-muted-foreground ml-2">
+                    ({t('schedule.minMaxPlayers', { min: respawn.minPlayers, max: respawn.maxPlayers })})
+                  </span>
+                </Label>
+                {guestNames.map((guest, i) => (
+                  <Input 
+                    key={i} 
+                    placeholder={t('schedule.guestPlaceholder', { number: i + 1 }) || `Guest ${i + 1} character name`}
+                    value={guest}
+                    onChange={(e) => {
+                      const newGuests = [...guestNames];
+                      newGuests[i] = e.target.value;
+                      setGuestNames(newGuests);
+                      setError(null);
+                    }}
+                    data-testid={`input-guest-member-${i}`}
+                  />
+                ))}
+                <p className="text-xs text-muted-foreground">
+                  {t('schedule.guestNote') || 'Guest characters will be validated against Tibia.com'}
+                </p>
+              </div>
             </div>
           ) : (
             <div className="space-y-2">

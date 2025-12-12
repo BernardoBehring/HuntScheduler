@@ -119,7 +119,20 @@
     "memberPlaceholder": "Nome do Membro {{number}}",
     "confirmRequest": "Confirmar Solicitação",
     "requestWarning": "Você está solicitando este horário para toda a duração do período selecionado. Certifique-se de que sua equipe pode se comprometer com este cronograma.",
-    "submitError": "Falha ao enviar solicitação. Por favor, tente novamente."
+    "submitError": "Falha ao enviar solicitação. Por favor, tente novamente.",
+    "selectLeader": "Selecionar Líder",
+    "selectLeaderHint": "Escolha qual personagem liderará o grupo",
+    "partyMembersList": "Membros do grupo",
+    "mustIncludeOwnCharacter": "Você deve incluir um dos seus próprios personagens no grupo.",
+    "validationError": "Falha ao validar personagens. Tente novamente.",
+    "validating": "Validando...",
+    "validatedMembers": "Membros validados do grupo",
+    "yourCharacter": "Seu Personagem",
+    "selectYourCharacter": "Selecione seu personagem",
+    "noCharactersLinked": "Você não tem personagens vinculados a este servidor. Por favor, adicione um personagem primeiro.",
+    "guestMembers": "Membros Convidados",
+    "guestPlaceholder": "Nome do convidado {{number}}",
+    "guestNote": "Personagens convidados serão validados no Tibia.com"
   },
   "admin": {
     "title": "Comando Admin",
