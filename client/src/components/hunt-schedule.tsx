@@ -185,6 +185,15 @@ export function HuntSchedule() {
                           )}>
                             <span className="font-bold">{request.statusId === approvedStatusId ? t('status.booked') : t('status.pending').toUpperCase()}</span>
                             <span className="opacity-70">{getLeaderName(request)}</span>
+                            {request.partyMembers && request.partyMembers.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1 justify-center">
+                                {request.partyMembers.filter(pm => !pm.isLeader).map((pm, idx) => (
+                                  <span key={idx} className="text-[10px] opacity-60">
+                                    {pm.character?.name || pm.characterId}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         ) : (
                           currentPeriod ? (
@@ -363,6 +372,8 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
           id: `temp-${idx}`,
           requestId: '',
           characterId: existingChar?.id || '',
+          characterName: vc.name,
+          userId: existingChar?.userId || undefined,
           character: existingChar || { 
             id: '', 
             name: vc.name, 
