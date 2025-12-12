@@ -51,7 +51,8 @@
     "players": "Players",
     "difficulty": "Difficulty",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "validate": "Validate"
   },
   "status": {
     "pending": "Pending",
@@ -300,11 +301,13 @@
     "description": "Link your Tibia characters to your account",
     "addCharacter": "Add Character",
     "addCharacterDesc": "Enter your character name exactly as it appears on Tibia.com. We will verify it exists and sync the details.",
+    "addCharacterDescAuto": "Enter your character name exactly as it appears on Tibia.com. We will automatically detect the server, vocation, and level.",
     "characterName": "Character Name",
     "characterNamePlaceholder": "e.g. Bubble",
     "selectServer": "Select Server",
-    "verificationNote": "Your character will be verified against Tibia.com. Make sure the name and server match exactly.",
+    "verificationNote": "Your character will be verified against Tibia.com.",
     "verifying": "Verifying...",
+    "adding": "Adding...",
     "noCharacters": "No Characters Linked",
     "noCharactersDesc": "Add your Tibia characters to use them in hunt requests and party formations.",
     "addFirstCharacter": "Add Your First Character",
@@ -317,7 +320,15 @@
     "mainSetDesc": "This character is now your main character.",
     "deleted": "Character Removed",
     "deletedDesc": "The character has been unlinked from your account.",
-    "fillAllFields": "Please fill in all required fields"
+    "fillAllFields": "Please fill in all required fields",
+    "enterName": "Please enter a character name",
+    "characterNotFound": "Character not found on Tibia.com",
+    "validationError": "Failed to validate character. Please try again.",
+    "characterFound": "Character found!",
+    "serverNotConfigured": "Server '{{world}}' is not configured in our system",
+    "name": "Name",
+    "vocation": "Vocation",
+    "level": "Level"
   },
   "errors": {
     "loadFailed": "Failed to load data",

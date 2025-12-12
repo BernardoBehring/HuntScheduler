@@ -9,10 +9,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Star, Trash2, UserCheck, Loader2, Swords } from "lucide-react";
+import { Plus, Star, Trash2, UserCheck, Loader2, Swords, CheckCircle, AlertCircle } from "lucide-react";
+
+interface ValidationState {
+  isValidating: boolean;
+  isValidated: boolean;
+  isValid: boolean;
+  errorMessage?: string;
+  world?: string;
+  vocation?: string;
+  level?: number;
+  validatedName?: string;
+}
 
 export default function CharactersPage() {
   const { t } = useTranslation();
@@ -22,8 +32,12 @@ export default function CharactersPage() {
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [characterName, setCharacterName] = useState("");
-  const [selectedServerId, setSelectedServerId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validation, setValidation] = useState<ValidationState>({
+    isValidating: false,
+    isValidated: false,
+    isValid: false,
+  });
 
   const { data: characters = [], isLoading } = useQuery({
     queryKey: ['characters', 'user', currentUser?.id],
@@ -73,23 +87,81 @@ export default function CharactersPage() {
 
   const resetForm = () => {
     setCharacterName("");
-    setSelectedServerId("");
     setIsAddDialogOpen(false);
     setIsSubmitting(false);
+    setValidation({
+      isValidating: false,
+      isValidated: false,
+      isValid: false,
+    });
+  };
+
+  const handleValidateCharacter = async () => {
+    if (!characterName.trim()) {
+      toast({ title: t('characters.enterName'), variant: 'destructive' });
+      return;
+    }
+
+    setValidation({
+      isValidating: true,
+      isValidated: false,
+      isValid: false,
+    });
+
+    try {
+      const response = await api.characters.validate([characterName.trim()]);
+      const result = response.results[0];
+
+      if (result.isValid) {
+        setValidation({
+          isValidating: false,
+          isValidated: true,
+          isValid: true,
+          world: result.world,
+          vocation: result.vocation,
+          level: result.level,
+          validatedName: result.name,
+        });
+      } else {
+        setValidation({
+          isValidating: false,
+          isValidated: true,
+          isValid: false,
+          errorMessage: result.errorMessage || t('characters.characterNotFound'),
+        });
+      }
+    } catch (error) {
+      setValidation({
+        isValidating: false,
+        isValidated: true,
+        isValid: false,
+        errorMessage: t('characters.validationError'),
+      });
+    }
   };
 
   const handleAddCharacter = async () => {
-    if (!characterName.trim() || !selectedServerId || !currentUser) {
-      toast({ title: t('characters.fillAllFields'), variant: 'destructive' });
+    if (!validation.isValid || !validation.world || !currentUser) {
+      return;
+    }
+
+    const server = servers.find(s => s.name.toLowerCase() === validation.world!.toLowerCase());
+    if (!server) {
+      toast({ 
+        title: t('common.error'), 
+        description: t('characters.serverNotConfigured', { world: validation.world }), 
+        variant: 'destructive' 
+      });
       return;
     }
 
     setIsSubmitting(true);
     createMutation.mutate({
-      name: characterName.trim(),
-      serverId: parseInt(selectedServerId),
+      name: validation.validatedName || characterName.trim(),
+      serverId: server.id,
       userId: parseInt(currentUser.id),
-      level: 0,
+      level: validation.level || 0,
+      vocation: validation.vocation,
       isMain: characters.length === 0,
     });
   };
@@ -207,43 +279,105 @@ export default function CharactersPage() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{t('characters.addCharacter')}</DialogTitle>
-              <DialogDescription>{t('characters.addCharacterDesc')}</DialogDescription>
+              <DialogDescription>{t('characters.addCharacterDescAuto')}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="characterName">{t('characters.characterName')}</Label>
-                <Input
-                  id="characterName"
-                  placeholder={t('characters.characterNamePlaceholder')}
-                  value={characterName}
-                  onChange={(e) => setCharacterName(e.target.value)}
-                  data-testid="input-character-name"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="characterName"
+                    placeholder={t('characters.characterNamePlaceholder')}
+                    value={characterName}
+                    onChange={(e) => {
+                      setCharacterName(e.target.value);
+                      setValidation({
+                        isValidating: false,
+                        isValidated: false,
+                        isValid: false,
+                      });
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !validation.isValidating) {
+                        e.preventDefault();
+                        handleValidateCharacter();
+                      }
+                    }}
+                    data-testid="input-character-name"
+                  />
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    onClick={handleValidateCharacter}
+                    disabled={validation.isValidating || !characterName.trim()}
+                    data-testid="button-validate-character"
+                  >
+                    {validation.isValidating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      t('common.validate')
+                    )}
+                  </Button>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>{t('common.server')}</Label>
-                <Select value={selectedServerId} onValueChange={setSelectedServerId}>
-                  <SelectTrigger data-testid="select-server">
-                    <SelectValue placeholder={t('characters.selectServer')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {servers.map((server) => (
-                      <SelectItem key={server.id} value={server.id.toString()}>
-                        {server.name} ({server.region})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+
+              {validation.isValidated && (
+                <div className={`p-4 rounded-lg border ${
+                  validation.isValid 
+                    ? 'bg-green-500/10 border-green-500/30' 
+                    : 'bg-destructive/10 border-destructive/30'
+                }`}>
+                  {validation.isValid ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-green-400">
+                        <CheckCircle className="h-4 w-4" />
+                        <span className="font-semibold">{t('characters.characterFound')}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">{t('characters.name')}:</span>
+                          <span className="ml-2 font-medium">{validation.validatedName}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">{t('common.server')}:</span>
+                          <span className="ml-2 font-medium">{validation.world}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">{t('characters.vocation')}:</span>
+                          <span className="ml-2">
+                            <Badge variant="outline" className={getVocationColor(validation.vocation)}>
+                              {validation.vocation}
+                            </Badge>
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">{t('characters.level')}:</span>
+                          <span className="ml-2 font-medium">{validation.level}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <span>{validation.errorMessage}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <p className="text-xs text-muted-foreground">{t('characters.verificationNote')}</p>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={resetForm}>{t('common.cancel')}</Button>
-              <Button onClick={handleAddCharacter} disabled={isSubmitting} data-testid="button-confirm-add">
+              <Button 
+                onClick={handleAddCharacter} 
+                disabled={isSubmitting || !validation.isValid} 
+                data-testid="button-confirm-add"
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    {t('characters.verifying')}
+                    {t('characters.adding')}
                   </>
                 ) : (
                   t('characters.addCharacter')

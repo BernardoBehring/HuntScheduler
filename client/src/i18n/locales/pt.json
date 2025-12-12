@@ -49,7 +49,10 @@
     "allServers": "Todos os Servidores",
     "error": "Erro",
     "players": "Jogadores",
-    "difficulty": "Dificuldade"
+    "difficulty": "Dificuldade",
+    "back": "Voltar",
+    "next": "Próximo",
+    "validate": "Validar"
   },
   "status": {
     "pending": "Pendente",
@@ -291,11 +294,13 @@
     "description": "Vincule seus personagens do Tibia à sua conta",
     "addCharacter": "Adicionar Personagem",
     "addCharacterDesc": "Digite o nome do seu personagem exatamente como aparece no Tibia.com. Verificaremos se existe e sincronizaremos os detalhes.",
+    "addCharacterDescAuto": "Digite o nome do seu personagem exatamente como aparece no Tibia.com. Detectaremos automaticamente o servidor, vocação e nível.",
     "characterName": "Nome do Personagem",
     "characterNamePlaceholder": "ex: Bubble",
     "selectServer": "Selecionar Servidor",
-    "verificationNote": "Seu personagem será verificado no Tibia.com. Certifique-se de que o nome e o servidor correspondam exatamente.",
+    "verificationNote": "Seu personagem será verificado no Tibia.com.",
     "verifying": "Verificando...",
+    "adding": "Adicionando...",
     "noCharacters": "Nenhum Personagem Vinculado",
     "noCharactersDesc": "Adicione seus personagens do Tibia para usá-los em solicitações de hunt e formações de grupo.",
     "addFirstCharacter": "Adicione Seu Primeiro Personagem",
@@ -308,7 +313,15 @@
     "mainSetDesc": "Este personagem agora é seu personagem principal.",
     "deleted": "Personagem Removido",
     "deletedDesc": "O personagem foi desvinculado da sua conta.",
-    "fillAllFields": "Por favor, preencha todos os campos obrigatórios"
+    "fillAllFields": "Por favor, preencha todos os campos obrigatórios",
+    "enterName": "Por favor, digite o nome do personagem",
+    "characterNotFound": "Personagem não encontrado no Tibia.com",
+    "validationError": "Falha ao validar personagem. Tente novamente.",
+    "characterFound": "Personagem encontrado!",
+    "serverNotConfigured": "O servidor '{{world}}' não está configurado em nosso sistema",
+    "name": "Nome",
+    "vocation": "Vocação",
+    "level": "Nível"
   },
   "errors": {
     "loadFailed": "Falha ao carregar dados",

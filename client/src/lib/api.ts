@@ -160,6 +160,20 @@ export interface UpdateProfileDto {
   whatsapp?: string;
 }
 
+export interface CharacterValidationResult {
+  name: string;
+  isValid: boolean;
+  errorMessage?: string;
+  world?: string;
+  vocation?: string;
+  level?: number;
+}
+
+export interface ValidateCharactersResponse {
+  results: CharacterValidationResult[];
+  allValid: boolean;
+}
+
 export interface CreateRequestDto {
   userId: number;
   serverId: number;
@@ -344,6 +358,12 @@ export const api = {
       fetch(`${API_BASE}/characters/${id}/set-main`, { method: 'PATCH' }).then(r => handleResponse(r)),
     delete: (id: number): Promise<void> =>
       fetch(`${API_BASE}/characters/${id}`, { method: 'DELETE' }).then(r => handleResponse(r)),
+    validate: (characterNames: string[], expectedWorld?: string): Promise<ValidateCharactersResponse> =>
+      fetch(`${API_BASE}/characters/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ characterNames, expectedWorld }),
+      }).then(r => handleResponse(r)),
   },
 
   auth: {
