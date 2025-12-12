@@ -103,7 +103,7 @@ public class CharactersController : ControllerBase
                 {
                     Name = name,
                     IsValid = false,
-                    ErrorMessage = _localization.GetString(CharacterNotFoundOnTibia)
+                    ErrorMessage = _localization.GetString(CharacterNotFoundOnTibia, name)
                 });
             }
             else if (!string.IsNullOrEmpty(request.ExpectedWorld) && 
@@ -113,7 +113,7 @@ public class CharactersController : ControllerBase
                 {
                     Name = tibiaResult.Name,
                     IsValid = false,
-                    ErrorMessage = _localization.GetString(CharacterServerMismatch),
+                    ErrorMessage = _localization.GetString(CharacterServerMismatch, tibiaResult.Name, tibiaResult.World, request.ExpectedWorld),
                     World = tibiaResult.World,
                     Vocation = tibiaResult.Vocation,
                     Level = tibiaResult.Level
