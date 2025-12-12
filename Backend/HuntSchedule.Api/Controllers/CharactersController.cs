@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
 using HuntSchedule.Services.Interfaces;
 using HuntSchedule.Services.Results;
+using HuntSchedule.Services.External;
 using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
@@ -12,11 +13,13 @@ public class CharactersController : ControllerBase
 {
     private readonly ICharacterService _characterService;
     private readonly ILocalizationService _localization;
+    private readonly ITibiaCharacterValidator _tibiaValidator;
 
-    public CharactersController(ICharacterService characterService, ILocalizationService localization)
+    public CharactersController(ICharacterService characterService, ILocalizationService localization, ITibiaCharacterValidator tibiaValidator)
     {
         _characterService = characterService;
         _localization = localization;
+        _tibiaValidator = tibiaValidator;
     }
 
     [HttpGet]
@@ -84,4 +87,77 @@ public class CharactersController : ControllerBase
         await _characterService.DeleteAsync(id);
         return NoContent();
     }
+
+    [HttpPost("validate")]
+    public async Task<ActionResult<ValidateCharactersResponse>> ValidateCharacters([FromBody] ValidateCharactersRequest request)
+    {
+        var results = new List<CharacterValidationResult>();
+        
+        foreach (var name in request.CharacterNames)
+        {
+            var tibiaResult = await _tibiaValidator.ValidateCharacterAsync(name);
+            
+            if (tibiaResult == null || !tibiaResult.Exists)
+            {
+                results.Add(new CharacterValidationResult
+                {
+                    Name = name,
+                    IsValid = false,
+                    ErrorMessage = _localization.GetString(CharacterNotFoundOnTibia)
+                });
+            }
+            else if (!string.IsNullOrEmpty(request.ExpectedWorld) && 
+                     !string.Equals(tibiaResult.World, request.ExpectedWorld, StringComparison.OrdinalIgnoreCase))
+            {
+                results.Add(new CharacterValidationResult
+                {
+                    Name = tibiaResult.Name,
+                    IsValid = false,
+                    ErrorMessage = _localization.GetString(CharacterServerMismatch),
+                    World = tibiaResult.World,
+                    Vocation = tibiaResult.Vocation,
+                    Level = tibiaResult.Level
+                });
+            }
+            else
+            {
+                results.Add(new CharacterValidationResult
+                {
+                    Name = tibiaResult.Name,
+                    IsValid = true,
+                    World = tibiaResult.World,
+                    Vocation = tibiaResult.Vocation,
+                    Level = tibiaResult.Level
+                });
+            }
+        }
+        
+        return Ok(new ValidateCharactersResponse
+        {
+            Results = results,
+            AllValid = results.All(r => r.IsValid)
+        });
+    }
+}
+
+public class ValidateCharactersRequest
+{
+    public List<string> CharacterNames { get; set; } = new();
+    public string? ExpectedWorld { get; set; }
+}
+
+public class ValidateCharactersResponse
+{
+    public List<CharacterValidationResult> Results { get; set; } = new();
+    public bool AllValid { get; set; }
+}
+
+public class CharacterValidationResult
+{
+    public string Name { get; set; } = string.Empty;
+    public bool IsValid { get; set; }
+    public string? ErrorMessage { get; set; }
+    public string? World { get; set; }
+    public string? Vocation { get; set; }
+    public int? Level { get; set; }
 }

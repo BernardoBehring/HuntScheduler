@@ -209,17 +209,29 @@ export function HuntSchedule() {
   );
 }
 
+interface ValidatedCharacter {
+  name: string;
+  isValid: boolean;
+  errorMessage?: string;
+  world?: string;
+  vocation?: string;
+  level?: number;
+}
+
 function RequestDialog({ server, respawn, slot, period }: { server: string, respawn: Respawn, slot: any, period: SchedulePeriod }) {
-  const { addRequest, currentUser, characters } = useStore();
+  const { addRequest, currentUser, characters, servers } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [party, setParty] = useState(['', '', '', '']);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
   const [selectedLeaderName, setSelectedLeaderName] = useState<string>('');
+  const [validatedCharacters, setValidatedCharacters] = useState<ValidatedCharacter[]>([]);
   const { t } = useTranslation();
 
   const userCharacters = characters.filter(c => c.userId === currentUser?.id && c.serverId === server);
+  const currentServer = servers.find(s => s.id === server);
 
   const handleOpen = (open: boolean) => {
     setIsOpen(open);
@@ -228,12 +240,13 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
       setParty(['', '', '', '']);
       setSelectedLeaderName('');
       setError(null);
+      setValidatedCharacters([]);
     }
   };
 
   const filteredParty = party.filter(p => p.trim() !== '');
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     const totalPartySize = filteredParty.length;
     
     const minRequired = respawn.minPlayers || 1;
@@ -241,11 +254,53 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
       setError(t('schedule.minPlayersError', { min: minRequired, current: totalPartySize }));
       return;
     }
+
+    const userCharacterNames = userCharacters.map(c => c.name.toLowerCase());
+    const hasUserCharacter = filteredParty.some(name => 
+      userCharacterNames.includes(name.toLowerCase())
+    );
+    
+    if (!hasUserCharacter) {
+      setError(t('schedule.mustIncludeOwnCharacter') || 'You must include one of your own characters in the party.');
+      return;
+    }
     
     setError(null);
-    setStep(2);
-    if (filteredParty.length > 0 && !selectedLeaderName) {
-      setSelectedLeaderName(filteredParty[0]);
+    setIsValidating(true);
+    
+    try {
+      const response = await fetch('/api/characters/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          characterNames: filteredParty,
+          expectedWorld: currentServer?.name
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Validation failed');
+      }
+      
+      const data = await response.json();
+      setValidatedCharacters(data.results);
+      
+      if (!data.allValid) {
+        const invalidChars = data.results.filter((r: ValidatedCharacter) => !r.isValid);
+        const errorMessages = invalidChars.map((r: ValidatedCharacter) => `${r.name}: ${r.errorMessage}`).join('\n');
+        setError(errorMessages);
+        return;
+      }
+      
+      setStep(2);
+      const validNames = data.results.map((r: ValidatedCharacter) => r.name);
+      if (validNames.length > 0 && !selectedLeaderName) {
+        setSelectedLeaderName(validNames[0]);
+      }
+    } catch (err: any) {
+      setError(t('schedule.validationError') || 'Failed to validate characters. Please try again.');
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -266,14 +321,21 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
     try {
       const leaderChar = userCharacters.find(c => c.name.toLowerCase() === selectedLeaderName.toLowerCase());
       
-      const partyMembers = filteredParty.map((name, idx) => {
-        const isLeader = name === selectedLeaderName;
-        const existingChar = characters.find(c => c.name.toLowerCase() === name.toLowerCase() && c.serverId === server);
+      const partyMembers = validatedCharacters.filter(vc => vc.isValid).map((vc, idx) => {
+        const isLeader = vc.name === selectedLeaderName;
+        const existingChar = characters.find(c => c.name.toLowerCase() === vc.name.toLowerCase() && c.serverId === server);
         return {
           id: `temp-${idx}`,
           requestId: '',
           characterId: existingChar?.id || '',
-          character: existingChar || { id: '', name, serverId: server, level: 0, isMain: false },
+          character: existingChar || { 
+            id: '', 
+            name: vc.name, 
+            serverId: server, 
+            level: vc.level || 0, 
+            vocation: vc.vocation,
+            isMain: false 
+          },
           roleInParty: isLeader ? 'leader' : 'member',
           isLeader
         };
@@ -292,6 +354,7 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
       setStep(1);
       setParty(['', '', '', '']);
       setSelectedLeaderName('');
+      setValidatedCharacters([]);
     } catch (err: any) {
       const errorMessage = err?.message || t('schedule.submitError') || 'Failed to submit request. Please try again.';
       setError(errorMessage);
@@ -367,15 +430,21 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
                   <SelectValue placeholder={t('schedule.selectLeader') || 'Select the party leader'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {filteredParty.map((name, idx) => (
-                    <SelectItem key={idx} value={name} data-testid={`leader-option-${idx}`}>
-                      {name}
+                  {validatedCharacters.filter(vc => vc.isValid).map((vc, idx) => (
+                    <SelectItem key={idx} value={vc.name} data-testid={`leader-option-${idx}`}>
+                      {vc.name} {vc.vocation && vc.level ? `(${vc.vocation}, Lvl ${vc.level})` : ''}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <div className="text-xs text-muted-foreground mt-2">
-                {t('schedule.partyMembersList') || 'Party members'}: {filteredParty.join(', ')}
+              <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                <div className="font-semibold">{t('schedule.validatedMembers') || 'Validated party members'}:</div>
+                {validatedCharacters.filter(vc => vc.isValid).map((vc, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-green-400">
+                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                    {vc.name} {vc.vocation && vc.level ? `- ${vc.vocation} (Lvl ${vc.level})` : ''}
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -403,13 +472,15 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
             onClick={step === 1 ? handleNextStep : handleSubmit} 
             className="bg-primary text-primary-foreground hover:bg-primary/90" 
             data-testid={step === 1 ? "button-next-step" : "button-confirm-request"}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isValidating}
           >
             {isSubmitting 
               ? (t('common.loading') || 'Submitting...') 
-              : step === 1 
-                ? (t('common.next') || 'Next')
-                : t('schedule.confirmRequest')
+              : isValidating
+                ? (t('schedule.validating') || 'Validating...')
+                : step === 1 
+                  ? (t('common.next') || 'Next')
+                  : t('schedule.confirmRequest')
             }
           </Button>
         </DialogFooter>

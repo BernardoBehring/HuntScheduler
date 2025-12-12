@@ -121,7 +121,11 @@
     "submitError": "Failed to submit request. Please try again.",
     "selectLeader": "Select Party Leader",
     "selectLeaderHint": "Choose which character will lead the party",
-    "partyMembersList": "Party members"
+    "partyMembersList": "Party members",
+    "mustIncludeOwnCharacter": "You must include one of your own characters in the party.",
+    "validationError": "Failed to validate characters. Please try again.",
+    "validating": "Validating...",
+    "validatedMembers": "Validated party members"
   },
   "admin": {
     "title": "Admin Command",
