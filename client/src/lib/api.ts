@@ -25,6 +25,7 @@ export interface RequestPartyMember {
   characterId: number;
   character?: Character;
   roleInParty?: string;
+  isLeader?: boolean;
 }
 
 export interface User {
@@ -101,6 +102,8 @@ export interface Request {
   period?: SchedulePeriod;
   statusId: number;
   status?: RequestStatus;
+  leaderCharacterId?: number;
+  leaderCharacter?: Character;
   partyMembers: RequestPartyMember[];
   rejectionReason?: string;
   createdAt: string;
@@ -163,7 +166,8 @@ export interface CreateRequestDto {
   respawnId: number;
   slotId: number;
   periodId: number;
-  partyMembers: { characterId?: number; characterName?: string; roleInParty?: string }[];
+  leaderCharacterId?: number;
+  partyMembers: { characterId?: number; characterName?: string; roleInParty?: string; isLeader?: boolean }[];
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {

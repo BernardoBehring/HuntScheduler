@@ -7,5 +7,6 @@ public class CreateRequestDto
     public int RespawnId { get; set; }
     public int SlotId { get; set; }
     public int PeriodId { get; set; }
+    public int? LeaderCharacterId { get; set; }
     public List<PartyMemberDto> PartyMembers { get; set; } = new();
 }

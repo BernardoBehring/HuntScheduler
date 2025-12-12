@@ -44,6 +44,11 @@ public class Request
     [ForeignKey("StatusId")]
     public RequestStatus? Status { get; set; }
 
+    public int? LeaderCharacterId { get; set; }
+
+    [ForeignKey("LeaderCharacterId")]
+    public Character? LeaderCharacter { get; set; }
+
     public ICollection<RequestPartyMember> PartyMembers { get; set; } = new List<RequestPartyMember>();
 
     [MaxLength(500)]

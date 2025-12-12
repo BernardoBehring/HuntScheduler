@@ -25,6 +25,7 @@ export interface RequestPartyMember {
   characterId: string;
   character?: Character;
   roleInParty?: string;
+  isLeader?: boolean;
 }
 
 export interface User {
@@ -94,6 +95,8 @@ export interface Request {
   periodId: string;
   statusId: string;
   status?: string;
+  leaderCharacterId?: string;
+  leaderCharacter?: Character;
   partyMembers: RequestPartyMember[];
   rejectionReason?: string;
   createdAt: number;
@@ -343,11 +346,19 @@ export const useStore = create<AppState>((set, get) => ({
           periodId: String(r.periodId),
           statusId: String(r.statusId),
           status: r.status?.name,
+          leaderCharacterId: r.leaderCharacterId ? String(r.leaderCharacterId) : undefined,
+          leaderCharacter: r.leaderCharacter ? {
+            ...r.leaderCharacter,
+            id: String(r.leaderCharacter.id),
+            userId: r.leaderCharacter.userId ? String(r.leaderCharacter.userId) : undefined,
+            serverId: String(r.leaderCharacter.serverId)
+          } : undefined,
           partyMembers: r.partyMembers.map((pm: any) => ({
             id: String(pm.id),
             requestId: String(pm.requestId),
             characterId: String(pm.characterId),
             roleInParty: pm.roleInParty,
+            isLeader: pm.isLeader || false,
             character: pm.character ? {
               ...pm.character,
               id: String(pm.character.id),
@@ -397,7 +408,8 @@ export const useStore = create<AppState>((set, get) => ({
         const apiPartyMembers = req.partyMembers.map(pm => ({
           characterId: pm.characterId ? parseInt(pm.characterId) : undefined,
           characterName: pm.character?.name,
-          roleInParty: pm.roleInParty
+          roleInParty: pm.roleInParty,
+          isLeader: pm.isLeader || false
         }));
         const newRequest = await api.requests.create({
           userId: parseInt(req.userId),
@@ -405,6 +417,7 @@ export const useStore = create<AppState>((set, get) => ({
           respawnId: parseInt(req.respawnId),
           slotId: parseInt(req.slotId),
           periodId: parseInt(req.periodId),
+          leaderCharacterId: req.leaderCharacterId ? parseInt(req.leaderCharacterId) : undefined,
           partyMembers: apiPartyMembers,
         });
         set((state) => ({
@@ -418,11 +431,19 @@ export const useStore = create<AppState>((set, get) => ({
             periodId: String(newRequest.periodId),
             statusId: String(newRequest.statusId),
             status: newRequest.status?.name,
+            leaderCharacterId: newRequest.leaderCharacterId ? String(newRequest.leaderCharacterId) : undefined,
+            leaderCharacter: newRequest.leaderCharacter ? {
+              ...newRequest.leaderCharacter,
+              id: String(newRequest.leaderCharacter.id),
+              userId: newRequest.leaderCharacter.userId ? String(newRequest.leaderCharacter.userId) : undefined,
+              serverId: String(newRequest.leaderCharacter.serverId)
+            } : undefined,
             partyMembers: newRequest.partyMembers.map((pm: any) => ({
               id: String(pm.id),
               requestId: String(pm.requestId),
               characterId: String(pm.characterId),
               roleInParty: pm.roleInParty,
+              isLeader: pm.isLeader || false,
               character: pm.character ? {
                 ...pm.character,
                 id: String(pm.character.id),

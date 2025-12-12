@@ -58,7 +58,7 @@ public class RequestService : IRequestService
 
         try
         {
-            var resolvedPartyMembers = new List<(Character character, string? role)>();
+            var resolvedPartyMembers = new List<(Character character, string? role, bool isLeader)>();
 
             foreach (var pm in dto.PartyMembers)
             {
@@ -116,7 +116,19 @@ public class RequestService : IRequestService
 
                 if (character != null)
                 {
-                    resolvedPartyMembers.Add((character, pm.RoleInParty));
+                    resolvedPartyMembers.Add((character, pm.RoleInParty, pm.IsLeader));
+                }
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+            int? leaderCharacterId = dto.LeaderCharacterId;
+            if (!leaderCharacterId.HasValue || leaderCharacterId == 0)
+            {
+                var leaderMember = resolvedPartyMembers.FirstOrDefault(m => m.isLeader);
+                if (leaderMember.character != null && leaderMember.character.Id > 0)
+                {
+                    leaderCharacterId = leaderMember.character.Id;
                 }
             }
 
@@ -128,19 +140,21 @@ public class RequestService : IRequestService
                 SlotId = dto.SlotId,
                 PeriodId = dto.PeriodId,
                 StatusId = pendingStatus?.Id ?? 1,
+                LeaderCharacterId = leaderCharacterId,
                 CreatedAt = DateTime.UtcNow
             };
 
             await _unitOfWork.Requests.AddAsync(request);
             await _unitOfWork.SaveChangesAsync();
 
-            foreach (var (character, role) in resolvedPartyMembers)
+            foreach (var (character, role, isLeader) in resolvedPartyMembers)
             {
                 var partyMember = new RequestPartyMember
                 {
                     RequestId = request.Id,
                     CharacterId = character.Id,
-                    RoleInParty = role
+                    RoleInParty = role,
+                    IsLeader = isLeader
                 };
                 await _unitOfWork.Requests.AddPartyMemberAsync(request.Id, partyMember);
             }

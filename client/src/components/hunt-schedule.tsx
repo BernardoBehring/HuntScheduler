@@ -40,13 +40,24 @@ export function HuntSchedule() {
   const rejectedStatusId = statuses.find(s => s.name === 'rejected')?.id;
   const approvedStatusId = statuses.find(s => s.name === 'approved')?.id;
 
-  const getCharacterName = (userId: string, serverId: string) => {
-    const character = characters.find(c => c.userId === userId && c.serverId === serverId && c.isMain);
+  const getLeaderName = (request: any) => {
+    if (request.leaderCharacter?.name) {
+      return request.leaderCharacter.name;
+    }
+    if (request.leaderCharacterId) {
+      const leaderChar = characters.find(c => c.id === String(request.leaderCharacterId));
+      if (leaderChar) return leaderChar.name;
+    }
+    const leaderMember = request.partyMembers?.find((pm: any) => pm.isLeader);
+    if (leaderMember?.character?.name) {
+      return leaderMember.character.name;
+    }
+    const character = characters.find(c => c.userId === request.userId && c.serverId === request.serverId && c.isMain);
     if (character) return character.name;
-    const anyCharacter = characters.find(c => c.userId === userId && c.serverId === serverId);
+    const anyCharacter = characters.find(c => c.userId === request.userId && c.serverId === request.serverId);
     if (anyCharacter) return anyCharacter.name;
-    const user = users.find(u => u.id === userId);
-    return user?.username || `User #${userId}`;
+    const user = users.find(u => u.id === request.userId);
+    return user?.username || `User #${request.userId}`;
   };
   
   const activeRespawns = respawns.filter(r => 
@@ -173,7 +184,7 @@ export function HuntSchedule() {
                               : "bg-primary/10 border-primary/30 text-primary"
                           )}>
                             <span className="font-bold">{request.statusId === approvedStatusId ? t('status.booked') : t('status.pending').toUpperCase()}</span>
-                            <span className="opacity-70">{getCharacterName(request.userId, request.serverId)}</span>
+                            <span className="opacity-70">{getLeaderName(request)}</span>
                           </div>
                         ) : (
                           currentPeriod ? (
@@ -199,12 +210,23 @@ export function HuntSchedule() {
 }
 
 function RequestDialog({ server, respawn, slot, period }: { server: string, respawn: Respawn, slot: any, period: SchedulePeriod }) {
-  const { addRequest, currentUser } = useStore();
+  const { addRequest, currentUser, characters } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [party, setParty] = useState(['', '', '', '']);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedLeaderCharId, setSelectedLeaderCharId] = useState<string>('');
   const { t } = useTranslation();
+
+  const userCharacters = characters.filter(c => c.userId === currentUser?.id && c.serverId === server);
+  const defaultChar = userCharacters.find(c => c.isMain) || userCharacters[0];
+
+  const handleOpen = (open: boolean) => {
+    setIsOpen(open);
+    if (open && !selectedLeaderCharId && defaultChar) {
+      setSelectedLeaderCharId(defaultChar.id);
+    }
+  };
 
   const handleSubmit = async () => {
     const filteredParty = party.filter(p => p.trim() !== '');
@@ -215,27 +237,48 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
       setError(t('schedule.minPlayersError', { min: minRequired, current: totalPartySize }));
       return;
     }
+
+    if (!selectedLeaderCharId && userCharacters.length > 0) {
+      setError(t('schedule.selectYourCharacter') || 'Please select your character');
+      return;
+    }
     
     setError(null);
     setIsSubmitting(true);
     
     try {
+      const leaderChar = userCharacters.find(c => c.id === selectedLeaderCharId);
+      const partyMembers = [
+        ...(leaderChar ? [{
+          id: `temp-leader`,
+          requestId: '',
+          characterId: leaderChar.id,
+          character: leaderChar,
+          roleInParty: 'leader',
+          isLeader: true
+        }] : []),
+        ...filteredParty.map((name, idx) => ({
+          id: `temp-${idx}`,
+          requestId: '',
+          characterId: '',
+          character: { id: '', name, serverId: server, level: 0, isMain: false },
+          roleInParty: 'member',
+          isLeader: false
+        }))
+      ];
+
       await addRequest({
         userId: currentUser!.id,
         serverId: server,
         respawnId: respawn.id,
         slotId: slot.id,
         periodId: period.id,
-        partyMembers: filteredParty.map((name, idx) => ({
-          id: `temp-${idx}`,
-          requestId: '',
-          characterId: '',
-          character: { id: '', name, serverId: server, level: 0, isMain: false },
-          roleInParty: 'member'
-        }))
+        leaderCharacterId: selectedLeaderCharId || undefined,
+        partyMembers
       });
       setIsOpen(false);
       setParty(['', '', '', '']);
+      setSelectedLeaderCharId('');
     } catch (err: any) {
       const errorMessage = err?.message || t('schedule.submitError') || 'Failed to submit request. Please try again.';
       setError(errorMessage);
@@ -245,7 +288,7 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
@@ -280,7 +323,24 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
 
           <div className="space-y-2">
             <Label>{t('schedule.partyLeader')}</Label>
-            <Input value={currentUser?.username} disabled className="bg-muted/50" />
+            {userCharacters.length > 0 ? (
+              <Select value={selectedLeaderCharId} onValueChange={setSelectedLeaderCharId}>
+                <SelectTrigger className="w-full" data-testid="select-leader-character">
+                  <SelectValue placeholder={t('schedule.selectYourCharacter') || 'Select your character'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {userCharacters.map(char => (
+                    <SelectItem key={char.id} value={char.id} data-testid={`leader-char-option-${char.id}`}>
+                      {char.name} ({char.vocation}, Lvl {char.level}){char.isMain ? ' ★' : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="text-sm text-muted-foreground p-2 bg-muted/30 rounded border border-border/50">
+                {t('schedule.noCharactersOnServer') || 'No characters found on this server. Please add a character first.'}
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label>

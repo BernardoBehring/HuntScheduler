@@ -25,4 +25,6 @@ public class RequestPartyMember
     
     [MaxLength(50)]
     public string? RoleInParty { get; set; }
+
+    public bool IsLeader { get; set; } = false;
 }
