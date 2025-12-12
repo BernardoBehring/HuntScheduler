@@ -4,6 +4,6 @@ namespace HuntSchedule.Services.External;
 
 public class TibiaDataResponse
 {
-    [JsonPropertyName("characters")]
+    [JsonPropertyName("character")]
     public TibiaCharactersData? Characters { get; set; }
 }
