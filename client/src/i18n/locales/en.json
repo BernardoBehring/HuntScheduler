@@ -49,7 +49,9 @@
     "allServers": "All Servers",
     "error": "Error",
     "players": "Players",
-    "difficulty": "Difficulty"
+    "difficulty": "Difficulty",
+    "back": "Back",
+    "next": "Next"
   },
   "status": {
     "pending": "Pending",
@@ -116,7 +118,10 @@
     "memberPlaceholder": "Member {{number}} Name",
     "confirmRequest": "Confirm Request",
     "requestWarning": "You are requesting this slot for the entire duration of the selected period. Ensure your team can commit to this schedule.",
-    "submitError": "Failed to submit request. Please try again."
+    "submitError": "Failed to submit request. Please try again.",
+    "selectLeader": "Select Party Leader",
+    "selectLeaderHint": "Choose which character will lead the party",
+    "partyMembersList": "Party members"
   },
   "admin": {
     "title": "Admin Command",

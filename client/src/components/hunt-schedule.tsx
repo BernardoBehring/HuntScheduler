@@ -212,34 +212,51 @@ export function HuntSchedule() {
 function RequestDialog({ server, respawn, slot, period }: { server: string, respawn: Respawn, slot: any, period: SchedulePeriod }) {
   const { addRequest, currentUser, characters } = useStore();
   const [isOpen, setIsOpen] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
   const [party, setParty] = useState(['', '', '', '']);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedLeaderCharId, setSelectedLeaderCharId] = useState<string>('');
+  const [selectedLeaderName, setSelectedLeaderName] = useState<string>('');
   const { t } = useTranslation();
 
   const userCharacters = characters.filter(c => c.userId === currentUser?.id && c.serverId === server);
-  const defaultChar = userCharacters.find(c => c.isMain) || userCharacters[0];
 
   const handleOpen = (open: boolean) => {
     setIsOpen(open);
-    if (open && !selectedLeaderCharId && defaultChar) {
-      setSelectedLeaderCharId(defaultChar.id);
+    if (!open) {
+      setStep(1);
+      setParty(['', '', '', '']);
+      setSelectedLeaderName('');
+      setError(null);
     }
   };
 
-  const handleSubmit = async () => {
-    const filteredParty = party.filter(p => p.trim() !== '');
-    const totalPartySize = 1 + filteredParty.length; // Leader + members
+  const filteredParty = party.filter(p => p.trim() !== '');
+
+  const handleNextStep = () => {
+    const totalPartySize = filteredParty.length;
     
     const minRequired = respawn.minPlayers || 1;
     if (totalPartySize < minRequired) {
       setError(t('schedule.minPlayersError', { min: minRequired, current: totalPartySize }));
       return;
     }
+    
+    setError(null);
+    setStep(2);
+    if (filteredParty.length > 0 && !selectedLeaderName) {
+      setSelectedLeaderName(filteredParty[0]);
+    }
+  };
 
-    if (!selectedLeaderCharId && userCharacters.length > 0) {
-      setError(t('schedule.selectYourCharacter') || 'Please select your character');
+  const handleBack = () => {
+    setStep(1);
+    setError(null);
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedLeaderName) {
+      setError(t('schedule.selectLeader') || 'Please select a party leader');
       return;
     }
     
@@ -247,25 +264,20 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
     setIsSubmitting(true);
     
     try {
-      const leaderChar = userCharacters.find(c => c.id === selectedLeaderCharId);
-      const partyMembers = [
-        ...(leaderChar ? [{
-          id: `temp-leader`,
-          requestId: '',
-          characterId: leaderChar.id,
-          character: leaderChar,
-          roleInParty: 'leader',
-          isLeader: true
-        }] : []),
-        ...filteredParty.map((name, idx) => ({
+      const leaderChar = userCharacters.find(c => c.name.toLowerCase() === selectedLeaderName.toLowerCase());
+      
+      const partyMembers = filteredParty.map((name, idx) => {
+        const isLeader = name === selectedLeaderName;
+        const existingChar = characters.find(c => c.name.toLowerCase() === name.toLowerCase() && c.serverId === server);
+        return {
           id: `temp-${idx}`,
           requestId: '',
-          characterId: '',
-          character: { id: '', name, serverId: server, level: 0, isMain: false },
-          roleInParty: 'member',
-          isLeader: false
-        }))
-      ];
+          characterId: existingChar?.id || '',
+          character: existingChar || { id: '', name, serverId: server, level: 0, isMain: false },
+          roleInParty: isLeader ? 'leader' : 'member',
+          isLeader
+        };
+      });
 
       await addRequest({
         userId: currentUser!.id,
@@ -273,12 +285,13 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
         respawnId: respawn.id,
         slotId: slot.id,
         periodId: period.id,
-        leaderCharacterId: selectedLeaderCharId || undefined,
+        leaderCharacterId: leaderChar?.id || undefined,
         partyMembers
       });
       setIsOpen(false);
+      setStep(1);
       setParty(['', '', '', '']);
-      setSelectedLeaderCharId('');
+      setSelectedLeaderName('');
     } catch (err: any) {
       const errorMessage = err?.message || t('schedule.submitError') || 'Failed to submit request. Please try again.';
       setError(errorMessage);
@@ -304,7 +317,9 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="font-display text-primary">{t('schedule.requestHunt')}</DialogTitle>
+          <DialogTitle className="font-display text-primary">
+            {step === 1 ? t('schedule.requestHunt') : (t('schedule.selectLeader') || 'Select Party Leader')}
+          </DialogTitle>
           <DialogDescription>
             {respawn.name} • {slot.startTime} - {slot.endTime}
             <br/>
@@ -317,53 +332,53 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
           <div className="bg-muted/20 p-3 rounded-md border border-border/50 flex items-start gap-2">
              <AlertCircle className="h-4 w-4 text-primary mt-0.5" />
              <p className="text-xs text-muted-foreground">
-               {t('schedule.requestWarning')}
+               {step === 1 ? t('schedule.requestWarning') : (t('schedule.selectLeaderHint') || 'Choose which character will lead the party')}
              </p>
           </div>
 
-          <div className="space-y-2">
-            <Label>{t('schedule.partyLeader')}</Label>
-            {userCharacters.length > 0 ? (
-              <Select value={selectedLeaderCharId} onValueChange={setSelectedLeaderCharId}>
+          {step === 1 ? (
+            <div className="space-y-2">
+              <Label>
+                {t('schedule.partyMembers')} 
+                <span className="text-xs text-muted-foreground ml-2">
+                  ({t('schedule.minMaxPlayers', { min: respawn.minPlayers, max: respawn.maxPlayers })})
+                </span>
+              </Label>
+              {party.map((member, i) => (
+                <Input 
+                  key={i} 
+                  placeholder={t('schedule.memberPlaceholder', { number: i + 1 })}
+                  value={member}
+                  onChange={(e) => {
+                    const newParty = [...party];
+                    newParty[i] = e.target.value;
+                    setParty(newParty);
+                    setError(null);
+                  }}
+                  data-testid={`input-party-member-${i}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label>{t('schedule.partyLeader')}</Label>
+              <Select value={selectedLeaderName} onValueChange={setSelectedLeaderName}>
                 <SelectTrigger className="w-full" data-testid="select-leader-character">
-                  <SelectValue placeholder={t('schedule.selectYourCharacter') || 'Select your character'} />
+                  <SelectValue placeholder={t('schedule.selectLeader') || 'Select the party leader'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {userCharacters.map(char => (
-                    <SelectItem key={char.id} value={char.id} data-testid={`leader-char-option-${char.id}`}>
-                      {char.name} ({char.vocation}, Lvl {char.level}){char.isMain ? ' ★' : ''}
+                  {filteredParty.map((name, idx) => (
+                    <SelectItem key={idx} value={name} data-testid={`leader-option-${idx}`}>
+                      {name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            ) : (
-              <div className="text-sm text-muted-foreground p-2 bg-muted/30 rounded border border-border/50">
-                {t('schedule.noCharactersOnServer') || 'No characters found on this server. Please add a character first.'}
+              <div className="text-xs text-muted-foreground mt-2">
+                {t('schedule.partyMembersList') || 'Party members'}: {filteredParty.join(', ')}
               </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label>
-              {t('schedule.partyMembers')} 
-              <span className="text-xs text-muted-foreground ml-2">
-                ({t('schedule.minMaxPlayers', { min: respawn.minPlayers, max: respawn.maxPlayers })})
-              </span>
-            </Label>
-            {party.map((member, i) => (
-              <Input 
-                key={i} 
-                placeholder={t('schedule.memberPlaceholder', { number: i + 1 })}
-                value={member}
-                onChange={(e) => {
-                  const newParty = [...party];
-                  newParty[i] = e.target.value;
-                  setParty(newParty);
-                  setError(null);
-                }}
-                data-testid={`input-party-member-${i}`}
-              />
-            ))}
-          </div>
+            </div>
+          )}
           
           {error && (
             <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 flex items-start gap-2">
@@ -372,15 +387,30 @@ function RequestDialog({ server, respawn, slot, period }: { server: string, resp
             </div>
           )}
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex gap-2">
+          {step === 2 && (
+            <Button 
+              type="button"
+              variant="outline"
+              onClick={handleBack}
+              data-testid="button-back"
+            >
+              {t('common.back') || 'Back'}
+            </Button>
+          )}
           <Button 
             type="submit" 
-            onClick={handleSubmit} 
+            onClick={step === 1 ? handleNextStep : handleSubmit} 
             className="bg-primary text-primary-foreground hover:bg-primary/90" 
-            data-testid="button-confirm-request"
+            data-testid={step === 1 ? "button-next-step" : "button-confirm-request"}
             disabled={isSubmitting}
           >
-            {isSubmitting ? t('common.loading') || 'Submitting...' : t('schedule.confirmRequest')}
+            {isSubmitting 
+              ? (t('common.loading') || 'Submitting...') 
+              : step === 1 
+                ? (t('common.next') || 'Next')
+                : t('schedule.confirmRequest')
+            }
           </Button>
         </DialogFooter>
       </DialogContent>
