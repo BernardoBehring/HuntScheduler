@@ -160,7 +160,8 @@
       "rejectDescription": "Please provide a reason for rejecting this hunt request.",
       "rejectionReason": "Rejection Reason",
       "rejectionReasonPlaceholder": "Enter the reason for rejection...",
-      "confirmReject": "Confirm Rejection"
+      "confirmReject": "Confirm Rejection",
+      "reason": "Reason"
     },
     "periods": {
       "createNew": "Create New Period",

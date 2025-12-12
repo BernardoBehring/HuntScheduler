@@ -171,6 +171,11 @@ export default function AdminRequests() {
                         <span>{periodName}</span>
                         {slotInfo && <span>• {slotInfo.startTime} - {slotInfo.endTime}</span>}
                       </div>
+                      {req.statusId === rejectedStatusId && req.rejectionReason && (
+                        <p className="text-xs text-destructive mt-1">
+                          {t('admin.requests.reason')}: {req.rejectionReason}
+                        </p>
+                      )}
                     </div>
                   );
                 })}

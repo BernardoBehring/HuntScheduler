@@ -160,7 +160,8 @@
       "rejectDescription": "Por favor, forneça um motivo para rejeitar este pedido de hunt.",
       "rejectionReason": "Motivo da Rejeição",
       "rejectionReasonPlaceholder": "Digite o motivo da rejeição...",
-      "confirmReject": "Confirmar Rejeição"
+      "confirmReject": "Confirmar Rejeição",
+      "reason": "Motivo"
     },
     "periods": {
       "createNew": "Criar Novo Período",
