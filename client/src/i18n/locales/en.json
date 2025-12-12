@@ -155,7 +155,12 @@
       "reject": "Reject",
       "requestApproved": "Request approved",
       "requestRejected": "Request rejected",
-      "requestStatus": "The hunt request has been {{status}}."
+      "requestStatus": "The hunt request has been {{status}}.",
+      "rejectRequest": "Reject Request",
+      "rejectDescription": "Please provide a reason for rejecting this hunt request.",
+      "rejectionReason": "Rejection Reason",
+      "rejectionReasonPlaceholder": "Enter the reason for rejection...",
+      "confirmReject": "Confirm Rejection"
     },
     "periods": {
       "createNew": "Create New Period",

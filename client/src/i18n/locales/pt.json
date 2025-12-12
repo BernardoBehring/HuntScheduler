@@ -155,7 +155,12 @@
       "reject": "Rejeitar",
       "requestApproved": "Pedido aprovado",
       "requestRejected": "Pedido rejeitado",
-      "requestStatus": "O pedido de hunt foi {{status}}."
+      "requestStatus": "O pedido de hunt foi {{status}}.",
+      "rejectRequest": "Rejeitar Pedido",
+      "rejectDescription": "Por favor, forneça um motivo para rejeitar este pedido de hunt.",
+      "rejectionReason": "Motivo da Rejeição",
+      "rejectionReasonPlaceholder": "Digite o motivo da rejeição...",
+      "confirmReject": "Confirmar Rejeição"
     },
     "periods": {
       "createNew": "Criar Novo Período",

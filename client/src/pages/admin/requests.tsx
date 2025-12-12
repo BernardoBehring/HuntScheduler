@@ -9,11 +9,17 @@ import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export default function AdminRequests() {
   const { requests, users, updateRequestStatus, servers, respawns, periods, characters, slots, statuses } = useStore();
   const { t } = useTranslation();
   const [filterServer, setFilterServer] = useState<string>("all");
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingRequestId, setRejectingRequestId] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   const pendingStatusId = statuses.find(s => s.name === 'pending')?.id;
   const approvedStatusId = statuses.find(s => s.name === 'approved')?.id;
@@ -52,6 +58,21 @@ export default function AdminRequests() {
       description: t('admin.requests.requestStatus', { status: t(`status.${statusKey}`).toLowerCase() }),
       variant: isApproval ? 'default' : 'destructive',
     });
+  };
+
+  const openRejectDialog = (requestId: string) => {
+    setRejectingRequestId(requestId);
+    setRejectionReason("");
+    setRejectDialogOpen(true);
+  };
+
+  const confirmRejection = () => {
+    if (rejectingRequestId && rejectedStatusId) {
+      handleReview(rejectingRequestId, rejectedStatusId, rejectionReason.trim() || undefined);
+      setRejectDialogOpen(false);
+      setRejectingRequestId(null);
+      setRejectionReason("");
+    }
   };
 
   return (
@@ -109,7 +130,7 @@ export default function AdminRequests() {
                         <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white h-8" onClick={() => approvedStatusId && handleReview(req.id, approvedStatusId)} data-testid={`button-approve-${req.id}`}>
                           <Check className="h-3 w-3 mr-1" /> {t('admin.requests.approve')}
                         </Button>
-                        <Button size="sm" variant="destructive" className="flex-1 h-8" onClick={() => rejectedStatusId && handleReview(req.id, rejectedStatusId, 'Admin declined')} data-testid={`button-reject-${req.id}`}>
+                        <Button size="sm" variant="destructive" className="flex-1 h-8" onClick={() => openRejectDialog(req.id)} data-testid={`button-reject-${req.id}`}>
                           <X className="h-3 w-3 mr-1" /> {t('admin.requests.reject')}
                         </Button>
                       </div>
@@ -158,6 +179,38 @@ export default function AdminRequests() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('admin.requests.rejectRequest')}</DialogTitle>
+            <DialogDescription>
+              {t('admin.requests.rejectDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="rejection-reason">{t('admin.requests.rejectionReason')}</Label>
+              <Textarea
+                id="rejection-reason"
+                placeholder={t('admin.requests.rejectionReasonPlaceholder')}
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                className="min-h-[100px]"
+                data-testid="textarea-rejection-reason"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setRejectDialogOpen(false)} data-testid="button-cancel-rejection">
+              {t('common.cancel')}
+            </Button>
+            <Button variant="destructive" onClick={confirmRejection} data-testid="button-confirm-rejection">
+              {t('admin.requests.confirmReject')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
