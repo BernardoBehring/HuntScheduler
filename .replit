@@ -47,10 +47,6 @@ author = "agent"
 task = "shell.exec"
 args = "bash start-backend.sh"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "git rm -r --cached Backend/*/bin Backend/*/obj"
-
 [agent]
 mockupState = "FULLSTACK"
 integrations = ["google-mail:1.0.0"]
