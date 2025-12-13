@@ -227,13 +227,19 @@ export function AdminLayout({ children, title, description }: AdminLayoutProps) 
 
         <div className="p-3 border-t border-border/40 bg-background/20">
           <div className="flex items-center gap-2 mb-3 px-2">
-            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-              <span className="font-display font-bold text-primary text-sm">{currentUser.username[0]}</span>
-            </div>
-            <div className="overflow-hidden flex-1">
-              <p className="font-medium truncate text-sm">{currentUser.username}</p>
-              <p className="text-xs text-primary">{t('roles.admin')}</p>
-            </div>
+            <Link 
+              href="/profile" 
+              className="flex items-center gap-2 flex-1 rounded-md hover:bg-accent/10 transition-colors cursor-pointer p-1 -m-1"
+              data-testid="link-profile-admin"
+            >
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+                <span className="font-display font-bold text-primary text-sm">{currentUser.username[0]}</span>
+              </div>
+              <div className="overflow-hidden flex-1">
+                <p className="font-medium truncate text-sm">{currentUser.username}</p>
+                <p className="text-xs text-primary">{t('roles.admin')}</p>
+              </div>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-7 w-7">
