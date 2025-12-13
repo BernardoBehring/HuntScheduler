@@ -127,7 +127,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
               );
             })}
             <div className="pt-2 border-t border-border/40 mt-2">
-              <div className="flex items-center gap-3 px-4 py-2 mb-2">
+              <Link 
+                href="/profile" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-2 mb-2 rounded-md hover:bg-accent/10 transition-colors cursor-pointer"
+                data-testid="link-profile-mobile"
+              >
                 <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
                   <span className="font-display font-bold text-primary text-sm">{currentUser.username[0]}</span>
                 </div>
@@ -135,7 +140,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <p className="font-medium text-sm">{currentUser.username}</p>
                   <p className="text-xs text-primary">{currentUser.points} {t('common.points')}</p>
                 </div>
-              </div>
+              </Link>
               <Button 
                 variant="outline" 
                 className="w-full justify-start gap-2 border-destructive/30 hover:bg-destructive/10 hover:text-destructive text-muted-foreground"
@@ -182,16 +187,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         <div className="p-4 border-t border-border/40 bg-background/20">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-              <span className="font-display font-bold text-primary">{currentUser.username[0]}</span>
-            </div>
-            <div className="overflow-hidden flex-1">
-              <p className="font-medium truncate text-sm">{currentUser.username}</p>
-              <p className="text-xs text-primary flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                {currentUser.points} {t('common.points')}
-              </p>
-            </div>
+            <Link 
+              href="/profile" 
+              className="flex items-center gap-3 flex-1 rounded-md hover:bg-accent/10 transition-colors cursor-pointer p-1 -m-1"
+              data-testid="link-profile-desktop"
+            >
+              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+                <span className="font-display font-bold text-primary">{currentUser.username[0]}</span>
+              </div>
+              <div className="overflow-hidden flex-1">
+                <p className="font-medium truncate text-sm">{currentUser.username}</p>
+                <p className="text-xs text-primary flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  {currentUser.points} {t('common.points')}
+                </p>
+              </div>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8" data-testid="button-language">
