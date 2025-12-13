@@ -37,7 +37,18 @@ public class RespawnService : IRespawnService
 
     public async Task UpdateAsync(Respawn respawn)
     {
-        _unitOfWork.Respawns.Update(respawn);
+        var existingRespawn = await _unitOfWork.Respawns.GetByIdAsync(respawn.Id);
+        if (existingRespawn != null)
+        {
+            existingRespawn.Name = respawn.Name;
+            existingRespawn.ServerId = respawn.ServerId;
+            existingRespawn.DifficultyId = respawn.DifficultyId;
+            existingRespawn.MinPlayers = respawn.MinPlayers;
+            existingRespawn.MaxPlayers = respawn.MaxPlayers;
+            existingRespawn.TsCode = respawn.TsCode;
+            existingRespawn.City = respawn.City;
+            existingRespawn.IsAvailable = respawn.IsAvailable;
+        }
         await _unitOfWork.SaveChangesAsync();
     }
 
