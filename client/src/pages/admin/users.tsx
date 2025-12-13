@@ -179,8 +179,15 @@ export default function AdminUsers() {
               <p className="text-muted-foreground text-center py-10">{t('common.noData')}</p>
             )}
             {filteredUsers.map(user => {
-              const userCharacters = characters.filter(c => c.userId === user.id);
+              const userIdStr = String(user.id);
+              const userCharacters = characters.filter(c => String(c.userId) === userIdStr);
               const userServers = getUserServersWithCharacters(user.id);
+              
+              const getCharactersForServer = (serverId: string | number) => {
+                const serverIdStr = String(serverId);
+                return userCharacters.filter(c => String(c.serverId) === serverIdStr);
+              };
+              
               return (
                 <div key={user.id} className="p-4 border border-border/40 rounded-lg bg-card/40" data-testid={`user-item-${user.id}`}>
                   <div className="flex items-center justify-between mb-3">
@@ -210,67 +217,78 @@ export default function AdminUsers() {
                   </div>
                   
                   {userServers.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-border/30">
-                      <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                        <Headphones className="h-3 w-3" />
-                        {t('admin.users.tsPositionPerServer')}:
-                      </p>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {userServers.map(server => {
-                          const currentTsPosition = getUserTsPositionForServer(user.id, server.id);
-                          return (
-                            <div 
-                              key={server.id} 
-                              className="flex items-center gap-2 text-xs px-2 py-1 rounded-md border bg-muted/20 border-border/30"
-                              data-testid={`user-server-ts-${user.id}-${server.id}`}
-                            >
-                              <ServerIcon className="h-3 w-3 text-muted-foreground" />
-                              <span className="font-medium">{server.name}</span>
-                              <Select 
-                                value={currentTsPosition?.id?.toString() || "none"} 
-                                onValueChange={(value) => handleSetTsPosition(user.id, server.id, value === "none" ? null : parseInt(value))}
-                              >
-                                <SelectTrigger className="h-6 w-[120px] text-xs border-none bg-transparent px-1" data-testid={`select-ts-position-${user.id}-${server.id}`}>
-                                  <SelectValue>
-                                    {currentTsPosition ? (
-                                      <span className="flex items-center gap-1">
-                                        <span 
-                                          className="w-2 h-2 rounded-full" 
-                                          style={{ backgroundColor: currentTsPosition.color }}
-                                        />
-                                        {currentTsPosition.name}
-                                      </span>
-                                    ) : (
+                    <div className="mt-2 pt-2 border-t border-border/30 space-y-3">
+                      {userServers.map(server => {
+                        const currentTsPosition = getUserTsPositionForServer(user.id, server.id);
+                        const serverCharacters = getCharactersForServer(server.id);
+                        return (
+                          <div key={server.id} className="space-y-2" data-testid={`user-server-section-${user.id}-${server.id}`}>
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2 text-xs">
+                                <ServerIcon className="h-3 w-3 text-muted-foreground" />
+                                <span className="font-medium">{server.name}</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-xs">
+                                <Headphones className="h-3 w-3 text-muted-foreground" />
+                                <Select 
+                                  value={currentTsPosition?.id?.toString() || "none"} 
+                                  onValueChange={(value) => handleSetTsPosition(user.id, server.id, value === "none" ? null : parseInt(value))}
+                                >
+                                  <SelectTrigger className="h-6 w-[130px] text-xs border-border/30 bg-muted/20 px-2" data-testid={`select-ts-position-${user.id}-${server.id}`}>
+                                    <SelectValue>
+                                      {currentTsPosition ? (
+                                        <span className="flex items-center gap-1">
+                                          <span 
+                                            className="w-2 h-2 rounded-full" 
+                                            style={{ backgroundColor: currentTsPosition.color }}
+                                          />
+                                          {currentTsPosition.name}
+                                        </span>
+                                      ) : (
+                                        <span className="text-muted-foreground">{t('admin.users.noTsPosition')}</span>
+                                      )}
+                                    </SelectValue>
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="none">
                                       <span className="text-muted-foreground">{t('admin.users.noTsPosition')}</span>
-                                    )}
-                                  </SelectValue>
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="none">
-                                    <span className="text-muted-foreground">{t('admin.users.noTsPosition')}</span>
-                                  </SelectItem>
-                                  {sortedTsPositions.map(pos => (
-                                    <SelectItem key={pos.id} value={pos.id.toString()}>
-                                      <span className="flex items-center gap-2">
-                                        <span 
-                                          className="w-2 h-2 rounded-full" 
-                                          style={{ backgroundColor: pos.color }}
-                                        />
-                                        {pos.name}
-                                      </span>
                                     </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                                    {sortedTsPositions.map(pos => (
+                                      <SelectItem key={pos.id} value={pos.id.toString()}>
+                                        <span className="flex items-center gap-2">
+                                          <span 
+                                            className="w-2 h-2 rounded-full" 
+                                            style={{ backgroundColor: pos.color }}
+                                          />
+                                          {pos.name}
+                                        </span>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             </div>
-                          );
-                        })}
-                      </div>
+                            <div className="flex flex-wrap gap-1.5 pl-5">
+                              {serverCharacters.map(char => (
+                                <div 
+                                  key={char.id}
+                                  className={`text-xs px-2 py-0.5 rounded-md border ${char.isMain ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-muted/30 border-border/30'}`}
+                                  data-testid={`character-badge-${char.id}`}
+                                >
+                                  <span className="font-medium">{char.name}</span>
+                                  {char.vocation && <span className="text-muted-foreground ml-1">({char.vocation})</span>}
+                                  {char.isMain && <span className="ml-1 text-primary">★</span>}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                   
-                  {userCharacters.length > 0 && (
-                    <div className={userServers.length > 0 ? "pt-2 border-t border-border/30" : "mt-2 pt-2 border-t border-border/30"}>
+                  {userServers.length === 0 && userCharacters.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-border/30">
                       <p className="text-xs text-muted-foreground mb-2">{t('common.characters')}:</p>
                       <div className="flex flex-wrap gap-2">
                         {userCharacters.map(char => {
