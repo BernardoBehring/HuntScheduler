@@ -163,6 +163,8 @@ export interface UserServerSettings {
   serverId: number;
   server?: Server;
   tsDescription?: string;
+  tsPositionId?: number;
+  tsPosition?: TsPosition;
 }
 
 export interface CreatePointClaimDto {
@@ -497,7 +499,7 @@ export const api = {
       fetch(`${API_BASE}/user-server-settings/user/${userId}`).then(r => handleResponse(r)),
     getByUserAndServer: (userId: number, serverId: number): Promise<UserServerSettings> =>
       fetch(`${API_BASE}/user-server-settings/user/${userId}/server/${serverId}`).then(r => handleResponse(r)),
-    update: (userId: number, serverId: number, dto: { tsDescription?: string }): Promise<void> =>
+    update: (userId: number, serverId: number, dto: { tsDescription?: string; tsPositionId?: number | null; clearTsPosition?: boolean }): Promise<void> =>
       fetch(`${API_BASE}/user-server-settings/user/${userId}/server/${serverId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

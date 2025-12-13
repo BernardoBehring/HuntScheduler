@@ -21,6 +21,7 @@ public class UserServerSettingsController : ControllerBase
     {
         var settings = await _context.UserServerSettings
             .Include(s => s.Server)
+            .Include(s => s.TsPosition)
             .Where(s => s.UserId == userId)
             .ToListAsync();
         return Ok(settings);
@@ -31,6 +32,7 @@ public class UserServerSettingsController : ControllerBase
     {
         var settings = await _context.UserServerSettings
             .Include(s => s.Server)
+            .Include(s => s.TsPosition)
             .FirstOrDefaultAsync(s => s.UserId == userId && s.ServerId == serverId);
         
         if (settings == null)
@@ -52,13 +54,21 @@ public class UserServerSettingsController : ControllerBase
             {
                 UserId = userId,
                 ServerId = serverId,
-                TsDescription = dto.TsDescription
+                TsDescription = dto.TsDescription,
+                TsPositionId = dto.TsPositionId
             };
             _context.UserServerSettings.Add(settings);
         }
         else
         {
-            settings.TsDescription = dto.TsDescription;
+            if (dto.TsDescription != null)
+            {
+                settings.TsDescription = dto.TsDescription;
+            }
+            if (dto.TsPositionId.HasValue || dto.ClearTsPosition)
+            {
+                settings.TsPositionId = dto.TsPositionId;
+            }
         }
         
         await _context.SaveChangesAsync();
@@ -69,4 +79,6 @@ public class UserServerSettingsController : ControllerBase
 public class UpdateUserServerSettingsDto
 {
     public string? TsDescription { get; set; }
+    public int? TsPositionId { get; set; }
+    public bool ClearTsPosition { get; set; } = false;
 }

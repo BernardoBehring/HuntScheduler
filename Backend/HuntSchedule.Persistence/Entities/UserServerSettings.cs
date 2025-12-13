@@ -26,4 +26,10 @@ public class UserServerSettings
 
     [Column("ts_description")]
     public string? TsDescription { get; set; }
+
+    [Column("ts_position_id")]
+    public int? TsPositionId { get; set; }
+
+    [ForeignKey("TsPositionId")]
+    public TsPosition? TsPosition { get; set; }
 }
