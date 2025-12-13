@@ -332,5 +332,21 @@
     "character_server_not_configured": "Personaje '{{name}}' está en el servidor '{{world}}' que no está configurado en nuestro sistema",
     "character_server_mismatch": "Personaje '{{name}}' está en el servidor '{{actualServer}}', pero seleccionaste '{{selectedServer}}'",
     "conflict_with_approved_request": "Conflicto con solicitud aprobada #{{id}}"
+  },
+  "email": {
+    "approvalSubject": "Solicitud de Caza Aprobada",
+    "approvalTitle": "¡Solicitud de Caza Aprobada!",
+    "approvalGreeting": "Hola",
+    "approvalMessage": "¡Buenas noticias! Tu solicitud de caza ha sido aprobada.",
+    "approvalFooter": "¡Asegúrate de estar en línea y listo para tu sesión de caza!",
+    "rejectionSubject": "Actualización de Solicitud de Caza",
+    "rejectionTitle": "Solicitud de Caza No Aprobada",
+    "rejectionMessage": "Desafortunadamente, tu solicitud de caza no pudo ser aprobada en este momento.",
+    "rejectionFooter": "No dudes en enviar otra solicitud para un horario diferente.",
+    "respawnLabel": "Respawn",
+    "timeSlotLabel": "Horario",
+    "periodLabel": "Período",
+    "reasonLabel": "Motivo",
+    "automatedMessage": "Este es un mensaje automático de GuildHall Hunt Schedule Manager."
   }
 }

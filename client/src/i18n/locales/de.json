@@ -332,5 +332,21 @@
     "character_server_not_configured": "Charakter '{{name}}' ist auf Server '{{world}}', der in unserem System nicht konfiguriert ist",
     "character_server_mismatch": "Charakter '{{name}}' ist auf Server '{{actualServer}}', aber du hast '{{selectedServer}}' ausgewählt",
     "conflict_with_approved_request": "Konflikt mit genehmigter Anfrage #{{id}}"
+  },
+  "email": {
+    "approvalSubject": "Jagdanfrage Genehmigt",
+    "approvalTitle": "Jagdanfrage Genehmigt!",
+    "approvalGreeting": "Hallo",
+    "approvalMessage": "Gute Nachrichten! Deine Jagdanfrage wurde genehmigt.",
+    "approvalFooter": "Stelle sicher, dass du online und bereit für deine Jagdsitzung bist!",
+    "rejectionSubject": "Jagdanfrage Aktualisierung",
+    "rejectionTitle": "Jagdanfrage Nicht Genehmigt",
+    "rejectionMessage": "Leider konnte deine Jagdanfrage zu diesem Zeitpunkt nicht genehmigt werden.",
+    "rejectionFooter": "Du kannst gerne eine neue Anfrage für einen anderen Zeitslot einreichen.",
+    "respawnLabel": "Respawn",
+    "timeSlotLabel": "Zeitfenster",
+    "periodLabel": "Zeitraum",
+    "reasonLabel": "Grund",
+    "automatedMessage": "Dies ist eine automatische Nachricht vom GuildHall Hunt Schedule Manager."
   }
 }

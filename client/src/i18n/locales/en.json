@@ -364,5 +364,21 @@
     "character_server_not_configured": "Character '{{name}}' is on server '{{world}}' which is not configured in our system",
     "character_server_mismatch": "Character '{{name}}' is on server '{{actualServer}}', but you selected '{{selectedServer}}'",
     "conflict_with_approved_request": "Conflict with approved request #{{id}}"
+  },
+  "email": {
+    "approvalSubject": "Hunt Request Approved",
+    "approvalTitle": "Hunt Request Approved!",
+    "approvalGreeting": "Hello",
+    "approvalMessage": "Great news! Your hunt request has been approved.",
+    "approvalFooter": "Make sure to be online and ready for your hunt session!",
+    "rejectionSubject": "Hunt Request Update",
+    "rejectionTitle": "Hunt Request Not Approved",
+    "rejectionMessage": "Unfortunately, your hunt request could not be approved at this time.",
+    "rejectionFooter": "Feel free to submit another request for a different time slot.",
+    "respawnLabel": "Respawn",
+    "timeSlotLabel": "Time Slot",
+    "periodLabel": "Period",
+    "reasonLabel": "Reason",
+    "automatedMessage": "This is an automated message from GuildHall Hunt Schedule Manager."
   }
 }

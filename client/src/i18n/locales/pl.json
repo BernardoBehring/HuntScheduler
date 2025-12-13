@@ -332,5 +332,21 @@
     "character_server_not_configured": "Postać '{{name}}' jest na serwerze '{{world}}', który nie jest skonfigurowany w naszym systemie",
     "character_server_mismatch": "Postać '{{name}}' jest na serwerze '{{actualServer}}', ale wybrałeś '{{selectedServer}}'",
     "conflict_with_approved_request": "Konflikt z zatwierdzonym wnioskiem #{{id}}"
+  },
+  "email": {
+    "approvalSubject": "Prośba o Polowanie Zatwierdzona",
+    "approvalTitle": "Prośba o Polowanie Zatwierdzona!",
+    "approvalGreeting": "Cześć",
+    "approvalMessage": "Świetne wiadomości! Twoja prośba o polowanie została zatwierdzona.",
+    "approvalFooter": "Upewnij się, że będziesz online i gotowy na sesję polowania!",
+    "rejectionSubject": "Aktualizacja Prośby o Polowanie",
+    "rejectionTitle": "Prośba o Polowanie Niezatwierdzona",
+    "rejectionMessage": "Niestety, Twoja prośba o polowanie nie mogła zostać zatwierdzona w tym momencie.",
+    "rejectionFooter": "Możesz wysłać kolejną prośbę na inny przedział czasowy.",
+    "respawnLabel": "Respawn",
+    "timeSlotLabel": "Przedział czasowy",
+    "periodLabel": "Okres",
+    "reasonLabel": "Powód",
+    "automatedMessage": "To jest automatyczna wiadomość z GuildHall Hunt Schedule Manager."
   }
 }
