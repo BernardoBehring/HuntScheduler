@@ -104,6 +104,7 @@
     "pasteUrl": "Pegar URL",
     "selectedFile": "Seleccionado",
     "maxFileSize": "Tamaño máximo: 5MB (JPG, PNG, GIF, WebP)",
+    "clickToUpload": "Haz clic para seleccionar un archivo",
     "uploading": "Subiendo...",
     "uploadError": "Error al subir archivo",
     "fileTooLarge": "El archivo es demasiado grande. Tamaño máximo: 5MB."

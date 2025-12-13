@@ -52,7 +52,8 @@
     "difficulty": "Dificuldade",
     "back": "Voltar",
     "next": "Próximo",
-    "validate": "Validar"
+    "validate": "Validar",
+    "change": "Alterar"
   },
   "status": {
     "pending": "Pendente",
@@ -107,6 +108,7 @@
     "pasteUrl": "Colar URL",
     "selectedFile": "Selecionado",
     "maxFileSize": "Tamanho máximo: 5MB (JPG, PNG, GIF, WebP)",
+    "clickToUpload": "Clique para selecionar um arquivo",
     "uploading": "Enviando...",
     "uploadError": "Falha ao enviar arquivo",
     "fileTooLarge": "Arquivo muito grande. Tamanho máximo é 5MB."

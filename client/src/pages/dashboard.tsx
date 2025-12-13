@@ -173,7 +173,10 @@ export default function Dashboard() {
                     type="button"
                     variant={screenshotMode === 'file' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setScreenshotMode('file')}
+                    onClick={() => {
+                      setScreenshotMode('file');
+                      setTimeout(() => fileInputRef.current?.click(), 0);
+                    }}
                     className="flex-1"
                     data-testid="button-mode-file"
                   >
@@ -193,24 +196,41 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  data-testid="input-claim-file"
+                />
+                
                 {screenshotMode === 'file' ? (
                   <div className="space-y-2">
-                    <Input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      className="cursor-pointer"
-                      data-testid="input-claim-file"
-                    />
-                    {claimScreenshotFile && (
-                      <p className="text-xs text-muted-foreground">
-                        {t('dashboard.selectedFile')}: {claimScreenshotFile.name}
-                      </p>
+                    {claimScreenshotFile ? (
+                      <div className="flex items-center gap-2 p-2 rounded-lg border border-border/50 bg-muted/30">
+                        <Image className="h-4 w-4 text-primary" />
+                        <span className="text-sm flex-1 truncate">{claimScreenshotFile.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="text-xs"
+                        >
+                          {t('common.change')}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div 
+                        className="p-4 border-2 border-dashed border-border/50 rounded-lg text-center cursor-pointer hover:border-primary/50 transition-colors"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">{t('dashboard.clickToUpload')}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('dashboard.maxFileSize')}</p>
+                      </div>
                     )}
-                    <p className="text-xs text-muted-foreground">
-                      {t('dashboard.maxFileSize')}
-                    </p>
                   </div>
                 ) : (
                   <Input 

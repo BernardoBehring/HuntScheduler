@@ -52,7 +52,8 @@
     "difficulty": "Difficulty",
     "back": "Back",
     "next": "Next",
-    "validate": "Validate"
+    "validate": "Validate",
+    "change": "Change"
   },
   "status": {
     "pending": "Pending",
@@ -107,6 +108,7 @@
     "pasteUrl": "Paste URL",
     "selectedFile": "Selected",
     "maxFileSize": "Max file size: 5MB (JPG, PNG, GIF, WebP)",
+    "clickToUpload": "Click to select a file",
     "uploading": "Uploading...",
     "uploadError": "Failed to upload file",
     "fileTooLarge": "File is too large. Maximum size is 5MB."

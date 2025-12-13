@@ -104,6 +104,7 @@
     "pasteUrl": "Wklej URL",
     "selectedFile": "Wybrany",
     "maxFileSize": "Maks. rozmiar: 5MB (JPG, PNG, GIF, WebP)",
+    "clickToUpload": "Kliknij, aby wybrać plik",
     "uploading": "Przesyłanie...",
     "uploadError": "Nie udało się przesłać pliku",
     "fileTooLarge": "Plik jest za duży. Maksymalny rozmiar to 5MB."
