@@ -54,7 +54,9 @@
     "back": "Voltar",
     "next": "Próximo",
     "validate": "Validar",
-    "change": "Alterar"
+    "change": "Alterar",
+    "saving": "Salvando...",
+    "characters": "Personagens"
   },
   "status": {
     "pending": "Pendente",
@@ -255,7 +257,11 @@
       "allUsers": "Todos os Usuários",
       "noTransactions": "Nenhuma transação de pontos encontrada.",
       "by": "por",
-      "balanceAfter": "Saldo"
+      "balanceAfter": "Saldo",
+      "pointsAdded": "Pontos Adicionados",
+      "pointsRemoved": "Pontos Removidos",
+      "pointsAddedDesc": "Adicionados {{amount}} pontos para {{user}}.",
+      "pointsRemovedDesc": "Removidos {{amount}} pontos de {{user}}."
     },
     "servers": {
       "title": "Gerenciamento de Servidores",
@@ -278,7 +284,25 @@
       "serverDeleted": "Servidor Excluído",
       "serverDeletedDesc": "O servidor foi removido.",
       "confirmDelete": "Tem certeza que deseja excluir este servidor? Isso pode afetar respawns e agendamentos existentes.",
-      "noServers": "Nenhum servidor configurado."
+      "noServers": "Nenhum servidor configurado. Clique em 'Sincronizar do Tibia' para importar todos os mundos do jogo.",
+      "syncFromTibia": "Sincronizar do Tibia",
+      "syncing": "Sincronizando...",
+      "syncComplete": "Sincronização Completa",
+      "syncAddedServers": "Adicionados {{count}} novos servidores",
+      "syncNoNewServers": "Todos os servidores estão atualizados",
+      "activeCount": "{{active}} de {{total}} servidores ativos",
+      "active": "Ativo",
+      "serverActivated": "Servidor Ativado",
+      "serverDeactivated": "Servidor Desativado",
+      "searchPlaceholder": "Buscar servidores por nome, região ou tipo de PvP...",
+      "noSearchResults": "Nenhum servidor encontrado.",
+      "editServerDesc": "Configure informações da guild e TeamSpeak para {{name}}",
+      "guildName": "Nome da Guild",
+      "guildNamePlaceholder": "ex: Dragon Hunters",
+      "tsName": "Servidor TeamSpeak",
+      "tsNamePlaceholder": "ex: ts.suaguild.com",
+      "tsDescription": "Descrição do TeamSpeak",
+      "tsDescriptionPlaceholder": "Informações adicionais sobre seu servidor TeamSpeak..."
     },
     "claims": {
       "title": "Revisão de Reivindicações de Pontos",
@@ -387,7 +411,8 @@
     "networkError": "Ocorreu um erro de rede",
     "pageNotFound": "404 Página Não Encontrada",
     "pageNotFoundDesc": "A página que você está procurando não existe ou foi movida.",
-    "goHome": "Ir para o Painel"
+    "goHome": "Ir para o Painel",
+    "syncFailed": "Falha ao sincronizar servidores do Tibia"
   },
   "error": {
     "user_not_found": "Usuário não encontrado",
