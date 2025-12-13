@@ -90,4 +90,10 @@
   <data name="InsufficientPartyMembers" xml:space="preserve">
     <value>This respawn requires at least {0} party members, but only {1} were provided</value>
   </data>
+  <data name="SourceTargetSameServer" xml:space="preserve">
+    <value>Source and target server cannot be the same</value>
+  </data>
+  <data name="NoRespawnsToCopy" xml:space="preserve">
+    <value>No respawns found in the source server to copy</value>
+  </data>
 </root>

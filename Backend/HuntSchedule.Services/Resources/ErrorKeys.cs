@@ -19,4 +19,6 @@ public static class ErrorKeys
     public const string ConflictWithApprovedRequest = "ConflictWithApprovedRequest";
     public const string PartyMembersRequired = "PartyMembersRequired";
     public const string InsufficientPartyMembers = "InsufficientPartyMembers";
+    public const string SourceTargetSameServer = "SourceTargetSameServer";
+    public const string NoRespawnsToCopy = "NoRespawnsToCopy";
 }

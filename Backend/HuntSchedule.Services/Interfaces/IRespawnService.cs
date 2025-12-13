@@ -1,4 +1,6 @@
 using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.DTOs;
+using HuntSchedule.Services.Results;
 
 namespace HuntSchedule.Services.Interfaces;
 
@@ -10,4 +12,5 @@ public interface IRespawnService
     Task<Respawn> CreateAsync(Respawn respawn);
     Task UpdateAsync(Respawn respawn);
     Task DeleteAsync(int id);
+    Task<ServiceResult<CopyRespawnsResultDto>> CopyRespawnsAsync(CopyRespawnsDto dto);
 }

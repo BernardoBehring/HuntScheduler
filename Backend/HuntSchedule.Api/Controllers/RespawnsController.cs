@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using HuntSchedule.Persistence.Entities;
+using HuntSchedule.Services.DTOs;
 using HuntSchedule.Services.Interfaces;
+using HuntSchedule.Services.Results;
 using static HuntSchedule.Services.Resources.ErrorKeys;
 
 namespace HuntSchedule.Api.Controllers;
@@ -59,5 +61,23 @@ public class RespawnsController : ControllerBase
         
         await _respawnService.DeleteAsync(id);
         return NoContent();
+    }
+
+    [HttpPost("copy")]
+    public async Task<ActionResult<CopyRespawnsResultDto>> CopyRespawns([FromBody] CopyRespawnsDto dto)
+    {
+        var result = await _respawnService.CopyRespawnsAsync(dto);
+        
+        if (!result.Success)
+        {
+            return result.ErrorType switch
+            {
+                ErrorType.NotFound => NotFound(result.ErrorMessage),
+                ErrorType.Validation => BadRequest(result.ErrorMessage),
+                _ => BadRequest(result.ErrorMessage)
+            };
+        }
+
+        return Ok(result.Data);
     }
 }
