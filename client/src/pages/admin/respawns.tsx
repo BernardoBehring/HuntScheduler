@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Power, PowerOff } from "lucide-react";
-import { useState } from "react";
+import { Plus, Trash2, Power, PowerOff, Search } from "lucide-react";
+import { useState, useMemo } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,6 +21,7 @@ export default function AdminRespawns() {
   
   const [filterServer, setFilterServer] = useState<string>("all");
   const [filterAvailability, setFilterAvailability] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -34,15 +35,39 @@ export default function AdminRespawns() {
   const [respawnCity, setRespawnCity] = useState("");
   const [respawnIsAvailable, setRespawnIsAvailable] = useState(true);
 
-  let filteredRespawns = filterServer === "all" 
-    ? respawns 
-    : respawns.filter(r => r.serverId === filterServer);
-  
-  if (filterAvailability !== "all") {
-    filteredRespawns = filteredRespawns.filter(r => 
-      filterAvailability === "available" ? r.isAvailable : !r.isAvailable
-    );
-  }
+  const filteredRespawns = useMemo(() => {
+    let result = [...respawns];
+    
+    if (filterServer !== "all") {
+      result = result.filter(r => String(r.serverId) === filterServer);
+    }
+    
+    if (filterAvailability !== "all") {
+      result = result.filter(r => 
+        filterAvailability === "available" ? r.isAvailable : !r.isAvailable
+      );
+    }
+    
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(r => 
+        r.name.toLowerCase().includes(query) ||
+        (r.tsCode && r.tsCode.toLowerCase().includes(query)) ||
+        (r.city && r.city.toLowerCase().includes(query))
+      );
+    }
+    
+    result.sort((a, b) => {
+      const aCode = a.tsCode || "";
+      const bCode = b.tsCode || "";
+      const aNum = parseInt(aCode.replace(/\D/g, '')) || 0;
+      const bNum = parseInt(bCode.replace(/\D/g, '')) || 0;
+      if (aNum !== bNum) return aNum - bNum;
+      return aCode.localeCompare(bCode);
+    });
+    
+    return result;
+  }, [respawns, filterServer, filterAvailability, searchQuery]);
 
   const getTranslatedDifficulty = (difficultyId: string) => {
     const difficultyMap: Record<string, string> = {
@@ -140,6 +165,17 @@ export default function AdminRespawns() {
           </div>
           
           <div className="flex items-center gap-3 flex-wrap">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder={t('common.search')} 
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)} 
+                className="pl-8 w-[200px]"
+                data-testid="input-search-respawns"
+              />
+            </div>
+
             <Select value={filterServer} onValueChange={setFilterServer}>
               <SelectTrigger className="w-[180px]" data-testid="select-filter-server">
                 <SelectValue placeholder={t('common.allServers')} />
@@ -147,7 +183,7 @@ export default function AdminRespawns() {
               <SelectContent>
                 <SelectItem value="all">{t('common.allServers')}</SelectItem>
                 {activeServers.map(s => (
-                  <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                  <SelectItem key={s.id} value={String(s.id)}>{s.name} ({s.region})</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -308,6 +344,9 @@ export default function AdminRespawns() {
           </div>
         </CardHeader>
         <CardContent>
+          <div className="text-sm text-muted-foreground mb-3">
+            {t('common.showing')} {filteredRespawns.length} {t('common.of')} {respawns.length} {t('admin.tabs.respawns').toLowerCase()}
+          </div>
           <div className="grid gap-3">
             {filteredRespawns.length === 0 && (
               <p className="text-muted-foreground text-center py-10">{t('common.noData')}</p>

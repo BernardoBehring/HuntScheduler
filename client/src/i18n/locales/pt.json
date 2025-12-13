@@ -57,7 +57,9 @@
     "validate": "Validar",
     "change": "Alterar",
     "saving": "Salvando...",
-    "characters": "Personagens"
+    "characters": "Personagens",
+    "showing": "Exibindo",
+    "of": "de"
   },
   "status": {
     "pending": "Pendente",

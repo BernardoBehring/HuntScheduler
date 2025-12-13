@@ -57,7 +57,9 @@
     "next": "Siguiente",
     "validate": "Validar",
     "change": "Cambiar",
-    "characters": "Personajes"
+    "characters": "Personajes",
+    "showing": "Mostrando",
+    "of": "de"
   },
   "status": {
     "pending": "Pendiente",

@@ -57,7 +57,9 @@
     "next": "Weiter",
     "validate": "Validieren",
     "change": "Ändern",
-    "characters": "Charaktere"
+    "characters": "Charaktere",
+    "showing": "Zeige",
+    "of": "von"
   },
   "status": {
     "pending": "Ausstehend",
