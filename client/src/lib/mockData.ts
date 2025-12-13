@@ -371,6 +371,15 @@ export const useStore = create<AppState>((set, get) => ({
         useApi: true,
         isLoading: false,
       });
+
+      // Update currentUser with refreshed data from users list
+      const currentState = get();
+      if (currentState.currentUser) {
+        const updatedUser = currentState.users.find(u => u.id === currentState.currentUser?.id);
+        if (updatedUser) {
+          set({ currentUser: updatedUser });
+        }
+      }
     } catch (error) {
       console.error('Failed to load from API, using mock data:', error);
       set({ isLoading: false, useApi: false });
