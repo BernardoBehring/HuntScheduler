@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HuntSchedule.Persistence\HuntSchedule.Persistence.csproj" />
     <ProjectReference Include="..\HuntSchedule.Services\HuntSchedule.Services.csproj" />
   </ItemGroup>
 

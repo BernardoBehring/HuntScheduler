@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout";
 import { useStore } from "@/lib/mockData";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api, Server, UserServerSettings } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,9 +29,11 @@ import {
   Pencil,
   Save,
   X,
-  Headphones
+  Headphones,
+  Server as ServerIcon
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ProfilePage() {
   const { t, i18n } = useTranslation();
@@ -43,22 +45,24 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [email, setEmail] = useState(currentUser?.email || '');
   const [whatsapp, setWhatsapp] = useState(currentUser?.whatsapp || '');
-  const [tsDescription, setTsDescription] = useState(currentUser?.tsDescription || '');
+  
+  const [selectedServerId, setSelectedServerId] = useState<number | null>(null);
+  const [editingTsServer, setEditingTsServer] = useState<number | null>(null);
+  const [serverTsDescription, setServerTsDescription] = useState('');
 
   useEffect(() => {
     if (currentUser) {
       setEmail(currentUser.email || '');
       setWhatsapp(currentUser.whatsapp || '');
-      setTsDescription(currentUser.tsDescription || '');
     }
   }, [currentUser]);
 
   const updateProfileMutation = useMutation({
-    mutationFn: (data: { email?: string; whatsapp?: string; tsDescription?: string }) =>
+    mutationFn: (data: { email?: string; whatsapp?: string }) =>
       userId ? api.users.updateProfile(userId, data) : Promise.reject(),
     onSuccess: () => {
       if (currentUser) {
-        setCurrentUser({ ...currentUser, email, whatsapp, tsDescription });
+        setCurrentUser({ ...currentUser, email, whatsapp });
       }
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setIsEditing(false);
@@ -76,15 +80,48 @@ export default function ProfilePage() {
     },
   });
 
+  const updateServerSettingsMutation = useMutation({
+    mutationFn: ({ serverId, tsDescription }: { serverId: number; tsDescription: string }) =>
+      userId ? api.userServerSettings.update(userId, serverId, { tsDescription }) : Promise.reject(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userServerSettings', userId] });
+      setEditingTsServer(null);
+      toast({
+        title: t('profile.tsSettingsUpdated'),
+        description: t('profile.tsSettingsUpdatedDesc'),
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t('common.error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
   const handleSave = () => {
-    updateProfileMutation.mutate({ email: email || undefined, whatsapp: whatsapp || undefined, tsDescription: tsDescription || undefined });
+    updateProfileMutation.mutate({ email: email || undefined, whatsapp: whatsapp || undefined });
   };
 
   const handleCancel = () => {
     setEmail(currentUser?.email || '');
     setWhatsapp(currentUser?.whatsapp || '');
-    setTsDescription(currentUser?.tsDescription || '');
     setIsEditing(false);
+  };
+
+  const handleSaveServerTs = (serverId: number) => {
+    updateServerSettingsMutation.mutate({ serverId, tsDescription: serverTsDescription });
+  };
+
+  const handleEditServerTs = (serverId: number, currentDescription: string) => {
+    setEditingTsServer(serverId);
+    setServerTsDescription(currentDescription || '');
+  };
+
+  const handleCancelServerTs = () => {
+    setEditingTsServer(null);
+    setServerTsDescription('');
   };
 
   const { data: characters = [] } = useQuery({
@@ -103,6 +140,24 @@ export default function ProfilePage() {
     queryFn: () => userId ? api.pointClaims.getByUser(userId) : Promise.resolve([]),
     enabled: !!userId,
   });
+
+  const { data: servers = [] } = useQuery({
+    queryKey: ['servers'],
+    queryFn: () => api.servers.getAll(),
+  });
+
+  const { data: userServerSettings = [] } = useQuery({
+    queryKey: ['userServerSettings', userId],
+    queryFn: () => userId ? api.userServerSettings.getByUser(userId) : Promise.resolve([]),
+    enabled: !!userId,
+  });
+
+  const activeServers = servers.filter((s: Server) => s.isActive);
+  
+  const getServerTsDescription = (serverId: number): string => {
+    const setting = userServerSettings.find((s: UserServerSettings) => s.serverId === serverId);
+    return setting?.tsDescription || '';
+  };
 
   const myRequests = requests.filter(r => r.userId === userId);
   const approvedRequests = myRequests.filter(r => r.statusId === 2);
@@ -253,17 +308,6 @@ export default function ProfilePage() {
                       data-testid="input-whatsapp"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="tsDescription">{t('profile.tsDescription')}</Label>
-                    <Textarea
-                      id="tsDescription"
-                      value={tsDescription}
-                      onChange={(e) => setTsDescription(e.target.value)}
-                      placeholder={t('profile.tsDescriptionPlaceholder')}
-                      rows={3}
-                      data-testid="input-ts-description"
-                    />
-                  </div>
                 </>
               ) : (
                 <div className="space-y-3">
@@ -285,21 +329,89 @@ export default function ProfilePage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <Headphones className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t('profile.tsDescription')}</p>
-                      <p className="font-medium">
-                        {currentUser.tsDescription || <span className="text-muted-foreground italic">{t('profile.notProvided')}</span>}
-                      </p>
-                    </div>
-                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
 
           </div>
+
+        {activeServers.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Headphones className="h-5 w-5 text-primary" />
+                {t('profile.tsSettingsTitle')}
+              </CardTitle>
+              <CardDescription>{t('profile.tsSettingsDesc')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {activeServers.map((server: Server) => {
+                  const currentTsDesc = getServerTsDescription(server.id);
+                  const isEditingThis = editingTsServer === server.id;
+                  
+                  return (
+                    <div key={server.id} className="p-4 rounded-lg border border-border/40 bg-muted/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <ServerIcon className="h-4 w-4 text-primary" />
+                          <span className="font-medium">{server.name}</span>
+                          <Badge variant="outline" className="text-xs">{server.region}</Badge>
+                        </div>
+                        {!isEditingThis ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditServerTs(server.id, currentTsDesc)}
+                            data-testid={`button-edit-ts-${server.id}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={handleCancelServerTs}
+                              data-testid={`button-cancel-ts-${server.id}`}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleSaveServerTs(server.id)}
+                              disabled={updateServerSettingsMutation.isPending}
+                              data-testid={`button-save-ts-${server.id}`}
+                            >
+                              <Save className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {isEditingThis ? (
+                        <Textarea
+                          value={serverTsDescription}
+                          onChange={(e) => setServerTsDescription(e.target.value)}
+                          placeholder={t('profile.tsDescriptionPlaceholder')}
+                          rows={2}
+                          className="mt-2"
+                          data-testid={`input-ts-description-${server.id}`}
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          {currentTsDesc || <span className="italic">{t('profile.notProvided')}</span>}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>

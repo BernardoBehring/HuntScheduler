@@ -40,6 +40,7 @@ public class AppDbContext : DbContext
     public DbSet<TsPosition> TsPositions { get; set; }
     public DbSet<PointTransaction> PointTransactions { get; set; }
     public DbSet<PointClaim> PointClaims { get; set; }
+    public DbSet<UserServerSettings> UserServerSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,6 +87,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.IsMain).HasColumnName("is_main");
             entity.Property(e => e.IsExternal).HasColumnName("is_external");
             entity.Property(e => e.ExternalVerifiedAt).HasColumnName("external_verified_at");
+            entity.Property(e => e.TsPositionId).HasColumnName("ts_position_id");
         });
 
         modelBuilder.Entity<Server>(entity =>

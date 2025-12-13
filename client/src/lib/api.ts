@@ -157,6 +157,14 @@ export interface PointClaim {
   createdAt: string;
 }
 
+export interface UserServerSettings {
+  id: number;
+  userId: number;
+  serverId: number;
+  server?: Server;
+  tsDescription?: string;
+}
+
 export interface CreatePointClaimDto {
   userId: number;
   note?: string;
@@ -482,5 +490,20 @@ export const api = {
       });
       return handleResponse(response);
     },
+  },
+
+  userServerSettings: {
+    getByUser: (userId: number): Promise<UserServerSettings[]> =>
+      fetch(`${API_BASE}/user-server-settings/user/${userId}`).then(r => handleResponse(r)),
+    getByUserAndServer: (userId: number, serverId: number): Promise<UserServerSettings> =>
+      fetch(`${API_BASE}/user-server-settings/user/${userId}/server/${serverId}`).then(r => handleResponse(r)),
+    update: (userId: number, serverId: number, dto: { tsDescription?: string }): Promise<void> =>
+      fetch(`${API_BASE}/user-server-settings/user/${userId}/server/${serverId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dto),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to update user server settings');
+      }),
   },
 };
