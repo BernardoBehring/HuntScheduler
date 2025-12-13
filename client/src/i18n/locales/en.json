@@ -241,7 +241,19 @@
     },
     "servers": {
       "title": "Server Management",
-      "description": "Manage game servers available for scheduling",
+      "description": "Sync servers from Tibia and toggle which ones your guild uses",
+      "syncFromTibia": "Sync from Tibia",
+      "syncing": "Syncing...",
+      "syncComplete": "Sync Complete",
+      "syncAddedServers": "Added {{count}} new servers",
+      "syncNoNewServers": "All servers are up to date",
+      "activeCount": "{{active}} of {{total}} servers active",
+      "active": "Active",
+      "serverActivated": "Server Activated",
+      "serverDeactivated": "Server Deactivated",
+      "searchPlaceholder": "Search servers by name, region, or PvP type...",
+      "noServers": "No servers configured. Click 'Sync from Tibia' to import all game worlds.",
+      "noSearchResults": "No servers match your search.",
       "addServer": "Add Server",
       "addNewServer": "Add New Server",
       "createServer": "Create a new game server for scheduling.",
@@ -259,8 +271,7 @@
       "serverUpdatedDesc": "Server details have been updated.",
       "serverDeleted": "Server Deleted",
       "serverDeletedDesc": "Server has been removed.",
-      "confirmDelete": "Are you sure you want to delete this server? This may affect existing respawns and schedules.",
-      "noServers": "No servers configured."
+      "confirmDelete": "Are you sure you want to delete this server? This may affect existing respawns and schedules."
     },
     "claims": {
       "title": "Point Claims Review",
@@ -360,6 +371,7 @@
   "errors": {
     "loadFailed": "Failed to load data",
     "saveFailed": "Failed to save data",
+    "syncFailed": "Failed to sync servers from Tibia",
     "networkError": "Network error occurred",
     "pageNotFound": "404 Page Not Found",
     "pageNotFoundDesc": "The page you're looking for doesn't exist or has been moved.",

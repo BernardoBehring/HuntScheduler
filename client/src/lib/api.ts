@@ -43,6 +43,8 @@ export interface Server {
   id: number;
   name: string;
   region: string;
+  pvpType?: string;
+  isActive: boolean;
 }
 
 export interface RequestStatus {
@@ -238,6 +240,14 @@ export const api = {
       }).then(r => handleResponse(r)),
     delete: (id: number): Promise<void> =>
       fetch(`${API_BASE}/servers/${id}`, { method: 'DELETE' }).then(r => handleResponse(r)),
+    sync: (): Promise<{ message: string; addedCount: number }> =>
+      fetch(`${API_BASE}/servers/sync`, { method: 'POST' }).then(r => handleResponse(r)),
+    setActive: (id: number, isActive: boolean): Promise<void> =>
+      fetch(`${API_BASE}/servers/${id}/active`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive }),
+      }).then(r => handleResponse(r)),
   },
 
   statuses: {

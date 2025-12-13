@@ -25,6 +25,13 @@ public class ServersController : ControllerBase
         return Ok(servers);
     }
 
+    [HttpGet("active")]
+    public async Task<ActionResult<IEnumerable<Server>>> GetActiveServers()
+    {
+        var servers = await _serverService.GetActiveAsync();
+        return Ok(servers);
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Server>> GetServer(int id)
     {
@@ -38,6 +45,21 @@ public class ServersController : ControllerBase
     {
         var createdServer = await _serverService.CreateAsync(server);
         return CreatedAtAction(nameof(GetServer), new { id = createdServer.Id }, createdServer);
+    }
+
+    [HttpPost("sync")]
+    public async Task<ActionResult<object>> SyncFromTibiaData()
+    {
+        var addedCount = await _serverService.SyncFromTibiaDataAsync();
+        return Ok(new { message = $"Sync completed. {addedCount} new servers added.", addedCount });
+    }
+
+    [HttpPatch("{id}/active")]
+    public async Task<IActionResult> SetActive(int id, [FromBody] SetActiveRequest request)
+    {
+        var success = await _serverService.SetActiveAsync(id, request.IsActive);
+        if (!success) return NotFound(_localization.GetString(ServerNotFound));
+        return NoContent();
     }
 
     [HttpPut("{id}")]
@@ -60,4 +82,9 @@ public class ServersController : ControllerBase
         await _serverService.DeleteAsync(id);
         return NoContent();
     }
+}
+
+public class SetActiveRequest
+{
+    public bool IsActive { get; set; }
 }

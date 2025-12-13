@@ -43,6 +43,8 @@ export interface Server {
   id: string;
   name: string;
   region: string;
+  pvpType?: string;
+  isActive: boolean;
 }
 
 export interface RequestStatus {
@@ -138,8 +140,8 @@ const MOCK_USERS: User[] = [
 ];
 
 const MOCK_SERVERS: Server[] = [
-  { id: 's1', name: 'Antica', region: 'EU' },
-  { id: 's2', name: 'Wintera', region: 'NA' },
+  { id: 's1', name: 'Antica', region: 'EU', pvpType: 'Open PvP', isActive: true },
+  { id: 's2', name: 'Wintera', region: 'NA', pvpType: 'Optional PvP', isActive: true },
 ];
 
 const MOCK_RESPAWNS: Respawn[] = [
@@ -226,6 +228,8 @@ interface AppState {
   addServer: (server: Omit<Server, 'id'>) => void;
   updateServer: (id: string, server: Partial<Omit<Server, 'id'>>) => void;
   deleteServer: (id: string) => void;
+  syncServers: () => Promise<{ message: string; addedCount: number }>;
+  setServerActive: (id: string, isActive: boolean) => Promise<void>;
   loadFromApi: () => Promise<void>;
   getStatusName: (statusId: string) => string;
   getDifficultyName: (difficultyId: string) => string;
@@ -748,6 +752,7 @@ export const useStore = create<AppState>((set, get) => ({
         await api.servers.create({
           name: server.name,
           region: server.region,
+          isActive: server.isActive ?? false,
         });
         await state.loadFromApi();
       } catch (error) {
@@ -758,7 +763,8 @@ export const useStore = create<AppState>((set, get) => ({
       set((state) => ({
         servers: [...state.servers, { 
           ...server, 
-          id: Math.random().toString(36).substr(2, 9) 
+          id: Math.random().toString(36).substr(2, 9),
+          isActive: server.isActive ?? false,
         }]
       }));
     }
@@ -774,6 +780,7 @@ export const useStore = create<AppState>((set, get) => ({
             id: parseInt(id),
             name: server.name || existing.name,
             region: server.region || existing.region,
+            isActive: server.isActive ?? existing.isActive,
           });
           await state.loadFromApi();
         }
@@ -801,6 +808,39 @@ export const useStore = create<AppState>((set, get) => ({
     } else {
       set((state) => ({
         servers: state.servers.filter(s => s.id !== id)
+      }));
+    }
+  },
+
+  syncServers: async () => {
+    const state = get();
+    if (state.useApi) {
+      try {
+        const result = await api.servers.sync();
+        await state.loadFromApi();
+        return result;
+      } catch (error) {
+        console.error('Failed to sync servers:', error);
+        throw error;
+      }
+    } else {
+      return { message: 'Mock mode: no sync available', addedCount: 0 };
+    }
+  },
+
+  setServerActive: async (id, isActive) => {
+    const state = get();
+    if (state.useApi) {
+      try {
+        await api.servers.setActive(parseInt(id), isActive);
+        await state.loadFromApi();
+      } catch (error) {
+        console.error('Failed to set server active:', error);
+        throw error;
+      }
+    } else {
+      set((state) => ({
+        servers: state.servers.map(s => s.id === id ? { ...s, isActive } : s)
       }));
     }
   }
