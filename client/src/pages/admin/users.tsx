@@ -72,16 +72,18 @@ export default function AdminUsers() {
   };
 
   const getUserServersWithCharacters = (userId: string | number) => {
-    const userChars = characters.filter(c => c.userId === userId);
-    const serverIds = [...new Set(userChars.map(c => c.serverId))];
-    return activeServers.filter(s => serverIds.includes(s.id));
+    const userIdStr = String(userId);
+    const userChars = characters.filter(c => String(c.userId) === userIdStr);
+    const serverIdStrs = Array.from(new Set(userChars.map(c => String(c.serverId))));
+    return activeServers.filter(s => serverIdStrs.includes(String(s.id)));
   };
 
-  const getUserTsPositionForServer = (userId: string | number, serverId: string | number): TsPosition | undefined => {
+  const getUserTsPositionForServer = (userId: string | number, serverId: string | number) => {
     const settings = userServerSettingsMap[userId] || [];
-    const serverSettings = settings.find(s => s.serverId === serverId || s.serverId === parseInt(String(serverId)));
+    const serverIdNum = typeof serverId === 'string' ? parseInt(serverId) : serverId;
+    const serverSettings = settings.find(s => s.serverId === serverIdNum);
     if (serverSettings?.tsPositionId) {
-      return tsPositions.find(p => p.id === serverSettings.tsPositionId || String(p.id) === String(serverSettings.tsPositionId));
+      return tsPositions.find(p => String(p.id) === String(serverSettings.tsPositionId));
     }
     return undefined;
   };
