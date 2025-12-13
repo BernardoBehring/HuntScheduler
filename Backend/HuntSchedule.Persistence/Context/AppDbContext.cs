@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using HuntSchedule.Persistence.Entities;
 
 namespace HuntSchedule.Persistence.Context;
@@ -6,6 +7,24 @@ namespace HuntSchedule.Persistence.Context;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+        
+        configurationBuilder.Properties<DateTime>()
+            .HaveConversion<DateTimeToUtcConverter>();
+    }
+
+    public class DateTimeToUtcConverter : ValueConverter<DateTime, DateTime>
+    {
+        public DateTimeToUtcConverter()
+            : base(
+                v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+        {
+        }
+    }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
