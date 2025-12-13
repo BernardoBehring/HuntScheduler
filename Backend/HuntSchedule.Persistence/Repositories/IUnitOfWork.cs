@@ -14,6 +14,7 @@ public interface IUnitOfWork : IDisposable
     IRequestRepository Requests { get; }
     IRequestStatusRepository RequestStatuses { get; }
     IDifficultyRepository Difficulties { get; }
+    ITsPositionRepository TsPositions { get; }
     IPointTransactionRepository PointTransactions { get; }
     IPointClaimRepository PointClaims { get; }
     

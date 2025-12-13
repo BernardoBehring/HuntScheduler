@@ -37,6 +37,7 @@ public class AppDbContext : DbContext
     public DbSet<RequestPartyMember> RequestPartyMembers { get; set; }
     public DbSet<RequestStatus> RequestStatuses { get; set; }
     public DbSet<Difficulty> Difficulties { get; set; }
+    public DbSet<TsPosition> TsPositions { get; set; }
     public DbSet<PointTransaction> PointTransactions { get; set; }
     public DbSet<PointClaim> PointClaims { get; set; }
 
@@ -156,6 +157,15 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Color).HasColumnName("color");
+            entity.Property(e => e.SortOrder).HasColumnName("sort_order");
+        });
+
+        modelBuilder.Entity<TsPosition>().ToTable("ts_positions");
+        modelBuilder.Entity<TsPosition>(entity =>
+        {
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.Color).HasColumnName("color");
             entity.Property(e => e.SortOrder).HasColumnName("sort_order");
         });

@@ -17,6 +17,7 @@ public class UnitOfWork : IUnitOfWork
     private IRequestRepository? _requests;
     private IRequestStatusRepository? _requestStatuses;
     private IDifficultyRepository? _difficulties;
+    private ITsPositionRepository? _tsPositions;
     private IPointTransactionRepository? _pointTransactions;
     private IPointClaimRepository? _pointClaims;
 
@@ -35,6 +36,7 @@ public class UnitOfWork : IUnitOfWork
     public IRequestRepository Requests => _requests ??= new RequestRepository(_context);
     public IRequestStatusRepository RequestStatuses => _requestStatuses ??= new RequestStatusRepository(_context);
     public IDifficultyRepository Difficulties => _difficulties ??= new DifficultyRepository(_context);
+    public ITsPositionRepository TsPositions => _tsPositions ??= new TsPositionRepository(_context);
     public IPointTransactionRepository PointTransactions => _pointTransactions ??= new PointTransactionRepository(_context);
     public IPointClaimRepository PointClaims => _pointClaims ??= new PointClaimRepository(_context);
 
