@@ -77,7 +77,7 @@ export default function AdminPeriods() {
                   <SelectValue placeholder={t('schedule.selectServer')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {servers.map(s => (
+                  {activeServers.map(s => (
                     <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
                   ))}
                 </SelectContent>

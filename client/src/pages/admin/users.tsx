@@ -17,6 +17,7 @@ export default function AdminUsers() {
   const { users, servers, characters, getRoleName, currentUser, loadFromApi } = useStore();
   const { t } = useTranslation();
   
+  const activeServers = servers.filter(s => s.isActive);
   const [filterServer, setFilterServer] = useState<string>("all");
   const [isPointsDialogOpen, setIsPointsDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -74,7 +75,7 @@ export default function AdminUsers() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('common.allServers')}</SelectItem>
-            {servers.map(s => (
+            {activeServers.map(s => (
               <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
             ))}
           </SelectContent>

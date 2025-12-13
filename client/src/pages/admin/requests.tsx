@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 export default function AdminRequests() {
   const { requests, users, updateRequestStatus, servers, respawns, periods, characters, slots, statuses } = useStore();
   const { t } = useTranslation();
+  const activeServers = servers.filter(s => s.isActive);
   const [filterServer, setFilterServer] = useState<string>("all");
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectingRequestId, setRejectingRequestId] = useState<string | null>(null);
@@ -84,7 +85,7 @@ export default function AdminRequests() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('common.allServers')}</SelectItem>
-            {servers.map(s => (
+            {activeServers.map(s => (
               <SelectItem key={s.id} value={String(s.id)}>{s.name} ({s.region})</SelectItem>
             ))}
           </SelectContent>
