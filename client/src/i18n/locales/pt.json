@@ -101,7 +101,15 @@
     "claimSubmitted": "Reivindicação Enviada",
     "claimDescription": "Sua reivindicação foi enviada para revisão do admin.",
     "awaitingReview": "Aguardando Revisão",
-    "invalidPoints": "Por favor, digite um número válido de pontos"
+    "invalidPoints": "Por favor, digite um número válido de pontos",
+    "screenshot": "Captura de Tela",
+    "uploadFile": "Enviar Arquivo",
+    "pasteUrl": "Colar URL",
+    "selectedFile": "Selecionado",
+    "maxFileSize": "Tamanho máximo: 5MB (JPG, PNG, GIF, WebP)",
+    "uploading": "Enviando...",
+    "uploadError": "Falha ao enviar arquivo",
+    "fileTooLarge": "Arquivo muito grande. Tamanho máximo é 5MB."
   },
   "schedule": {
     "title": "Agenda de Hunts",

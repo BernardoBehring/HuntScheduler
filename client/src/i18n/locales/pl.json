@@ -98,7 +98,15 @@
     "claimSubmitted": "Wniosek Wysłany",
     "claimDescription": "Twój wniosek został przesłany do weryfikacji przez admina.",
     "awaitingReview": "Oczekuje na weryfikację",
-    "invalidPoints": "Proszę wpisać prawidłową liczbę punktów"
+    "invalidPoints": "Proszę wpisać prawidłową liczbę punktów",
+    "screenshot": "Zrzut ekranu",
+    "uploadFile": "Prześlij plik",
+    "pasteUrl": "Wklej URL",
+    "selectedFile": "Wybrany",
+    "maxFileSize": "Maks. rozmiar: 5MB (JPG, PNG, GIF, WebP)",
+    "uploading": "Przesyłanie...",
+    "uploadError": "Nie udało się przesłać pliku",
+    "fileTooLarge": "Plik jest za duży. Maksymalny rozmiar to 5MB."
   },
   "schedule": {
     "title": "Harmonogram Huntów",

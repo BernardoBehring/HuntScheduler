@@ -2,7 +2,7 @@ import { Layout } from "@/components/layout";
 import { useStore } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Clock, AlertCircle, Swords, Upload, FileText, CheckCircle, XCircle } from "lucide-react";
+import { Trophy, Clock, AlertCircle, Swords, Upload, FileText, CheckCircle, XCircle, Image, Link2 } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -21,6 +21,10 @@ export default function Dashboard() {
   const [isClaimOpen, setIsClaimOpen] = useState(false);
   const [claimNote, setClaimNote] = useState('');
   const [claimScreenshotUrl, setClaimScreenshotUrl] = useState('');
+  const [claimScreenshotFile, setClaimScreenshotFile] = useState<File | null>(null);
+  const [screenshotMode, setScreenshotMode] = useState<'url' | 'file'>('file');
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   
@@ -46,8 +50,7 @@ export default function Dashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pointClaims'] });
       setIsClaimOpen(false);
-      setClaimNote('');
-      setClaimScreenshotUrl('');
+      resetClaimForm();
       toast({
         title: t('dashboard.claimSubmitted'),
         description: t('dashboard.claimDescription'),
@@ -85,13 +88,57 @@ export default function Dashboard() {
     }
   };
 
-  const handleClaimPoints = () => {
+  const handleClaimPoints = async () => {
     if (!userId) return;
-    createClaimMutation.mutate({
-      userId: userId,
-      note: claimNote || undefined,
-      screenshotUrl: claimScreenshotUrl || undefined,
-    });
+    
+    try {
+      let screenshotUrl = claimScreenshotUrl;
+      
+      if (screenshotMode === 'file' && claimScreenshotFile) {
+        setIsUploading(true);
+        const result = await api.upload.screenshot(claimScreenshotFile);
+        screenshotUrl = result.url;
+        setIsUploading(false);
+      }
+      
+      createClaimMutation.mutate({
+        userId: userId,
+        note: claimNote || undefined,
+        screenshotUrl: screenshotUrl || undefined,
+      });
+    } catch (error) {
+      setIsUploading(false);
+      toast({
+        title: t('common.error'),
+        description: error instanceof Error ? error.message : t('dashboard.uploadError'),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: t('common.error'),
+          description: t('dashboard.fileTooLarge'),
+          variant: 'destructive',
+        });
+        return;
+      }
+      setClaimScreenshotFile(file);
+    }
+  };
+
+  const resetClaimForm = () => {
+    setClaimNote('');
+    setClaimScreenshotUrl('');
+    setClaimScreenshotFile(null);
+    setScreenshotMode('file');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const sortedClaims = [...myClaims].sort((a, b) => 
@@ -119,15 +166,61 @@ export default function Dashboard() {
               <DialogDescription>{t('dashboard.uploadScreenshot')}</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="screenshot">{t('dashboard.screenshotUrl')}</Label>
-                <Input 
-                  id="screenshot" 
-                  value={claimScreenshotUrl}
-                  onChange={(e) => setClaimScreenshotUrl(e.target.value)}
-                  placeholder="https://imgur.com/..."
-                  data-testid="input-claim-screenshot"
-                />
+              <div className="space-y-3">
+                <Label>{t('dashboard.screenshot')}</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={screenshotMode === 'file' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setScreenshotMode('file')}
+                    className="flex-1"
+                    data-testid="button-mode-file"
+                  >
+                    <Image className="h-4 w-4 mr-2" />
+                    {t('dashboard.uploadFile')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={screenshotMode === 'url' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setScreenshotMode('url')}
+                    className="flex-1"
+                    data-testid="button-mode-url"
+                  >
+                    <Link2 className="h-4 w-4 mr-2" />
+                    {t('dashboard.pasteUrl')}
+                  </Button>
+                </div>
+                
+                {screenshotMode === 'file' ? (
+                  <div className="space-y-2">
+                    <Input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="cursor-pointer"
+                      data-testid="input-claim-file"
+                    />
+                    {claimScreenshotFile && (
+                      <p className="text-xs text-muted-foreground">
+                        {t('dashboard.selectedFile')}: {claimScreenshotFile.name}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {t('dashboard.maxFileSize')}
+                    </p>
+                  </div>
+                ) : (
+                  <Input 
+                    id="screenshot" 
+                    value={claimScreenshotUrl}
+                    onChange={(e) => setClaimScreenshotUrl(e.target.value)}
+                    placeholder="https://imgur.com/..."
+                    data-testid="input-claim-screenshot"
+                  />
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="note">{t('dashboard.noteOptional')}</Label>
@@ -143,10 +236,10 @@ export default function Dashboard() {
             <DialogFooter>
               <Button 
                 onClick={handleClaimPoints} 
-                disabled={createClaimMutation.isPending}
+                disabled={createClaimMutation.isPending || isUploading}
                 data-testid="button-submit-claim"
               >
-                {createClaimMutation.isPending ? t('common.loading') : t('dashboard.submitClaim')}
+                {isUploading ? t('dashboard.uploading') : createClaimMutation.isPending ? t('common.loading') : t('dashboard.submitClaim')}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -98,7 +98,15 @@
     "claimSubmitted": "Reclamación Enviada",
     "claimDescription": "Tu reclamación ha sido enviada para revisión del admin.",
     "awaitingReview": "Esperando Revisión",
-    "invalidPoints": "Por favor, ingresa un número válido de puntos"
+    "invalidPoints": "Por favor, ingresa un número válido de puntos",
+    "screenshot": "Captura de Pantalla",
+    "uploadFile": "Subir Archivo",
+    "pasteUrl": "Pegar URL",
+    "selectedFile": "Seleccionado",
+    "maxFileSize": "Tamaño máximo: 5MB (JPG, PNG, GIF, WebP)",
+    "uploading": "Subiendo...",
+    "uploadError": "Error al subir archivo",
+    "fileTooLarge": "El archivo es demasiado grande. Tamaño máximo: 5MB."
   },
   "schedule": {
     "title": "Calendario de Hunts",

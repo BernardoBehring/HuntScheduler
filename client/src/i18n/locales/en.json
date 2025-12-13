@@ -101,7 +101,15 @@
     "claimSubmitted": "Claim Submitted",
     "claimDescription": "Your claim has been submitted for admin review.",
     "invalidPoints": "Please enter a valid number of points",
-    "awaitingReview": "Awaiting Review"
+    "awaitingReview": "Awaiting Review",
+    "screenshot": "Screenshot",
+    "uploadFile": "Upload File",
+    "pasteUrl": "Paste URL",
+    "selectedFile": "Selected",
+    "maxFileSize": "Max file size: 5MB (JPG, PNG, GIF, WebP)",
+    "uploading": "Uploading...",
+    "uploadError": "Failed to upload file",
+    "fileTooLarge": "File is too large. Maximum size is 5MB."
   },
   "schedule": {
     "title": "Hunt Schedule",

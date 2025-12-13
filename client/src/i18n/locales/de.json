@@ -98,7 +98,15 @@
     "claimSubmitted": "Antrag eingereicht",
     "claimDescription": "Dein Antrag wurde zur Admin-Überprüfung eingereicht.",
     "awaitingReview": "Wartet auf Überprüfung",
-    "invalidPoints": "Bitte gib eine gültige Punktezahl ein"
+    "invalidPoints": "Bitte gib eine gültige Punktezahl ein",
+    "screenshot": "Screenshot",
+    "uploadFile": "Datei hochladen",
+    "pasteUrl": "URL einfügen",
+    "selectedFile": "Ausgewählt",
+    "maxFileSize": "Max. Dateigröße: 5MB (JPG, PNG, GIF, WebP)",
+    "uploading": "Hochladen...",
+    "uploadError": "Fehler beim Hochladen",
+    "fileTooLarge": "Datei zu groß. Maximale Größe ist 5MB."
   },
   "schedule": {
     "title": "Hunt Zeitplan",

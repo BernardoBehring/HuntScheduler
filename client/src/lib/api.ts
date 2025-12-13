@@ -428,4 +428,16 @@ export const api = {
         body: JSON.stringify(dto),
       }).then(r => handleResponse(r)),
   },
+
+  upload: {
+    screenshot: async (file: File): Promise<{ url: string; fileName: string }> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await fetch(`${API_BASE}/upload/screenshot`, {
+        method: 'POST',
+        body: formData,
+      });
+      return handleResponse(response);
+    },
+  },
 };
