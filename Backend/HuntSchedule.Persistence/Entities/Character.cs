@@ -35,6 +35,7 @@ public class Character
     
     public DateTime? ExternalVerifiedAt { get; set; }
     
+    [Column("ts_position_id")]
     public int? TsPositionId { get; set; }
     
     [ForeignKey("TsPositionId")]
