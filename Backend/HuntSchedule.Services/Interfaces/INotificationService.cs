@@ -8,7 +8,8 @@ public interface INotificationService
         string userName,
         string respawnName,
         string slotTime,
-        string periodName);
+        string periodName,
+        string? language = null);
 
     Task SendRequestRejectionNotificationAsync(
         string? userEmail,
@@ -17,5 +18,6 @@ public interface INotificationService
         string respawnName,
         string slotTime,
         string periodName,
-        string? rejectionReason);
+        string? rejectionReason,
+        string? language = null);
 }

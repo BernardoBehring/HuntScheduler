@@ -21,7 +21,8 @@ public class NotificationService : INotificationService
         string userName,
         string respawnName,
         string slotTime,
-        string periodName)
+        string periodName,
+        string? language = null)
     {
         if (string.IsNullOrEmpty(userEmail) && string.IsNullOrEmpty(userWhatsapp))
         {
@@ -40,7 +41,8 @@ public class NotificationService : INotificationService
                 userName,
                 respawnName,
                 slotTime,
-                periodName
+                periodName,
+                language = language ?? "en"
             };
 
             var response = await client.PostAsJsonAsync("/api/notifications/send", payload);
@@ -67,7 +69,8 @@ public class NotificationService : INotificationService
         string respawnName,
         string slotTime,
         string periodName,
-        string? rejectionReason)
+        string? rejectionReason,
+        string? language = null)
     {
         if (string.IsNullOrEmpty(userEmail) && string.IsNullOrEmpty(userWhatsapp))
         {
@@ -87,7 +90,8 @@ public class NotificationService : INotificationService
                 respawnName,
                 slotTime,
                 periodName,
-                rejectionReason
+                rejectionReason,
+                language = language ?? "en"
             };
 
             var response = await client.PostAsJsonAsync("/api/notifications/send", payload);

@@ -50,4 +50,5 @@ public class NotificationRequest
     public string SlotTime { get; set; } = string.Empty;
     public string PeriodName { get; set; } = string.Empty;
     public string? RejectionReason { get; set; }
+    public string Language { get; set; } = "en";
 }

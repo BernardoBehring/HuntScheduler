@@ -34,6 +34,10 @@ public class User
     [Column("whatsapp")]
     public string? Whatsapp { get; set; }
 
+    [MaxLength(10)]
+    [Column("preferred_language")]
+    public string PreferredLanguage { get; set; } = "en";
+
     public ICollection<Request> Requests { get; set; } = new List<Request>();
     
     public ICollection<Character> Characters { get; set; } = new List<Character>();

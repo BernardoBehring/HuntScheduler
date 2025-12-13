@@ -205,7 +205,8 @@ public class RequestService : IRequestService
                         conflictWithDetails.Respawn?.Name ?? "Unknown",
                         conflictWithDetails.Slot != null ? $"{conflictWithDetails.Slot.StartTime} - {conflictWithDetails.Slot.EndTime}" : "Unknown",
                         conflictWithDetails.Period?.Name ?? "Unknown",
-                        conflict.RejectionReason);
+                        conflict.RejectionReason,
+                        conflictWithDetails.User.PreferredLanguage);
                 }
             }
         }
@@ -226,7 +227,8 @@ public class RequestService : IRequestService
                     request.User.Username,
                     respawnName,
                     slotTime,
-                    periodName);
+                    periodName,
+                    request.User.PreferredLanguage);
             }
             else if (rejectedStatus != null && dto.StatusId == rejectedStatus.Id)
             {
@@ -237,7 +239,8 @@ public class RequestService : IRequestService
                     respawnName,
                     slotTime,
                     periodName,
-                    dto.Reason);
+                    dto.Reason,
+                    request.User.PreferredLanguage);
             }
         }
 
