@@ -66,7 +66,7 @@ public class PointTransactionsController : ControllerBase
 
         try
         {
-            var transaction = await _pointTransactionService.CreateAsync(
+            var transaction = await _pointTransactionService.CreateWithTransactionAsync(
                 dto.UserId, 
                 dto.AdminId, 
                 dto.Amount, 

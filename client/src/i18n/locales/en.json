@@ -53,7 +53,8 @@
     "back": "Back",
     "next": "Next",
     "validate": "Validate",
-    "change": "Change"
+    "change": "Change",
+    "characters": "Characters"
   },
   "status": {
     "pending": "Pending",
@@ -237,7 +238,11 @@
       "allUsers": "All Users",
       "noTransactions": "No point transactions found.",
       "by": "by",
-      "balanceAfter": "Balance"
+      "balanceAfter": "Balance",
+      "pointsAdded": "Points Added",
+      "pointsRemoved": "Points Removed",
+      "pointsAddedDesc": "Added {{amount}} points to {{user}}.",
+      "pointsRemovedDesc": "Removed {{amount}} points from {{user}}."
     },
     "servers": {
       "title": "Server Management",

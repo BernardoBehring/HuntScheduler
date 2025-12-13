@@ -57,9 +57,12 @@ export default function AdminUsers() {
       await loadFromApi();
       setIsPointsDialogOpen(false);
       
+      const isAdding = pointsOperation === "add";
       toast({ 
-        title: t('admin.users.pointsUpdated'), 
-        description: t('admin.users.pointsUpdatedDesc', { amount: Math.abs(finalAmount) })
+        title: isAdding ? t('admin.points.pointsAdded') : t('admin.points.pointsRemoved'), 
+        description: isAdding 
+          ? t('admin.points.pointsAddedDesc', { amount: Math.abs(finalAmount), user: selectedUser.username })
+          : t('admin.points.pointsRemovedDesc', { amount: Math.abs(finalAmount), user: selectedUser.username })
       });
     } catch (error) {
       toast({ title: t('errors.saveFailed'), variant: 'destructive' });
