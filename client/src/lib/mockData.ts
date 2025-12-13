@@ -347,7 +347,7 @@ export const useStore = create<AppState>((set, get) => ({
           }))
         })),
         roles: roles.map(r => ({ ...r, id: String(r.id) })),
-        characters: characters.map(c => ({ ...c, id: String(c.id), userId: String(c.userId), serverId: String(c.serverId) })),
+        characters: characters.map(c => ({ ...c, id: String(c.id), userId: String(c.userId), serverId: String(c.serverId), tsPositionId: c.tsPositionId ? String(c.tsPositionId) : undefined })),
         servers: servers.map(s => ({ ...s, id: String(s.id) })),
         statuses: statuses.map(s => ({ ...s, id: String(s.id) })),
         difficulties: difficulties.map(d => ({ ...d, id: String(d.id) })),
@@ -384,7 +384,8 @@ export const useStore = create<AppState>((set, get) => ({
             ...r.leaderCharacter,
             id: String(r.leaderCharacter.id),
             userId: r.leaderCharacter.userId ? String(r.leaderCharacter.userId) : undefined,
-            serverId: String(r.leaderCharacter.serverId)
+            serverId: String(r.leaderCharacter.serverId),
+            tsPositionId: r.leaderCharacter.tsPositionId ? String(r.leaderCharacter.tsPositionId) : undefined
           } : undefined,
           partyMembers: r.partyMembers.map((pm: any) => ({
             id: String(pm.id),
@@ -396,7 +397,8 @@ export const useStore = create<AppState>((set, get) => ({
               ...pm.character,
               id: String(pm.character.id),
               userId: pm.character.userId ? String(pm.character.userId) : undefined,
-              serverId: String(pm.character.serverId)
+              serverId: String(pm.character.serverId),
+              tsPositionId: pm.character.tsPositionId ? String(pm.character.tsPositionId) : undefined
             } : undefined
           })),
           createdAt: new Date(r.createdAt).getTime(),
@@ -478,7 +480,8 @@ export const useStore = create<AppState>((set, get) => ({
               ...newRequest.leaderCharacter,
               id: String(newRequest.leaderCharacter.id),
               userId: newRequest.leaderCharacter.userId ? String(newRequest.leaderCharacter.userId) : undefined,
-              serverId: String(newRequest.leaderCharacter.serverId)
+              serverId: String(newRequest.leaderCharacter.serverId),
+              tsPositionId: newRequest.leaderCharacter.tsPositionId ? String(newRequest.leaderCharacter.tsPositionId) : undefined
             } : undefined,
             partyMembers: newRequest.partyMembers.map((pm: any) => ({
               id: String(pm.id),
@@ -490,7 +493,8 @@ export const useStore = create<AppState>((set, get) => ({
                 ...pm.character,
                 id: String(pm.character.id),
                 userId: pm.character.userId ? String(pm.character.userId) : undefined,
-                serverId: String(pm.character.serverId)
+                serverId: String(pm.character.serverId),
+                tsPositionId: pm.character.tsPositionId ? String(pm.character.tsPositionId) : undefined
               } : undefined
             })),
             createdAt: new Date(newRequest.createdAt).getTime(),
@@ -737,6 +741,9 @@ export const useStore = create<AppState>((set, get) => ({
             vocation: character.vocation || existing.vocation,
             level: character.level ?? existing.level,
             isMain: character.isMain ?? existing.isMain,
+            tsPositionId: character.tsPositionId !== undefined 
+              ? (character.tsPositionId ? parseInt(character.tsPositionId) : undefined)
+              : (existing.tsPositionId ? parseInt(existing.tsPositionId) : undefined),
           });
           await state.loadFromApi();
         }

@@ -34,4 +34,9 @@ public class Character
     public bool IsExternal { get; set; } = false;
     
     public DateTime? ExternalVerifiedAt { get; set; }
+    
+    public int? TsPositionId { get; set; }
+    
+    [ForeignKey("TsPositionId")]
+    public TsPosition? TsPosition { get; set; }
 }
