@@ -69,12 +69,13 @@ public class ServerService : IServerService
         }
 
         var existingServers = await _unitOfWork.Servers.GetAllAsync();
-        var existingDict = existingServers.ToDictionary(s => s.Name.ToLowerInvariant());
+        var existingDict = existingServers.ToDictionary(s => s.Name.Trim().ToLowerInvariant());
+        var tibiaWorldNames = new HashSet<string>(worlds.Select(w => w.Name.Trim().ToLowerInvariant()));
         int addedCount = 0;
 
         foreach (var world in worlds)
         {
-            var key = world.Name.ToLowerInvariant();
+            var key = world.Name.Trim().ToLowerInvariant();
             if (existingDict.TryGetValue(key, out var existing))
             {
                 existing.Region = world.Location;
@@ -85,13 +86,23 @@ public class ServerService : IServerService
             {
                 var newServer = new Server
                 {
-                    Name = world.Name,
+                    Name = world.Name.Trim(),
                     Region = world.Location,
                     PvpType = world.PvpType,
                     IsActive = false
                 };
                 await _unitOfWork.Servers.AddAsync(newServer);
                 addedCount++;
+            }
+        }
+
+        foreach (var existing in existingServers)
+        {
+            var key = existing.Name.Trim().ToLowerInvariant();
+            if (!tibiaWorldNames.Contains(key) && existing.IsActive)
+            {
+                existing.IsActive = false;
+                _unitOfWork.Servers.Update(existing);
             }
         }
 
