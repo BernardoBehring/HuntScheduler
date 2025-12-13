@@ -92,33 +92,61 @@ export default function AdminUsers() {
             {filteredUsers.length === 0 && (
               <p className="text-muted-foreground text-center py-10">{t('common.noData')}</p>
             )}
-            {filteredUsers.map(user => (
-              <div key={user.id} className="flex items-center justify-between p-3 border border-border/40 rounded-lg bg-card/40" data-testid={`user-item-${user.id}`}>
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-                    {user.username[0]}
+            {filteredUsers.map(user => {
+              const userCharacters = characters.filter(c => c.userId === user.id);
+              return (
+                <div key={user.id} className="p-4 border border-border/40 rounded-lg bg-card/40" data-testid={`user-item-${user.id}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+                        {user.username[0]}
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm">{user.username}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{t(`roles.${getRoleName(user.roleId)}`)}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="text-right mr-2">
+                        <p className="text-sm font-medium text-primary">{user.points} {t('common.points').toUpperCase()}</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => openPointsDialog(user, "remove")} data-testid={`button-remove-points-${user.id}`}>
+                          <TrendingDown className="h-3 w-3 mr-1" /> {t('admin.points.remove')}
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => openPointsDialog(user, "add")} data-testid={`button-add-points-${user.id}`}>
+                          <TrendingUp className="h-3 w-3 mr-1" /> {t('admin.points.add')}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold text-sm">{user.username}</p>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">{t(`roles.${getRoleName(user.roleId)}`)}</p>
-                  </div>
+                  
+                  {userCharacters.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-border/30">
+                      <p className="text-xs text-muted-foreground mb-2">{t('common.characters')}:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {userCharacters.map(char => {
+                          const server = servers.find(s => s.id === char.serverId);
+                          return (
+                            <div 
+                              key={char.id} 
+                              className={`text-xs px-2 py-1 rounded-md border ${char.isMain ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-muted/30 border-border/30'}`}
+                              data-testid={`character-badge-${char.id}`}
+                            >
+                              <span className="font-medium">{char.name}</span>
+                              {char.vocation && <span className="text-muted-foreground ml-1">({char.vocation})</span>}
+                              {server && <span className="text-muted-foreground ml-1">• {server.name}</span>}
+                              {char.isMain && <span className="ml-1 text-primary">★</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="text-right mr-2">
-                    <p className="text-sm font-medium text-primary">{user.points} {t('common.points').toUpperCase()}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => openPointsDialog(user, "remove")} data-testid={`button-remove-points-${user.id}`}>
-                      <TrendingDown className="h-3 w-3 mr-1" /> {t('admin.points.remove')}
-                    </Button>
-                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => openPointsDialog(user, "add")} data-testid={`button-add-points-${user.id}`}>
-                      <TrendingUp className="h-3 w-3 mr-1" /> {t('admin.points.add')}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
