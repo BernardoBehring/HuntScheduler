@@ -332,6 +332,7 @@
     "mainSetDesc": "Este personagem agora é seu personagem principal.",
     "deleted": "Personagem Removido",
     "deletedDesc": "O personagem foi desvinculado da sua conta.",
+    "confirmDelete": "Tem certeza que deseja remover {{name}} da sua conta?",
     "fillAllFields": "Por favor, preencha todos os campos obrigatórios",
     "enterName": "Por favor, digite o nome do personagem",
     "characterNotFound": "Personagem não encontrado no Tibia.com",

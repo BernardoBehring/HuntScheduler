@@ -308,6 +308,7 @@
     "mainSetDesc": "Este personaje ahora es tu personaje principal.",
     "deleted": "Personaje Eliminado",
     "deletedDesc": "El personaje ha sido desvinculado de tu cuenta.",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar a {{name}} de tu cuenta?",
     "fillAllFields": "Por favor, completa todos los campos requeridos"
   },
   "errors": {

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Star, Trash2, UserCheck, Loader2, Swords, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -31,6 +32,7 @@ export default function CharactersPage() {
   const queryClient = useQueryClient();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [characterToDelete, setCharacterToDelete] = useState<Character | null>(null);
   const [characterName, setCharacterName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validation, setValidation] = useState<ValidationState>({
@@ -245,7 +247,7 @@ export default function CharactersPage() {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => deleteMutation.mutate(character.id)}
+                        onClick={() => setCharacterToDelete(character)}
                         title={t('common.delete')}
                         data-testid={`button-delete-${character.id}`}
                       >
@@ -386,6 +388,32 @@ export default function CharactersPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <AlertDialog open={!!characterToDelete} onOpenChange={() => setCharacterToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('common.confirm')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('characters.confirmDelete', { name: characterToDelete?.name })}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel data-testid="button-cancel-delete">{t('common.cancel')}</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  if (characterToDelete) {
+                    deleteMutation.mutate(characterToDelete.id);
+                    setCharacterToDelete(null);
+                  }
+                }}
+                data-testid="button-confirm-delete"
+              >
+                {t('common.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );

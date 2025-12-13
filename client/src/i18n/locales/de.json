@@ -308,6 +308,7 @@
     "mainSetDesc": "Dieser Charakter ist jetzt dein Hauptcharakter.",
     "deleted": "Charakter entfernt",
     "deletedDesc": "Der Charakter wurde von deinem Konto getrennt.",
+    "confirmDelete": "Bist du sicher, dass du {{name}} von deinem Konto entfernen möchtest?",
     "fillAllFields": "Bitte fülle alle erforderlichen Felder aus"
   },
   "errors": {

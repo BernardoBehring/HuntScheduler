@@ -332,6 +332,7 @@
     "mainSetDesc": "This character is now your main character.",
     "deleted": "Character Removed",
     "deletedDesc": "The character has been unlinked from your account.",
+    "confirmDelete": "Are you sure you want to remove {{name}} from your account?",
     "fillAllFields": "Please fill in all required fields",
     "enterName": "Please enter a character name",
     "characterNotFound": "Character not found on Tibia.com",

@@ -308,6 +308,7 @@
     "mainSetDesc": "Ta postać jest teraz twoją główną postacią.",
     "deleted": "Postać Usunięta",
     "deletedDesc": "Postać została odłączona od twojego konta.",
+    "confirmDelete": "Czy na pewno chcesz usunąć {{name}} ze swojego konta?",
     "fillAllFields": "Proszę wypełnić wszystkie wymagane pola"
   },
   "errors": {
