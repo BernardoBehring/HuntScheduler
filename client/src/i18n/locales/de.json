@@ -97,6 +97,7 @@
     "submitClaim": "Antrag einreichen",
     "claimSubmitted": "Antrag eingereicht",
     "claimDescription": "Dein Antrag wurde zur Admin-Überprüfung eingereicht.",
+    "awaitingReview": "Wartet auf Überprüfung",
     "invalidPoints": "Bitte gib eine gültige Punktezahl ein"
   },
   "schedule": {
@@ -246,6 +247,9 @@
       "response": "Antwort",
       "responsePlaceholder": "Erkläre deine Entscheidung...",
       "responseRequired": "Bitte gib eine Antwort an",
+      "pointsToAward": "Punkte zu vergeben",
+      "pointsPlaceholder": "z.B. 50",
+      "pointsRequired": "Bitte gib die zu vergebenden Punkte ein",
       "approve": "Genehmigen",
       "reject": "Ablehnen",
       "claimApproved": "Antrag genehmigt",

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Check, X, Trophy, Clock, Eye, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
@@ -24,6 +25,7 @@ export default function AdminClaims() {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [selectedClaim, setSelectedClaim] = useState<PointClaim | null>(null);
   const [claimResponse, setClaimResponse] = useState("");
+  const [pointsToAward, setPointsToAward] = useState("");
 
   const { data: pointClaims = [], isLoading } = useQuery({
     queryKey: ['pointClaims', 'all'],
@@ -31,9 +33,9 @@ export default function AdminClaims() {
   });
 
   const approveMutation = useMutation({
-    mutationFn: ({ claimId, adminResponse }: { claimId: number; adminResponse: string }) => {
+    mutationFn: ({ claimId, adminResponse, pointsAwarded }: { claimId: number; adminResponse: string; pointsAwarded: number }) => {
       const adminId = currentUser ? (typeof currentUser.id === 'string' ? parseInt(currentUser.id) : currentUser.id) : 1;
-      return api.pointClaims.approve(claimId, { adminId, adminResponse });
+      return api.pointClaims.approve(claimId, { adminId, adminResponse, pointsAwarded });
     },
     onSuccess: async (claim) => {
       queryClient.invalidateQueries({ queryKey: ['pointClaims'] });
@@ -42,9 +44,10 @@ export default function AdminClaims() {
       setIsReviewOpen(false);
       setSelectedClaim(null);
       setClaimResponse("");
+      setPointsToAward("");
       toast({
         title: t('admin.claims.claimApproved'),
-        description: t('admin.claims.pointsAwarded', { points: claim.pointsRequested }),
+        description: t('admin.claims.pointsAwarded', { points: claim.pointsAwarded }),
       });
     },
     onError: (error: Error) => {
@@ -62,6 +65,7 @@ export default function AdminClaims() {
       setIsReviewOpen(false);
       setSelectedClaim(null);
       setClaimResponse("");
+      setPointsToAward("");
       toast({ title: t('admin.claims.claimRejected'), description: t('admin.claims.claimRejectedDesc') });
     },
     onError: (error: Error) => {
@@ -81,6 +85,7 @@ export default function AdminClaims() {
   const openReview = (claim: PointClaim) => {
     setSelectedClaim(claim);
     setClaimResponse("");
+    setPointsToAward("");
     setIsReviewOpen(true);
   };
 
@@ -89,7 +94,12 @@ export default function AdminClaims() {
       toast({ title: t('admin.claims.responseRequired'), variant: 'destructive' });
       return;
     }
-    approveMutation.mutate({ claimId: selectedClaim.id, adminResponse: claimResponse.trim() });
+    const points = parseInt(pointsToAward);
+    if (isNaN(points) || points <= 0) {
+      toast({ title: t('admin.claims.pointsRequired'), variant: 'destructive' });
+      return;
+    }
+    approveMutation.mutate({ claimId: selectedClaim.id, adminResponse: claimResponse.trim(), pointsAwarded: points });
   };
 
   const handleReject = () => {
@@ -163,7 +173,11 @@ export default function AdminClaims() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-primary">{claim.pointsRequested} {t('common.points')}</p>
+                      {claim.status === 'approved' && claim.pointsAwarded ? (
+                        <p className="font-bold text-green-400">{claim.pointsAwarded} {t('common.points')}</p>
+                      ) : claim.status === 'pending' ? (
+                        <p className="font-bold text-yellow-400">{t('dashboard.awaitingReview')}</p>
+                      ) : null}
                       <Badge className={getStatusBadge(claim.status)}>
                         {t(`status.${claim.status}`)}
                       </Badge>
@@ -209,7 +223,7 @@ export default function AdminClaims() {
           <DialogHeader>
             <DialogTitle>{t('admin.claims.reviewClaim')}</DialogTitle>
             <DialogDescription>
-              {selectedClaim && `${getUserName(selectedClaim.userId)} - ${selectedClaim.pointsRequested} ${t('common.points')}`}
+              {selectedClaim && getUserName(selectedClaim.userId)}
             </DialogDescription>
           </DialogHeader>
           
@@ -237,6 +251,18 @@ export default function AdminClaims() {
                 </div>
               )}
               
+              <div className="space-y-2">
+                <Label>{t('admin.claims.pointsToAward')} *</Label>
+                <Input 
+                  type="number"
+                  min="1"
+                  value={pointsToAward}
+                  onChange={(e) => setPointsToAward(e.target.value)}
+                  placeholder={t('admin.claims.pointsPlaceholder')}
+                  data-testid="input-points-to-award"
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label>{t('admin.claims.yourResponse')} *</Label>
                 <Textarea 

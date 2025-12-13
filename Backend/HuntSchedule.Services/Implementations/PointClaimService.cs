@@ -35,7 +35,7 @@ public class PointClaimService : IPointClaimService
         return await _unitOfWork.PointClaims.GetByIdWithDetailsAsync(id);
     }
 
-    public async Task<PointClaim> CreateAsync(int userId, int pointsRequested, string? note, string? screenshotUrl)
+    public async Task<PointClaim> CreateAsync(int userId, string? note, string? screenshotUrl)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(userId);
         if (user == null)
@@ -46,7 +46,6 @@ public class PointClaimService : IPointClaimService
         var claim = new PointClaim
         {
             UserId = userId,
-            PointsRequested = pointsRequested,
             Note = note,
             ScreenshotUrl = screenshotUrl,
             Status = "pending",
@@ -60,7 +59,7 @@ public class PointClaimService : IPointClaimService
         return claim;
     }
 
-    public async Task<PointClaim?> ApproveAsync(int claimId, int adminId, string adminResponse)
+    public async Task<PointClaim?> ApproveAsync(int claimId, int adminId, string adminResponse, int pointsAwarded)
     {
         using var transaction = await _unitOfWork.BeginTransactionAsync();
         try
@@ -79,6 +78,7 @@ public class PointClaimService : IPointClaimService
             claim.Status = "approved";
             claim.ReviewedByAdminId = adminId;
             claim.AdminResponse = adminResponse;
+            claim.PointsAwarded = pointsAwarded;
             claim.ReviewedAt = DateTime.UtcNow;
 
             _unitOfWork.PointClaims.Update(claim);
@@ -86,7 +86,7 @@ public class PointClaimService : IPointClaimService
             await _pointTransactionService.CreateAsync(
                 claim.UserId, 
                 adminId, 
-                claim.PointsRequested, 
+                pointsAwarded, 
                 $"Claim approved: {adminResponse}"
             );
 

@@ -97,6 +97,7 @@
     "submitClaim": "Wyślij Wniosek",
     "claimSubmitted": "Wniosek Wysłany",
     "claimDescription": "Twój wniosek został przesłany do weryfikacji przez admina.",
+    "awaitingReview": "Oczekuje na weryfikację",
     "invalidPoints": "Proszę wpisać prawidłową liczbę punktów"
   },
   "schedule": {
@@ -246,6 +247,9 @@
       "response": "Odpowiedź",
       "responsePlaceholder": "Wyjaśnij swoją decyzję...",
       "responseRequired": "Proszę podać odpowiedź",
+      "pointsToAward": "Punkty do przyznania",
+      "pointsPlaceholder": "np. 50",
+      "pointsRequired": "Proszę podać punkty do przyznania",
       "approve": "Zatwierdź",
       "reject": "Odrzuć",
       "claimApproved": "Wniosek Zatwierdzony",

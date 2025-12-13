@@ -338,7 +338,7 @@ export default function ProfilePage() {
                   <Award className="h-4 w-4" />
                   <span className="text-xs uppercase tracking-wider">{t('profile.pointsClaimed')}</span>
                 </div>
-                <p className="text-2xl font-bold">{approvedClaims.reduce((sum, c) => sum + c.pointsRequested, 0)}</p>
+                <p className="text-2xl font-bold">{approvedClaims.reduce((sum, c) => sum + (c.pointsAwarded || 0), 0)}</p>
                 <p className="text-xs text-muted-foreground">{pendingClaims.length} {t('status.pending').toLowerCase()}</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50 border border-border/40">

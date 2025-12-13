@@ -14,8 +14,7 @@ public class PointClaim
     [ForeignKey("UserId")]
     public User? User { get; set; }
 
-    [Required]
-    public int PointsRequested { get; set; }
+    public int? PointsAwarded { get; set; }
 
     [MaxLength(500)]
     public string? Note { get; set; }

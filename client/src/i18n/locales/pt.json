@@ -100,6 +100,7 @@
     "submitClaim": "Enviar Reivindicação",
     "claimSubmitted": "Reivindicação Enviada",
     "claimDescription": "Sua reivindicação foi enviada para revisão do admin.",
+    "awaitingReview": "Aguardando Revisão",
     "invalidPoints": "Por favor, digite um número válido de pontos"
   },
   "schedule": {
@@ -268,6 +269,9 @@
       "response": "Resposta",
       "responsePlaceholder": "Explique sua decisão...",
       "responseRequired": "Por favor, forneça uma resposta",
+      "pointsToAward": "Pontos a Conceder",
+      "pointsPlaceholder": "ex. 50",
+      "pointsRequired": "Por favor, insira os pontos a conceder",
       "approve": "Aprovar",
       "reject": "Rejeitar",
       "claimApproved": "Reivindicação Aprovada",

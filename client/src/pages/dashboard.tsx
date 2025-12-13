@@ -19,7 +19,6 @@ import { api, PointClaim } from "@/lib/api";
 export default function Dashboard() {
   const { currentUser, requests, respawns, slots, periods, getStatusName, statuses } = useStore();
   const [isClaimOpen, setIsClaimOpen] = useState(false);
-  const [claimPoints, setClaimPoints] = useState('');
   const [claimNote, setClaimNote] = useState('');
   const [claimScreenshotUrl, setClaimScreenshotUrl] = useState('');
   const { t } = useTranslation();
@@ -42,12 +41,11 @@ export default function Dashboard() {
   });
 
   const createClaimMutation = useMutation({
-    mutationFn: (data: { userId: number; pointsRequested: number; note?: string; screenshotUrl?: string }) => 
+    mutationFn: (data: { userId: number; note?: string; screenshotUrl?: string }) => 
       api.pointClaims.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pointClaims'] });
       setIsClaimOpen(false);
-      setClaimPoints('');
       setClaimNote('');
       setClaimScreenshotUrl('');
       toast({
@@ -89,18 +87,8 @@ export default function Dashboard() {
 
   const handleClaimPoints = () => {
     if (!userId) return;
-    const points = parseInt(claimPoints);
-    if (isNaN(points) || points <= 0) {
-      toast({
-        title: t('common.error'),
-        description: t('dashboard.invalidPoints'),
-        variant: 'destructive',
-      });
-      return;
-    }
     createClaimMutation.mutate({
       userId: userId,
-      pointsRequested: points,
       note: claimNote || undefined,
       screenshotUrl: claimScreenshotUrl || undefined,
     });
@@ -131,18 +119,6 @@ export default function Dashboard() {
               <DialogDescription>{t('dashboard.uploadScreenshot')}</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="points">{t('dashboard.pointsRequested')}</Label>
-                <Input 
-                  id="points" 
-                  type="number" 
-                  min="1"
-                  value={claimPoints}
-                  onChange={(e) => setClaimPoints(e.target.value)}
-                  placeholder="e.g. 50"
-                  data-testid="input-claim-points"
-                />
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="screenshot">{t('dashboard.screenshotUrl')}</Label>
                 <Input 
@@ -310,7 +286,12 @@ export default function Dashboard() {
                     <div className="space-y-1 flex-1">
                       <h4 className="font-semibold text-foreground flex items-center gap-2 text-sm">
                         <Trophy className="h-4 w-4 text-primary" />
-                        {claim.pointsRequested} {t('common.points')}
+                        {claim.status === 'approved' && claim.pointsAwarded 
+                          ? `${claim.pointsAwarded} ${t('common.points')} ${t('status.approved').toLowerCase()}`
+                          : claim.status === 'pending' 
+                            ? t('dashboard.awaitingReview')
+                            : t('status.rejected')
+                        }
                       </h4>
                       <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-3">
                         <span className="flex items-center gap-1">

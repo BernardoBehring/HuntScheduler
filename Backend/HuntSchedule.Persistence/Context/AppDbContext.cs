@@ -168,7 +168,7 @@ public class AppDbContext : DbContext
         {
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.UserId).HasColumnName("user_id");
-            entity.Property(e => e.PointsRequested).HasColumnName("points_requested");
+            entity.Property(e => e.PointsAwarded).HasColumnName("points_awarded");
             entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.ScreenshotUrl).HasColumnName("screenshot_url");
             entity.Property(e => e.Status).HasColumnName("status");

@@ -62,16 +62,10 @@ public class PointClaimsController : ControllerBase
         var user = await _userService.GetByIdAsync(dto.UserId);
         if (user == null) return NotFound(_localization.GetString(UserNotFound));
 
-        if (dto.PointsRequested <= 0)
-        {
-            return BadRequest("Points requested must be greater than 0");
-        }
-
         try
         {
             var claim = await _pointClaimService.CreateAsync(
-                dto.UserId, 
-                dto.PointsRequested,
+                dto.UserId,
                 dto.Note,
                 dto.ScreenshotUrl);
             
@@ -91,12 +85,17 @@ public class PointClaimsController : ControllerBase
             return BadRequest("Admin response is required");
         }
 
+        if (!dto.PointsAwarded.HasValue || dto.PointsAwarded <= 0)
+        {
+            return BadRequest("Points to award must be greater than 0");
+        }
+
         var admin = await _userService.GetByIdAsync(dto.AdminId);
         if (admin == null) return NotFound("Admin not found");
 
         try
         {
-            var claim = await _pointClaimService.ApproveAsync(id, dto.AdminId, dto.AdminResponse);
+            var claim = await _pointClaimService.ApproveAsync(id, dto.AdminId, dto.AdminResponse, dto.PointsAwarded.Value);
             if (claim == null) return NotFound("Claim not found");
             
             return Ok(claim);
@@ -143,7 +142,6 @@ public class PointClaimsController : ControllerBase
 public class CreatePointClaimDto
 {
     public int UserId { get; set; }
-    public int PointsRequested { get; set; }
     public string? Note { get; set; }
     public string? ScreenshotUrl { get; set; }
 }
@@ -152,4 +150,5 @@ public class ReviewClaimDto
 {
     public int AdminId { get; set; }
     public string AdminResponse { get; set; } = string.Empty;
+    public int? PointsAwarded { get; set; }
 }

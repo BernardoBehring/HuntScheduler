@@ -132,7 +132,7 @@ export interface PointClaim {
   id: number;
   userId: number;
   user?: User;
-  pointsRequested: number;
+  pointsAwarded?: number;
   note?: string;
   screenshotUrl?: string;
   status: 'pending' | 'approved' | 'rejected';
@@ -145,7 +145,6 @@ export interface PointClaim {
 
 export interface CreatePointClaimDto {
   userId: number;
-  pointsRequested: number;
   note?: string;
   screenshotUrl?: string;
 }
@@ -153,6 +152,7 @@ export interface CreatePointClaimDto {
 export interface ReviewPointClaimDto {
   adminId: number;
   adminResponse: string;
+  pointsAwarded?: number;
 }
 
 export interface UpdateProfileDto {

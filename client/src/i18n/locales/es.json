@@ -97,6 +97,7 @@
     "submitClaim": "Enviar Reclamación",
     "claimSubmitted": "Reclamación Enviada",
     "claimDescription": "Tu reclamación ha sido enviada para revisión del admin.",
+    "awaitingReview": "Esperando Revisión",
     "invalidPoints": "Por favor, ingresa un número válido de puntos"
   },
   "schedule": {
@@ -246,6 +247,9 @@
       "response": "Respuesta",
       "responsePlaceholder": "Explica tu decisión...",
       "responseRequired": "Por favor, proporciona una respuesta",
+      "pointsToAward": "Puntos a Otorgar",
+      "pointsPlaceholder": "ej. 50",
+      "pointsRequired": "Por favor, ingresa los puntos a otorgar",
       "approve": "Aprobar",
       "reject": "Rechazar",
       "claimApproved": "Reclamación Aprobada",

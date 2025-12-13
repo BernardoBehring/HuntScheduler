@@ -100,7 +100,8 @@
     "submitClaim": "Submit Claim",
     "claimSubmitted": "Claim Submitted",
     "claimDescription": "Your claim has been submitted for admin review.",
-    "invalidPoints": "Please enter a valid number of points"
+    "invalidPoints": "Please enter a valid number of points",
+    "awaitingReview": "Awaiting Review"
   },
   "schedule": {
     "title": "Hunt Schedule",
@@ -268,6 +269,9 @@
       "response": "Response",
       "responsePlaceholder": "Explain your decision...",
       "responseRequired": "Please provide a response",
+      "pointsToAward": "Points to Award",
+      "pointsPlaceholder": "e.g. 50",
+      "pointsRequired": "Please enter points to award",
       "approve": "Approve",
       "reject": "Reject",
       "claimApproved": "Claim Approved",
