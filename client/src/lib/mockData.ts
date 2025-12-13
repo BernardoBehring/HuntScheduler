@@ -82,6 +82,9 @@ export interface Respawn {
   difficulty?: string;
   minPlayers: number;
   maxPlayers: number;
+  tsCode?: string;
+  city?: string;
+  isAvailable: boolean;
 }
 
 export interface Slot {
@@ -157,10 +160,10 @@ const MOCK_SERVERS: Server[] = [
 ];
 
 const MOCK_RESPAWNS: Respawn[] = [
-  { id: 'r1', serverId: 's1', name: 'Library - Fire', difficultyId: '3', difficulty: 'hard', minPlayers: 4, maxPlayers: 5 },
-  { id: 'r2', serverId: 's1', name: 'Soul War - Crater', difficultyId: '4', difficulty: 'nightmare', minPlayers: 4, maxPlayers: 5 },
-  { id: 'r3', serverId: 's1', name: 'Cobras', difficultyId: '2', difficulty: 'medium', minPlayers: 1, maxPlayers: 4 },
-  { id: 'r4', serverId: 's2', name: 'Rotten Blood - Jaded', difficultyId: '4', difficulty: 'nightmare', minPlayers: 4, maxPlayers: 5 },
+  { id: 'r1', serverId: 's1', name: 'Library - Fire', difficultyId: '3', difficulty: 'hard', minPlayers: 4, maxPlayers: 5, tsCode: '50a', city: 'Issavi', isAvailable: true },
+  { id: 'r2', serverId: 's1', name: 'Soul War - Crater', difficultyId: '4', difficulty: 'nightmare', minPlayers: 4, maxPlayers: 5, tsCode: '215a', city: 'Feru Hills', isAvailable: true },
+  { id: 'r3', serverId: 's1', name: 'Cobras', difficultyId: '2', difficulty: 'medium', minPlayers: 1, maxPlayers: 4, tsCode: '89', city: 'Darashia', isAvailable: true },
+  { id: 'r4', serverId: 's2', name: 'Rotten Blood - Jaded', difficultyId: '4', difficulty: 'nightmare', minPlayers: 4, maxPlayers: 5, tsCode: '300', city: 'Feru Hills', isAvailable: true },
 ];
 
 const MOCK_SLOTS: Slot[] = [
@@ -633,6 +636,9 @@ export const useStore = create<AppState>((set, get) => ({
           name: respawn.name,
           difficultyId: parseInt(respawn.difficultyId),
           maxPlayers: respawn.maxPlayers,
+          tsCode: respawn.tsCode,
+          city: respawn.city,
+          isAvailable: respawn.isAvailable ?? true,
         });
         await state.loadFromApi();
       } catch (error) {
@@ -643,7 +649,8 @@ export const useStore = create<AppState>((set, get) => ({
         respawns: [...state.respawns, { 
           ...respawn, 
           id: Math.random().toString(36).substr(2, 9),
-          difficulty: state.getDifficultyName(respawn.difficultyId)
+          difficulty: state.getDifficultyName(respawn.difficultyId),
+          isAvailable: respawn.isAvailable ?? true
         }]
       }));
     }
@@ -661,6 +668,9 @@ export const useStore = create<AppState>((set, get) => ({
             name: respawn.name || existing.name,
             difficultyId: parseInt(respawn.difficultyId || existing.difficultyId),
             maxPlayers: respawn.maxPlayers || existing.maxPlayers,
+            tsCode: respawn.tsCode ?? existing.tsCode,
+            city: respawn.city ?? existing.city,
+            isAvailable: respawn.isAvailable ?? existing.isAvailable,
           });
           await state.loadFromApi();
         }

@@ -186,7 +186,15 @@
       "respawnUpdatedDesc": "Detalles del área de respawn actualizados.",
       "respawnDeleted": "Respawn Eliminado",
       "respawnDeletedDesc": "Área de respawn ha sido eliminada.",
-      "confirmDelete": "¿Estás seguro de que quieres eliminar este respawn?"
+      "confirmDelete": "¿Estás seguro de que quieres eliminar este respawn?",
+      "tsCode": "Código TS",
+      "city": "Ciudad",
+      "available": "Disponible",
+      "unavailable": "No Disponible",
+      "markAvailable": "Marcar como disponible",
+      "markUnavailable": "Marcar como no disponible",
+      "markedAvailable": "Respawn Disponible",
+      "markedUnavailable": "Respawn No Disponible"
     },
     "users": {
       "title": "Gestión de Usuarios",

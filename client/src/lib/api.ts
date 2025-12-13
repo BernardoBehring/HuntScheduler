@@ -81,7 +81,11 @@ export interface Respawn {
   name: string;
   difficultyId: number;
   difficulty?: Difficulty;
+  minPlayers?: number;
   maxPlayers: number;
+  tsCode?: string;
+  city?: string;
+  isAvailable: boolean;
 }
 
 export interface Slot {

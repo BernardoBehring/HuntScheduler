@@ -1,0 +1,407 @@
+CodeRespawnCityStatus
+1BarklessAb'DendrielFREE
+2HellgateAb'DendrielFREE
+3Poacher CaveAb'DendrielFREE
+4TrollAb'DendrielFREE
+5WaspAb'DendrielFREE
+50aAncient Scarab NorthAnkrahmunFREE
+50bAncient Scarab WestAnkrahmunFREE
+51GS TombAnkrahmunFREE
+52Gold TokenAnkrahmunFREE
+53Hydra (Passage)AnkrahmunFREE
+55Mother of Scarab LiarAnkrahmunFREE
+56Oasis TombAnkrahmunFREE
+57Peninsula TombAnkrahmunFREE
+58RahemosAnkrahmunFREE
+59Stone TombAnkrahmunFREE
+60TerramiteAnkrahmunFREE
+61VashresamunAnkrahmunFREE
+62aCobra Bastion (-1)AnkrahmunFREE
+62bCobra Bastion (0 e +1 até flask)AnkrahmunFREE
+62cCobra Bastion (+1 depois do flask, +2, +3 e +4)AnkrahmunFREE
+62dCobra Bastion (Mini Boss Fire)AnkrahmunFREE
+62eCobra Bastion (Mini Boss Smoke)AnkrahmunFREE
+62fCobra Bastion (0 e +1)AnkrahmunFREE
+62gCobra Bastion (+2, +3 e +4)AnkrahmunFREE
+62hCobra Bastion (+3 e +4)AnkrahmunFREE
+63aWeretiger (-1)AnkrahmunFREE
+63bWeretiger (-2)AnkrahmunFREE
+63cWeretiger (-1 e -2)AnkrahmunFREE
+64aWerecrododile (-1)AnkrahmunFREE
+64bWerecrododile (-2)AnkrahmunFREE
+64cWerecrododile (-1 e -2)AnkrahmunFREE
+165Lion's RockAnkrahmunFREE
+1154Candia SurfaceCandiaFREE
+1155Chocolate MinesCandiaFREE
+1156Dessert DungeonCandiaFREE
+100CorymCarlinFREE
+101aCults -1CarlinFREE
+101bCults -2CarlinFREE
+101cCults -3CarlinFREE
+104aSecret Library (Biting Book)CarlinFREE
+104bSecret Library (Earth)CarlinFREE
+104cSecret Library (Energy)CarlinFREE
+104dSecret Library (Fire)CarlinFREE
+104eSecret Library (Ice)CarlinFREE
+150Ancient Scarabs TombDarashiaFREE
+151Cults & LizardsDarashiaFREE
+152DragonDarashiaFREE
+153Dragon LordDarashiaFREE
+154aDrefia Grim Reaper (Floor 1)DarashiaFREE
+154bDrefia Grim Reaper (Floor 1+2)DarashiaFREE
+154cDrefia Grim Reaper (Floor All)DarashiaFREE
+155aFerumbra's (South)DarashiaFREE
+155bFerumbra's ArcDarashiaFREE
+155cFerumbra's DT SealDarashiaFREE
+155dFerumbra's Fury SealDarashiaFREE
+155eFerumbra's Jugger SealDarashiaFREE
+155fFerumbra's Lair (Entrance)DarashiaFREE
+155gFerumbra's Plague SealDarashiaFREE
+155hFerumbra's PuminDarashiaFREE
+155iFerumbra's Undead SealDarashiaFREE
+155jFerumbra's Bazir SealDarashiaFREE
+155kFerumbra's DT Seal -1DarashiaFREE
+155lFerumbra's Pumin AfterDarashiaFREE
+155mFerumbra's Pumin BeforeDarashiaFREE
+156Haunted Nexus (Darashia)DarashiaFREE
+157Nightmare IslesDarashiaBUSY
+158aRotworm (East)DarashiaFREE
+158bRotworm (West)DarashiaFREE
+159aSkeleton Elite Warrior (Inside)DarashiaFREE
+159bSkeleton Elite Warrior (Outside)DarashiaFREE
+160Terramite's CaveDarashiaFREE
+161WyrmDarashiaFREE
+162aWerehyaena -1DarashiaFREE
+162bWerehyaena -2 (North)DarashiaFREE
+162cWerehyaena -2 (South)DarashiaFREE
+163aWerelion -1DarashiaFREE
+163bWerelion -2DarashiaFREE
+163cWerelion -2 ->DarashiaFREE
+163dWerelion -2 <-DarashiaFREE
+164aRotten Blood (Blood Vestibule)DarashiaFREE
+164bRotten Blood (Darklight Core)DarashiaFREE
+164cRotten Blood (Gloom Pillars)DarashiaFREE
+164dRotten Blood (Jaded Roots)DarashiaFREE
+164eRotten Blood (Putrefactory)DarashiaFREE
+200Asharak DemonEdronFREE
+201Bog Raider (Cave Earth Elemental)EdronFREE
+202Bog Raider East (Hidden)EdronFREE
+203aCyclopolisEdronFREE
+203bCyclopolis BehemothsEdronFREE
+204Demon (Demon Helmet Quest)EdronFREE
+205Demon (Novo)EdronFREE
+206Demon ForgeEdronFREE
+207Dragon LairEdronFREE
+208Dryad GardensEdronFREE
+209Earth ElementalEdronFREE
+210aElemental Quest - Soil EDEdronFREE
+210bElemental Quest - Soil EKEdronFREE
+210cElemental Quest - Soil MSEdronFREE
+210dElemental Quest - Soil RPEdronFREE
+211aFalcon BastionEdronFREE
+211bFalcon Mini-BossesEdronFREE
+211cFalcon UndergroundEdronFREE
+212aFlimsy -1EdronFREE
+213Forgotten TombEdronFREE
+214GrimvaleEdronFREE
+215aHero Fortress -1 (Bonebeast)EdronFREE
+215bHero Fortress -2EdronBLOCKED
+215cHero Fortress -2 e -3EdronBUSY
+215dHero Fortress -3EdronBLOCKED
+216aInquisitionEdronFREE
+216bInquisition HellhoundEdronFREE
+217Servants (Mad Mage)EdronFREE
+218Shaburak DemonsEdronFREE
+219Vampire CryptEdronFREE
+220Werefox CaveEdronFREE
+221ZuguroshEdronFREE
+222Usurper EastEdronFREE
+223BounacEdronFREE
+224Ancient Lion KnightEdronFREE
+225Crypt WardenEdronFREE
+226CarnisylvanEdronFREE
+227aIngol (Surface)EdronFREE
+227bIngol (-1)EdronFREE
+227cIngol (-2)EdronFREE
+227dIngol (-3)EdronFREE
+227eIngol (-4)EdronFREE
+1157Podzilla Rootthings (-1)EdronFREE
+1158Podzilla Rootthings (-2)EdronFREE
+1159Podzilla Quaras (-1)EdronFREE
+1160Podzilla Quaras (-2)EdronFREE
+1161aInferniarchs Surface e -1 (Tree)EdronFREE
+1161bInferniarchs -2EdronFREE
+1161cInferniarchs -3EdronFREE
+1161dInferniarchs -4EdronFREE
+250aBrimstone Bug (Hidden)FarmineFREE
+250bBrimstone Bug (Shovel)FarmineFREE
+250cBrimstone Bug (Surface)FarmineFREE
+250dBrimstone Bug (Wrath)FarmineFREE
+251aCorruption Hole -1FarmineFREE
+251bCorruption Hole -2FarmineFREE
+253aDragon Lord (Antes do TP)FarmineFREE
+253bDragon Lord (Depois do TP)FarmineFREE
+254DragonblazeFarmineFREE
+255Draken EliteFarmineFREE
+256aDraken WallFarmineFREE
+256bDraken Wall (Bottom)FarmineBUSY
+256cDraken Wall (Top)FarmineFREE
+256dDraken Wall (Tower Meio)FarmineFREE
+257aFlimsy -1FarmineFREE
+258aGhastly DragonFarmineBUSY
+258bGhastly Dragon (Mission 10)FarmineFREE
+258cGhastly Dragon (Mission 7)FarmineFREE
+258dGhastly Dragon (Palace)FarmineFREE
+259Gold TokenFarmineFREE
+260Hidden Lizards (Mission 7)FarmineFREE
+262Lizard Camp (Muggy Plains)FarmineFREE
+263Lizard Chosen (New - 1,2,3)FarmineFREE
+264Lizard Chosen (New - 4,5)FarmineFREE
+265Lizard CityFarmineFREE
+266Lizards (Mortal Kombat)FarmineFREE
+267SouleatersFarmineBUSY
+270Wailing Widow CaveFarmineFREE
+271YielothaxFarmineBUSY
+1152Mega Dragon [Respawn 2]FarmineFREE
+300Dream Labyrinth (Fire)FeyristFREE
+301Dream Labyrinth (Ice)FeyristFREE
+305aMini Roshamuul -1FeyristFREE
+305bMini Roshamuul -2FeyristBUSY
+306Summer CourtFeyristBUSY
+307Winter CourtFeyristFREE
+401Dragon LairGoromaFREE
+406aMedusa -1 (East)GoromaFREE
+406bMedusa -1 (West) & WestGoromaFREE
+406cMedusa East & NortheastGoromaFREE
+406dMedusa North & NorthwestGoromaFREE
+450aDeathling (Port Hope)Gray IslandFREE
+450bDeathling Cave -1Gray IslandFREE
+450cDeathling Cave -2Gray IslandFREE
+451aDeepling (East)Gray IslandFREE
+451bDeepling (North - Hardcore)Gray IslandFREE
+451cDeepling (North)Gray IslandFREE
+451dDeepling (South - Library)Gray IslandFREE
+451eDeepling (West)Gray IslandFREE
+452Hive SurfaceGray IslandFREE
+453aHive TowerGray IslandFREE
+454Hive UndergroundGray IslandFREE
+500Bridge (West)IssaviFREE
+502aSphinx Cave -1IssaviFREE
+502bSphinx Cave -2IssaviFREE
+503Undergrond (Bueiro/Sewers)IssaviFREE
+504WaterfallIssaviFREE
+505aPirat Ship -1IssaviFREE
+505bPirat Ship -2IssaviBUSY
+506bPirat -1IssaviBUSY
+506cPirat -2IssaviBUSY
+507aExotic Cave -1IssaviFREE
+507bExotic Cave -2IssaviBUSY
+508Ruins of Nuur (Bilu)IssaviFREE
+509Salt Caves (Bashmu)IssaviFREE
+510GoannasIssaviFREE
+550CorymKazordoonFREE
+551aDrillworms (East)KazordoonFREE
+551bDrillworms (West)KazordoonFREE
+552aLost Dwarfs (East)KazordoonFREE
+552bLost Dwarfs (Small Respawn)KazordoonFREE
+552cLost Dwarfs (West Up)KazordoonFREE
+552dLost Dwarfs (West)KazordoonFREE
+553Lower SpikesKazordoonFREE
+600Brimstone BugsKrailosFREE
+601Nightmare KrailosKrailosFREE
+650BehemothsLiberty BayFREE
+651aCalassa Quara EastLiberty BayFREE
+651bCalassa Quara WestLiberty BayFREE
+652CorymsLiberty BayFREE
+653Crystal GardenLiberty BayFREE
+654CultLiberty BayFREE
+655Earth ElementalLiberty BayFREE
+656Gargoyles (Meriana)Liberty BayFREE
+657Hive OutpostLiberty BayFREE
+658Laguna IslandLiberty BayFREE
+659Night Stalker -1Liberty BayFREE
+660Pirates (Nargor)Liberty BayFREE
+661Quara (New)Liberty BayFREE
+662aWyrms +1Liberty BayFREE
+662bWyrms +2Liberty BayFREE
+663Wyrms Cave (New)Liberty BayFREE
+664Zombie (Treasure Island)Liberty BayFREE
+1100aFoam Stalker (-1 -2)MarapurFREE
+1100bFoam Stalker (-1)MarapurFREE
+1100cFoam Stalker (-2)MarapurFREE
+1101aNaga (-1 -2)MarapurFREE
+1101bNaga (-1)MarapurFREE
+1101cNaga (-2)MarapurFREE
+700aCatacombsOramondFREE
+700bCatacombs (East)OramondBUSY
+700dCatacombs (West)OramondBUSY
+701Demons & Grim ReaperOramondFREE
+702Devourer & Quaras (West)OramondFREE
+703Fury & SpectreOramondFREE
+704aGlooth Bandits (East)OramondFREE
+704bGlooth Bandits (South)OramondFREE
+704cGlooth Bandits (West)OramondFREE
+705Glooth FactoryOramondFREE
+707Glooth TowerOramondFREE
+709aHydras & Bog Raider (Deeper)OramondFREE
+709bHydras & Bog Raider (Surface)OramondFREE
+716aSeacrest (East)OramondFREE
+716bSeacrest (North)OramondFREE
+716cSeacrest (West)OramondFREE
+750aAsura (Mirror) MirrorPort HopeBUSY
+750cAsura (Mirror) True (-1)Port HopeFREE
+750dAsura (Mirror) True (-2)Port HopeFREE
+750eAsura (Mirror) True (All)Port HopeFREE
+751Asura PalacePort HopeFREE
+752bBanuta -1Port HopeFREE
+752cBanuta -2Port HopeFREE
+752dBanuta -3Port HopeFREE
+752eBanuta -4Port HopeFREE
+754aCarnivora's Rock -1Port HopeFREE
+754bCarnivora's Rock -2Port HopeFREE
+754cCarnivora's Rock -2 e -3Port HopeFREE
+754dCarnivora's Rock -3Port HopeFREE
+754eCarnivora's Rock -1 e -2Port HopeFREE
+757aFlimsy -1Port HopeFREE
+757bFlimsy -2Port HopeFREE
+758Haunted Nexus (Port Hope)Port HopeFREE
+761Medusa TowerPort HopeFREE
+762aIks EntradaPort HopeFREE
+762bIks Antes da Ponte das 3 vidasPort HopeFREE
+762cIks Depois da Ponte das 3 vidasPort HopeFREE
+802aGuzzlemaw Valley (Center)RoshamuulFREE
+802bGuzzlemaw Valley (East)RoshamuulFREE
+802cGuzzlemaw Valley (West)RoshamuulFREE
+803bPrison (-1)RoshamuulFREE
+803cPrison (-2)RoshamuulFREE
+803dPrison (-3)RoshamuulFREE
+804aRoshamuul DP (North)RoshamuulFREE
+804bRoshamuul DP (South)RoshamuulFREE
+805aRoshamuul Mountain (East)RoshamuulFREE
+805bRoshamuul Mountain (North East)RoshamuulFREE
+805cRoshamuul Mountain (South)RoshamuulFREE
+806Shock HeadRoshamuulFREE
+807aSurface (-3)RoshamuulFREE
+807bSurface (Buckets - East)RoshamuulFREE
+807cSurface (Buckets - West)RoshamuulFREE
+807dSurface (Buckets)RoshamuulFREE
+850aBarbarian Camp (Big)SvargrondFREE
+850bBarbarian Camp (Medium)SvargrondFREE
+850cBarbarian Camp (Small)SvargrondFREE
+851Crystal Spiders (Hidden)SvargrondFREE
+852Crystal Spiders (New)SvargrondFREE
+853Crystal Spiders (Nibelor)SvargrondFREE
+854Crystal Spiders (Old)SvargrondFREE
+855Crystal Spiders North (New)SvargrondFREE
+856Crystal Spiders South (New)SvargrondFREE
+857Cults HiddenSvargrondFREE
+858Cults Mines (East)SvargrondFREE
+859Cults Mines (North West)SvargrondFREE
+860Frost GiantSvargrondFREE
+861Gold TokenSvargrondFREE
+862Hidden Formogar MinesSvargrondFREE
+863Ice Witch Temple (New)SvargrondFREE
+864Mammoth FactorySvargrondFREE
+865Mines -2SvargrondFREE
+866Mines -3SvargrondFREE
+867Mines South East -2SvargrondFREE
+868Mines Yakchal FloorSvargrondFREE
+869aOkolnir Frost Dragons (East)SvargrondFREE
+869bOkolnir Frost Dragons (West)SvargrondFREE
+870aSea Serpent North (Old Cave)SvargrondFREE
+870bSea Serpent South (Old Cave)SvargrondBUSY
+900aMinotaur Cult Cave -1ThaisFREE
+900bMinotaur Cult Cave -2ThaisFREE
+902Thais FuryThaisFREE
+950Amazon CampVenoreFREE
+951aBuried Cathedral -1VenoreFREE
+951bBuried Cathedral -2VenoreFREE
+951cBuried Cathedral -3VenoreFREE
+952Dark CathedralVenoreFREE
+953aDragon Lair (East)VenoreFREE
+953bDragon Lair (West)VenoreFREE
+954Dragon Lord (POI)VenoreFREE
+955aFlimsy -1VenoreFREE
+955bFlimsy -2VenoreFREE
+955cFlimsy -3VenoreFREE
+955dFlimsy -2 e -3VenoreFREE
+955eFlimsy -1, -2 e -3VenoreFREE
+956Haunted Nexus (PoH)VenoreFREE
+957aOrc Fortress (Inside)VenoreFREE
+957bOrc Fortress (Outside)VenoreFREE
+958SalamandraVenoreFREE
+959StonerefinerVenoreFREE
+960Tainted Soul CaveVenoreFREE
+1153Bulltaurs [Respawn 3]VenoreFREE
+1001Crystal GroundsWarzoneFREE
+1002aDiremaw (North)WarzoneFREE
+1002bDiremaw (South)WarzoneFREE
+1003Gnoman's LandWarzoneFREE
+1004Gnomegate HotspotWarzoneFREE
+1005Mushroom GardensWarzoneFREE
+1006Warzone 3WarzoneFREE
+1007aWarzone 4WarzoneFREE
+1008aWarzone 5WarzoneFREE
+1009aWarzone 6WarzoneFREE
+1010aWarzone 7WarzoneFREE
+1011Warzone 8WarzoneFREE
+1012aWarzone 9WarzoneFREE
+1013bMonster Graveyard (Left)WarzoneFREE
+1013cMonster Graveyard (Right)WarzoneFREE
+1014bCrystal Enigma (Left)WarzoneFREE
+1014cCrystal Enigma (Right)WarzoneFREE
+1015bSparkling Pools (Left)WarzoneFREE
+1015cSparkling Pools (Right)WarzoneFREE
+1016Ravenous LavalurkerWarzoneFREE
+1050Arena QuarterYalaharFREE
+1051Barbarian BloodwalkerYalaharFREE
+1052Blue DjinnYalaharFREE
+1053Bog Raider (North)YalaharFREE
+1054Bog Raider + Nightmare + DestroyerYalaharFREE
+1055Cemetery -1YalaharFREE
+1056aCemetery Ghoul (East)YalaharFREE
+1056bCemetery Ghoul (West)YalaharFREE
+1057Cemetery ZombiesYalaharFREE
+1058CultsYalaharFREE
+1059aCycs Mistrock (Center)YalaharFREE
+1059bCycs Mistrock (North)YalaharFREE
+1059cCycs Mistrock (South)YalaharFREE
+1060aDemon (East)YalaharFREE
+1060bDemon (West)YalaharFREE
+1061aDragon (Hydra)YalaharFREE
+1061bDragon (NW)YalaharFREE
+1061cDragon (SE)YalaharFREE
+1061dDragon (Serpent)YalaharFREE
+1062Dragon Lord (Fenrock)YalaharFREE
+1063Giant SpiderYalaharFREE
+1064Green DjinnYalaharFREE
+1065Grim ReaperYalaharBUSY
+1066Haunted TreelingYalaharFREE
+1067aHellspawn (-1)YalaharFREE
+1067bHellspawn (Surface)YalaharFREE
+1068MagicianYalaharFREE
+1069MinotaursYalaharFREE
+1070Mutated HumanYalaharFREE
+1071Mutated RatYalaharFREE
+1072aNecromancer (East)YalaharFREE
+1072bNecromancer (West)YalaharFREE
+1073NightmareYalaharFREE
+1074PiratesYalaharFREE
+1075Sunken QuarasYalaharFREE
+1076Tortoise & Barbarian (Fenrock)YalaharFREE
+1077Vengoth CastleYalaharFREE
+1078Vengoth Castle (North)YalaharFREE
+1079War GolemYalaharFREE
+1080aWar Golem New (East)YalaharFREE
+1080bWar Golem New (West)YalaharFREE
+1081WerewolfYalaharFREE
+1082Worker GolemYalaharFREE
+1083Claustrophobic InfernoYalaharFREE
+1084aRotten WastelandYalaharFREE
+1084bRotten Wasteland (North)YalaharFREE
+1084cRotten Wasteland (South)YalaharFREE
+1085Ebb and FlowYalaharFREE
+1086Furious CraterYalaharFREE
+1087Mirrored NightmareYalaharFREE
+1088Mutated Tiger (Arena -3)YalaharFREE
+1089Mutated Tiger & Bog Raider (North Alchemist)YalaharFREE

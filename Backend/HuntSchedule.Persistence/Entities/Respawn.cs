@@ -28,4 +28,14 @@ public class Respawn
     public int MinPlayers { get; set; } = 1;
     
     public int MaxPlayers { get; set; } = 4;
+
+    [MaxLength(20)]
+    [Column("ts_code")]
+    public string? TsCode { get; set; }
+
+    [MaxLength(100)]
+    public string? City { get; set; }
+
+    [Column("is_available")]
+    public bool IsAvailable { get; set; } = true;
 }

@@ -211,7 +211,15 @@
       "respawnUpdatedDesc": "Respawn area details updated.",
       "respawnDeleted": "Respawn Deleted",
       "respawnDeletedDesc": "Respawn area has been removed.",
-      "confirmDelete": "Are you sure you want to delete this respawn?"
+      "confirmDelete": "Are you sure you want to delete this respawn?",
+      "tsCode": "TS Code",
+      "city": "City",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "markAvailable": "Mark as available",
+      "markUnavailable": "Mark as unavailable",
+      "markedAvailable": "Respawn Available",
+      "markedUnavailable": "Respawn Unavailable"
     },
     "users": {
       "title": "User Management",

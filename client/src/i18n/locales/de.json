@@ -186,7 +186,15 @@
       "respawnUpdatedDesc": "Respawn-Bereichsdetails aktualisiert.",
       "respawnDeleted": "Respawn gelöscht",
       "respawnDeletedDesc": "Respawn-Bereich wurde entfernt.",
-      "confirmDelete": "Bist du sicher, dass du diesen Respawn löschen möchtest?"
+      "confirmDelete": "Bist du sicher, dass du diesen Respawn löschen möchtest?",
+      "tsCode": "TS-Code",
+      "city": "Stadt",
+      "available": "Verfügbar",
+      "unavailable": "Nicht Verfügbar",
+      "markAvailable": "Als verfügbar markieren",
+      "markUnavailable": "Als nicht verfügbar markieren",
+      "markedAvailable": "Respawn Verfügbar",
+      "markedUnavailable": "Respawn Nicht Verfügbar"
     },
     "users": {
       "title": "Benutzerverwaltung",
