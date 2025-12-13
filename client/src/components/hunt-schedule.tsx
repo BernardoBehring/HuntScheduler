@@ -28,7 +28,8 @@ import { useTranslation } from "react-i18next";
 
 export function HuntSchedule() {
   const { servers, respawns, slots, requests, addRequest, currentUser, periods, getDifficultyName, characters, users, statuses } = useStore();
-  const [selectedServer, setSelectedServer] = useState(servers[0]?.id);
+  const activeServers = servers.filter(s => s.isActive);
+  const [selectedServer, setSelectedServer] = useState(activeServers[0]?.id);
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
   
@@ -97,7 +98,7 @@ export function HuntSchedule() {
               <SelectValue placeholder={t('schedule.selectServer')} />
             </SelectTrigger>
             <SelectContent>
-              {servers.map(s => (
+              {activeServers.map(s => (
                 <SelectItem key={s.id} value={s.id} data-testid={`server-option-${s.id}`}>{s.name} ({s.region})</SelectItem>
               ))}
             </SelectContent>

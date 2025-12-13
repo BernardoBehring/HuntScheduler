@@ -47,10 +47,12 @@ export default function CharactersPage() {
     enabled: !!currentUser,
   });
 
-  const { data: servers = [] } = useQuery({
+  const { data: allServers = [] } = useQuery({
     queryKey: ['servers'],
     queryFn: () => api.servers.getAll(),
   });
+  
+  const servers = allServers.filter(s => s.isActive);
 
   const createMutation = useMutation({
     mutationFn: (character: Omit<Character, 'id'>) => api.characters.create(character),

@@ -15,13 +15,15 @@ export default function AdminRespawns() {
   const { servers, respawns, addRespawn, updateRespawn, deleteRespawn } = useStore();
   const { t } = useTranslation();
   
+  const activeServers = servers.filter(s => s.isActive);
+  
   const [filterServer, setFilterServer] = useState<string>("all");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
   const [respawnName, setRespawnName] = useState("");
-  const [respawnServer, setRespawnServer] = useState(servers[0]?.id || "");
+  const [respawnServer, setRespawnServer] = useState(activeServers[0]?.id || "");
   const [respawnDifficulty, setRespawnDifficulty] = useState("2");
   const [respawnMinPlayers, setRespawnMinPlayers] = useState("1");
   const [respawnMaxPlayers, setRespawnMaxPlayers] = useState("4");
@@ -42,7 +44,7 @@ export default function AdminRespawns() {
 
   const openAddDialog = () => {
     setRespawnName("");
-    setRespawnServer(servers[0]?.id || "");
+    setRespawnServer(activeServers[0]?.id || "");
     setRespawnDifficulty("2");
     setRespawnMinPlayers("1");
     setRespawnMaxPlayers("4");
@@ -109,7 +111,7 @@ export default function AdminRespawns() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('common.allServers')}</SelectItem>
-                {servers.map(s => (
+                {activeServers.map(s => (
                   <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
                 ))}
               </SelectContent>

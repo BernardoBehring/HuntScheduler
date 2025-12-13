@@ -16,11 +16,13 @@ export default function AdminPeriods() {
   const { servers, periods, addPeriod, togglePeriod } = useStore();
   const { t } = useTranslation();
   
+  const activeServers = servers.filter(s => s.isActive);
+  
   const [filterServer, setFilterServer] = useState<string>("all");
   const [newPeriodName, setNewPeriodName] = useState("");
   const [newPeriodStart, setNewPeriodStart] = useState("");
   const [newPeriodEnd, setNewPeriodEnd] = useState("");
-  const [newPeriodServer, setNewPeriodServer] = useState(servers[0]?.id || "");
+  const [newPeriodServer, setNewPeriodServer] = useState(activeServers[0]?.id || "");
 
   const filteredPeriods = filterServer === "all"
     ? periods
@@ -50,7 +52,7 @@ export default function AdminPeriods() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('common.allServers')}</SelectItem>
-            {servers.map(s => (
+            {activeServers.map(s => (
               <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
             ))}
           </SelectContent>
