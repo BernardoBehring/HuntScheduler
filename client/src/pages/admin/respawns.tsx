@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Power, PowerOff } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -328,7 +328,7 @@ export default function AdminRespawns() {
                       <p className="font-medium text-sm">{r.name}</p>
                       {!r.isAvailable && (
                         <Badge variant="secondary" className="text-xs">
-                          <EyeOff className="h-3 w-3 mr-1" />
+                          <PowerOff className="h-3 w-3 mr-1" />
                           {t('admin.respawns.unavailable')}
                         </Badge>
                       )}
@@ -346,7 +346,7 @@ export default function AdminRespawns() {
                       title={r.isAvailable ? t('admin.respawns.markUnavailable') : t('admin.respawns.markAvailable')}
                       data-testid={`button-toggle-respawn-${r.id}`}
                     >
-                      {r.isAvailable ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      {r.isAvailable ? <Power className="h-4 w-4 text-green-500" /> : <PowerOff className="h-4 w-4 text-muted-foreground" />}
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => openEditDialog(r)} data-testid={`button-edit-respawn-${r.id}`}>{t('common.edit')}</Button>
                     <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleDelete(r.id)} data-testid={`button-delete-respawn-${r.id}`}><Trash2 className="h-4 w-4"/></Button>

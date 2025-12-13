@@ -42,8 +42,26 @@ public class Repository<T> : IRepository<T> where T : class
 
     public virtual void Update(T entity)
     {
-        _dbSet.Attach(entity);
-        _context.Entry(entity).State = EntityState.Modified;
+        var entry = _context.Entry(entity);
+        if (entry.State == EntityState.Detached)
+        {
+            var keyProperty = _context.Model.FindEntityType(typeof(T))?.FindPrimaryKey()?.Properties.FirstOrDefault();
+            if (keyProperty != null)
+            {
+                var keyValue = keyProperty.PropertyInfo?.GetValue(entity);
+                var trackedEntity = _context.ChangeTracker.Entries<T>()
+                    .FirstOrDefault(e => keyProperty.PropertyInfo?.GetValue(e.Entity)?.Equals(keyValue) == true);
+                
+                if (trackedEntity != null)
+                {
+                    trackedEntity.CurrentValues.SetValues(entity);
+                    trackedEntity.State = EntityState.Modified;
+                    return;
+                }
+            }
+            _dbSet.Attach(entity);
+        }
+        entry.State = EntityState.Modified;
     }
 
     public virtual void Remove(T entity)
