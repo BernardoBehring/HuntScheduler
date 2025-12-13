@@ -69,4 +69,38 @@ public class TibiaDataValidator : ITibiaCharacterValidator
             return null;
         }
     }
+
+    public async Task<List<TibiaWorld>?> GetAllWorldsAsync()
+    {
+        const string cacheKey = "tibia_worlds";
+        
+        if (_cache.TryGetValue(cacheKey, out List<TibiaWorld>? cachedWorlds))
+        {
+            return cachedWorlds;
+        }
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"{API_BASE_URL}/worlds");
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("TibiaData API returned {StatusCode} for worlds", response.StatusCode);
+                return null;
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var apiResponse = JsonSerializer.Deserialize<TibiaWorldsResponse>(content, options);
+
+            var worlds = apiResponse?.Worlds?.RegularWorlds ?? new List<TibiaWorld>();
+            _cache.Set(cacheKey, worlds, TimeSpan.FromHours(1));
+            return worlds;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching worlds from TibiaData API");
+            return null;
+        }
+    }
 }

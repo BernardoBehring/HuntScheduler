@@ -12,8 +12,13 @@ public class Server
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(10)]
+    [MaxLength(50)]
     public string Region { get; set; } = string.Empty;
+
+    [MaxLength(50)]
+    public string? PvpType { get; set; }
+
+    public bool IsActive { get; set; } = false;
 
     public ICollection<Respawn> Respawns { get; set; } = new List<Respawn>();
 }
