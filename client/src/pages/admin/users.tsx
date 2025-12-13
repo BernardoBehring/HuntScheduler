@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Search } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -19,15 +19,24 @@ export default function AdminUsers() {
   
   const activeServers = servers.filter(s => s.isActive);
   const [filterServer, setFilterServer] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isPointsDialogOpen, setIsPointsDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [pointsAmount, setPointsAmount] = useState("");
   const [pointsReason, setPointsReason] = useState("");
   const [pointsOperation, setPointsOperation] = useState<"add" | "remove">("add");
 
-  const filteredUsers = filterServer === "all"
-    ? users
-    : users.filter(u => characters.some(c => c.userId === u.id && c.serverId === filterServer));
+  const filteredUsers = users.filter(u => {
+    const matchesServer = filterServer === "all" || characters.some(c => c.userId === u.id && c.serverId === filterServer);
+    if (!matchesServer) return false;
+    
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    const usernameMatch = u.username.toLowerCase().includes(query);
+    const characterMatch = characters.some(c => c.userId === u.id && c.name.toLowerCase().includes(query));
+    return usernameMatch || characterMatch;
+  });
 
   const openPointsDialog = (user: User, operation: "add" | "remove") => {
     setSelectedUser(user);
@@ -71,7 +80,17 @@ export default function AdminUsers() {
 
   return (
     <AdminLayout title={t('admin.tabs.users')} description={t('admin.users.description')}>
-      <div className="flex justify-end mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 justify-between mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t('common.searchUsers')}
+            className="pl-9"
+            data-testid="input-search-users"
+          />
+        </div>
         <Select value={filterServer} onValueChange={setFilterServer}>
           <SelectTrigger className="w-[180px]" data-testid="select-filter-users-server">
             <SelectValue placeholder={t('common.allServers')} />
