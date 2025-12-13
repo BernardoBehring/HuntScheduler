@@ -197,7 +197,11 @@
       "noTsPosition": "Sin Posición",
       "tsPositionUpdated": "Posición TS Actualizada",
       "tsPositionUpdatedDesc": "La posición del usuario ha sido actualizada.",
-      "tsPositionPerServer": "Posición TS por Servidor"
+      "tsPositionPerServer": "Posición TS por Servidor",
+      "tsDescriptionUpdated": "Descripción TS Actualizada",
+      "tsDescriptionUpdatedDesc": "La descripción del usuario ha sido actualizada.",
+      "tsDescriptionPlaceholder": "Ingrese descripción del TS...",
+      "clickToAddDescription": "Haga clic para agregar descripción"
     },
     "points": {
       "add": "Añadir",

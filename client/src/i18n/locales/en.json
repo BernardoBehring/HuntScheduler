@@ -222,7 +222,11 @@
       "noTsPosition": "No Position",
       "tsPositionUpdated": "TS Position Updated",
       "tsPositionUpdatedDesc": "User position has been updated.",
-      "tsPositionPerServer": "TS Position by Server"
+      "tsPositionPerServer": "TS Position by Server",
+      "tsDescriptionUpdated": "TS Description Updated",
+      "tsDescriptionUpdatedDesc": "User description has been updated.",
+      "tsDescriptionPlaceholder": "Enter TS description...",
+      "clickToAddDescription": "Click to add description"
     },
     "points": {
       "add": "Add",

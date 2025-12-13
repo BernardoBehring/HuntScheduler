@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, TrendingDown, Search, Headphones, Server as ServerIcon } from "lucide-react";
+import { TrendingUp, TrendingDown, Search, Headphones, Server as ServerIcon, MessageSquare, Check, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -26,6 +26,8 @@ export default function AdminUsers() {
   const [pointsReason, setPointsReason] = useState("");
   const [pointsOperation, setPointsOperation] = useState<"add" | "remove">("add");
   const [userServerSettingsMap, setUserServerSettingsMap] = useState<Record<string, UserServerSettings[]>>({});
+  const [editingTsDescription, setEditingTsDescription] = useState<string | null>(null);
+  const [tsDescriptionValue, setTsDescriptionValue] = useState("");
 
   useEffect(() => {
     const fetchAllUserServerSettings = async () => {
@@ -69,6 +71,42 @@ export default function AdminUsers() {
     } catch (error) {
       toast({ title: t('errors.saveFailed'), variant: 'destructive' });
     }
+  };
+
+  const handleSaveTsDescription = async (userId: string | number, serverId: string | number) => {
+    try {
+      const userIdNum = typeof userId === 'string' ? parseInt(userId) : userId;
+      const serverIdNum = typeof serverId === 'string' ? parseInt(serverId) : serverId;
+      
+      await api.userServerSettings.update(userIdNum, serverIdNum, {
+        tsDescription: tsDescriptionValue
+      });
+      
+      const updatedSettings = await api.userServerSettings.getByUser(userIdNum);
+      setUserServerSettingsMap(prev => ({
+        ...prev,
+        [userId]: updatedSettings
+      }));
+      
+      setEditingTsDescription(null);
+      toast({ 
+        title: t('admin.users.tsDescriptionUpdated'),
+        description: t('admin.users.tsDescriptionUpdatedDesc')
+      });
+    } catch (error) {
+      toast({ title: t('errors.saveFailed'), variant: 'destructive' });
+    }
+  };
+
+  const startEditingTsDescription = (userId: string | number, serverId: string | number, currentValue: string) => {
+    setEditingTsDescription(`${userId}-${serverId}`);
+    setTsDescriptionValue(currentValue || "");
+  };
+
+  const getUserServerSettings = (userId: string | number, serverId: string | number) => {
+    const settings = userServerSettingsMap[userId] || [];
+    const serverIdNum = typeof serverId === 'string' ? parseInt(serverId) : serverId;
+    return settings.find(s => s.serverId === serverIdNum);
   };
 
   const getUserServersWithCharacters = (userId: string | number) => {
@@ -221,52 +259,97 @@ export default function AdminUsers() {
                       {userServers.map(server => {
                         const currentTsPosition = getUserTsPositionForServer(user.id, server.id);
                         const serverCharacters = getCharactersForServer(server.id);
+                        const serverSettings = getUserServerSettings(user.id, server.id);
+                        const editKey = `${user.id}-${server.id}`;
+                        const isEditing = editingTsDescription === editKey;
                         return (
-                          <div key={server.id} className="space-y-2" data-testid={`user-server-section-${user.id}-${server.id}`}>
-                            <div className="flex items-center gap-3">
-                              <div className="flex items-center gap-2 text-xs">
-                                <ServerIcon className="h-3 w-3 text-muted-foreground" />
-                                <span className="font-medium">{server.name}</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-xs">
-                                <Headphones className="h-3 w-3 text-muted-foreground" />
-                                <Select 
-                                  value={currentTsPosition?.id?.toString() || "none"} 
-                                  onValueChange={(value) => handleSetTsPosition(user.id, server.id, value === "none" ? null : parseInt(value))}
-                                >
-                                  <SelectTrigger className="h-6 w-[130px] text-xs border-border/30 bg-muted/20 px-2" data-testid={`select-ts-position-${user.id}-${server.id}`}>
-                                    <SelectValue>
-                                      {currentTsPosition ? (
-                                        <span className="flex items-center gap-1">
-                                          <span 
-                                            className="w-2 h-2 rounded-full" 
-                                            style={{ backgroundColor: currentTsPosition.color }}
-                                          />
-                                          {currentTsPosition.name}
-                                        </span>
-                                      ) : (
+                          <div key={server.id} className="space-y-2 p-2 rounded-md bg-muted/10 border border-border/20" data-testid={`user-server-section-${user.id}-${server.id}`}>
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                              <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 text-xs">
+                                  <ServerIcon className="h-3 w-3 text-muted-foreground" />
+                                  <span className="font-medium">{server.name}</span>
+                                </div>
+                                <div className="flex items-center gap-1 text-xs">
+                                  <Headphones className="h-3 w-3 text-muted-foreground" />
+                                  <Select 
+                                    value={currentTsPosition?.id?.toString() || "none"} 
+                                    onValueChange={(value) => handleSetTsPosition(user.id, server.id, value === "none" ? null : parseInt(value))}
+                                  >
+                                    <SelectTrigger className="h-6 w-[130px] text-xs border-border/30 bg-muted/20 px-2" data-testid={`select-ts-position-${user.id}-${server.id}`}>
+                                      <SelectValue>
+                                        {currentTsPosition ? (
+                                          <span className="flex items-center gap-1">
+                                            <span 
+                                              className="w-2 h-2 rounded-full" 
+                                              style={{ backgroundColor: currentTsPosition.color }}
+                                            />
+                                            {currentTsPosition.name}
+                                          </span>
+                                        ) : (
+                                          <span className="text-muted-foreground">{t('admin.users.noTsPosition')}</span>
+                                        )}
+                                      </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="none">
                                         <span className="text-muted-foreground">{t('admin.users.noTsPosition')}</span>
-                                      )}
-                                    </SelectValue>
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="none">
-                                      <span className="text-muted-foreground">{t('admin.users.noTsPosition')}</span>
-                                    </SelectItem>
-                                    {sortedTsPositions.map(pos => (
-                                      <SelectItem key={pos.id} value={pos.id.toString()}>
-                                        <span className="flex items-center gap-2">
-                                          <span 
-                                            className="w-2 h-2 rounded-full" 
-                                            style={{ backgroundColor: pos.color }}
-                                          />
-                                          {pos.name}
-                                        </span>
                                       </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
+                                      {sortedTsPositions.map(pos => (
+                                        <SelectItem key={pos.id} value={pos.id.toString()}>
+                                          <span className="flex items-center gap-2">
+                                            <span 
+                                              className="w-2 h-2 rounded-full" 
+                                              style={{ backgroundColor: pos.color }}
+                                            />
+                                            {pos.name}
+                                          </span>
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
                               </div>
+                            </div>
+                            <div className="flex items-start gap-2 pl-5">
+                              <MessageSquare className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
+                              {isEditing ? (
+                                <div className="flex-1 flex items-center gap-1">
+                                  <Input
+                                    value={tsDescriptionValue}
+                                    onChange={(e) => setTsDescriptionValue(e.target.value)}
+                                    className="h-6 text-xs flex-1"
+                                    placeholder={t('admin.users.tsDescriptionPlaceholder')}
+                                    data-testid={`input-ts-description-${user.id}-${server.id}`}
+                                  />
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="h-6 w-6 p-0"
+                                    onClick={() => handleSaveTsDescription(user.id, server.id)}
+                                    data-testid={`button-save-ts-description-${user.id}-${server.id}`}
+                                  >
+                                    <Check className="h-3 w-3 text-green-500" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="h-6 w-6 p-0"
+                                    onClick={() => setEditingTsDescription(null)}
+                                    data-testid={`button-cancel-ts-description-${user.id}-${server.id}`}
+                                  >
+                                    <X className="h-3 w-3 text-red-500" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div 
+                                  className="flex-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                                  onClick={() => startEditingTsDescription(user.id, server.id, serverSettings?.tsDescription || "")}
+                                  data-testid={`ts-description-display-${user.id}-${server.id}`}
+                                >
+                                  {serverSettings?.tsDescription || <span className="italic">{t('admin.users.clickToAddDescription')}</span>}
+                                </div>
+                              )}
                             </div>
                             <div className="flex flex-wrap gap-1.5 pl-5">
                               {serverCharacters.map(char => (
