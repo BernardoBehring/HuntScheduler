@@ -192,7 +192,12 @@
       "title": "Zarządzanie Użytkownikami",
       "description": "Zarządzaj punktami i rolami gildii",
       "pointsUpdated": "Punkty Zaktualizowane",
-      "pointsUpdatedDesc": "Dodano {{amount}} punktów użytkownikowi."
+      "pointsUpdatedDesc": "Dodano {{amount}} punktów użytkownikowi.",
+      "setTsPosition": "Ustaw Pozycję TS",
+      "noTsPosition": "Brak Pozycji",
+      "tsPositionUpdated": "Pozycja TS Zaktualizowana",
+      "tsPositionUpdatedDesc": "Pozycja użytkownika została zaktualizowana.",
+      "tsPositionPerServer": "Pozycja TS wg Serwera"
     },
     "points": {
       "add": "Dodaj",

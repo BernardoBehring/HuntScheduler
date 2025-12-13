@@ -1,21 +1,20 @@
 import { AdminLayout } from "@/components/admin-layout";
-import { useStore, User, Character } from "@/lib/mockData";
+import { useStore, User } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, TrendingDown, Search, Headphones } from "lucide-react";
-import { useState } from "react";
+import { TrendingUp, TrendingDown, Search, Headphones, Server as ServerIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "react-i18next";
-import { api } from "@/lib/api";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { api, UserServerSettings, TsPosition } from "@/lib/api";
 
 export default function AdminUsers() {
-  const { users, servers, characters, getRoleName, getTsPosition, tsPositions, currentUser, loadFromApi, updateCharacter } = useStore();
+  const { users, servers, characters, getRoleName, tsPositions, currentUser, loadFromApi } = useStore();
   const { t } = useTranslation();
   
   const activeServers = servers.filter(s => s.isActive);
@@ -26,15 +25,43 @@ export default function AdminUsers() {
   const [pointsAmount, setPointsAmount] = useState("");
   const [pointsReason, setPointsReason] = useState("");
   const [pointsOperation, setPointsOperation] = useState<"add" | "remove">("add");
+  const [userServerSettingsMap, setUserServerSettingsMap] = useState<Record<string, UserServerSettings[]>>({});
 
-  const handleSetTsPosition = async (characterId: string, tsPositionId: string | null) => {
+  useEffect(() => {
+    const fetchAllUserServerSettings = async () => {
+      const settingsMap: Record<string, UserServerSettings[]> = {};
+      for (const user of users) {
+        try {
+          const userId = typeof user.id === 'string' ? parseInt(user.id) : user.id;
+          const settings = await api.userServerSettings.getByUser(userId);
+          settingsMap[user.id] = settings;
+        } catch (error) {
+          settingsMap[user.id] = [];
+        }
+      }
+      setUserServerSettingsMap(settingsMap);
+    };
+    if (users.length > 0) {
+      fetchAllUserServerSettings();
+    }
+  }, [users]);
+
+  const handleSetTsPosition = async (userId: string | number, serverId: string | number, tsPositionId: number | null) => {
     try {
-      const char = characters.find(c => c.id === characterId);
-      if (!char) return;
-      await updateCharacter(characterId, {
-        ...char,
-        tsPositionId: tsPositionId || '',
+      const userIdNum = typeof userId === 'string' ? parseInt(userId) : userId;
+      const serverIdNum = typeof serverId === 'string' ? parseInt(serverId) : serverId;
+      
+      await api.userServerSettings.update(userIdNum, serverIdNum, {
+        tsPositionId: tsPositionId,
+        clearTsPosition: tsPositionId === null
       });
+      
+      const updatedSettings = await api.userServerSettings.getByUser(userIdNum);
+      setUserServerSettingsMap(prev => ({
+        ...prev,
+        [userId]: updatedSettings
+      }));
+      
       toast({ 
         title: t('admin.users.tsPositionUpdated'),
         description: t('admin.users.tsPositionUpdatedDesc')
@@ -42,6 +69,21 @@ export default function AdminUsers() {
     } catch (error) {
       toast({ title: t('errors.saveFailed'), variant: 'destructive' });
     }
+  };
+
+  const getUserServersWithCharacters = (userId: string | number) => {
+    const userChars = characters.filter(c => c.userId === userId);
+    const serverIds = [...new Set(userChars.map(c => c.serverId))];
+    return activeServers.filter(s => serverIds.includes(s.id));
+  };
+
+  const getUserTsPositionForServer = (userId: string | number, serverId: string | number): TsPosition | undefined => {
+    const settings = userServerSettingsMap[userId] || [];
+    const serverSettings = settings.find(s => s.serverId === serverId || s.serverId === parseInt(String(serverId)));
+    if (serverSettings?.tsPositionId) {
+      return tsPositions.find(p => p.id === serverSettings.tsPositionId || String(p.id) === String(serverSettings.tsPositionId));
+    }
+    return undefined;
   };
 
   const filteredUsers = users.filter(u => {
@@ -96,6 +138,8 @@ export default function AdminUsers() {
     }
   };
 
+  const sortedTsPositions = [...tsPositions].sort((a, b) => a.sortOrder - b.sortOrder);
+
   return (
     <AdminLayout title={t('admin.tabs.users')} description={t('admin.users.description')}>
       <div className="flex flex-col sm:flex-row gap-3 justify-between mb-4">
@@ -134,6 +178,7 @@ export default function AdminUsers() {
             )}
             {filteredUsers.map(user => {
               const userCharacters = characters.filter(c => c.userId === user.id);
+              const userServers = getUserServersWithCharacters(user.id);
               return (
                 <div key={user.id} className="p-4 border border-border/40 rounded-lg bg-card/40" data-testid={`user-item-${user.id}`}>
                   <div className="flex items-center justify-between mb-3">
@@ -162,67 +207,83 @@ export default function AdminUsers() {
                     </div>
                   </div>
                   
-                  {userCharacters.length > 0 && (
+                  {userServers.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-border/30">
+                      <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                        <Headphones className="h-3 w-3" />
+                        {t('admin.users.tsPositionPerServer')}:
+                      </p>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {userServers.map(server => {
+                          const currentTsPosition = getUserTsPositionForServer(user.id, server.id);
+                          return (
+                            <div 
+                              key={server.id} 
+                              className="flex items-center gap-2 text-xs px-2 py-1 rounded-md border bg-muted/20 border-border/30"
+                              data-testid={`user-server-ts-${user.id}-${server.id}`}
+                            >
+                              <ServerIcon className="h-3 w-3 text-muted-foreground" />
+                              <span className="font-medium">{server.name}</span>
+                              <Select 
+                                value={currentTsPosition?.id?.toString() || "none"} 
+                                onValueChange={(value) => handleSetTsPosition(user.id, server.id, value === "none" ? null : parseInt(value))}
+                              >
+                                <SelectTrigger className="h-6 w-[120px] text-xs border-none bg-transparent px-1" data-testid={`select-ts-position-${user.id}-${server.id}`}>
+                                  <SelectValue>
+                                    {currentTsPosition ? (
+                                      <span className="flex items-center gap-1">
+                                        <span 
+                                          className="w-2 h-2 rounded-full" 
+                                          style={{ backgroundColor: currentTsPosition.color }}
+                                        />
+                                        {currentTsPosition.name}
+                                      </span>
+                                    ) : (
+                                      <span className="text-muted-foreground">{t('admin.users.noTsPosition')}</span>
+                                    )}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="none">
+                                    <span className="text-muted-foreground">{t('admin.users.noTsPosition')}</span>
+                                  </SelectItem>
+                                  {sortedTsPositions.map(pos => (
+                                    <SelectItem key={pos.id} value={pos.id.toString()}>
+                                      <span className="flex items-center gap-2">
+                                        <span 
+                                          className="w-2 h-2 rounded-full" 
+                                          style={{ backgroundColor: pos.color }}
+                                        />
+                                        {pos.name}
+                                      </span>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {userCharacters.length > 0 && (
+                    <div className={userServers.length > 0 ? "pt-2 border-t border-border/30" : "mt-2 pt-2 border-t border-border/30"}>
                       <p className="text-xs text-muted-foreground mb-2">{t('common.characters')}:</p>
                       <div className="flex flex-wrap gap-2">
                         {userCharacters.map(char => {
                           const server = servers.find(s => s.id === char.serverId);
-                          const tsPosition = char.tsPositionId ? getTsPosition(char.tsPositionId) : undefined;
-                          const sortedTsPositions = [...tsPositions].sort((a, b) => a.sortOrder - b.sortOrder);
                           return (
-                            <DropdownMenu key={char.id}>
-                              <DropdownMenuTrigger asChild>
-                                <div 
-                                  className={`text-xs px-2 py-1 rounded-md border cursor-pointer hover:opacity-80 transition-opacity ${char.isMain ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-muted/30 border-border/30'}`}
-                                  data-testid={`character-badge-${char.id}`}
-                                >
-                                  <span className="font-medium">{char.name}</span>
-                                  {char.vocation && <span className="text-muted-foreground ml-1">({char.vocation})</span>}
-                                  {server && <span className="text-muted-foreground ml-1">• {server.name}</span>}
-                                  {char.isMain && <span className="ml-1 text-primary">★</span>}
-                                  {tsPosition && (
-                                    <span 
-                                      className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium"
-                                      style={{ backgroundColor: tsPosition.color + '20', color: tsPosition.color, border: `1px solid ${tsPosition.color}40` }}
-                                      data-testid={`ts-position-badge-${char.id}`}
-                                    >
-                                      {tsPosition.name}
-                                    </span>
-                                  )}
-                                </div>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start">
-                                <DropdownMenuLabel className="flex items-center gap-2">
-                                  <Headphones className="h-3 w-3" />
-                                  {t('admin.users.setTsPosition')}
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                {sortedTsPositions.map(pos => (
-                                  <DropdownMenuItem 
-                                    key={pos.id}
-                                    onClick={() => handleSetTsPosition(char.id, pos.id)}
-                                    className="flex items-center gap-2"
-                                    data-testid={`dropdown-ts-position-${pos.id}`}
-                                  >
-                                    <span 
-                                      className="w-3 h-3 rounded-full" 
-                                      style={{ backgroundColor: pos.color }}
-                                    />
-                                    {pos.name}
-                                    {char.tsPositionId === pos.id && <span className="ml-auto">✓</span>}
-                                  </DropdownMenuItem>
-                                ))}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  onClick={() => handleSetTsPosition(char.id, null)}
-                                  className="text-muted-foreground"
-                                  data-testid="dropdown-ts-position-none"
-                                >
-                                  {t('admin.users.noTsPosition')}
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                            <div 
+                              key={char.id}
+                              className={`text-xs px-2 py-1 rounded-md border ${char.isMain ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-muted/30 border-border/30'}`}
+                              data-testid={`character-badge-${char.id}`}
+                            >
+                              <span className="font-medium">{char.name}</span>
+                              {char.vocation && <span className="text-muted-foreground ml-1">({char.vocation})</span>}
+                              {server && <span className="text-muted-foreground ml-1">• {server.name}</span>}
+                              {char.isMain && <span className="ml-1 text-primary">★</span>}
+                            </div>
                           );
                         })}
                       </div>

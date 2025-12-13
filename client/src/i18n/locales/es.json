@@ -192,7 +192,12 @@
       "title": "Gestión de Usuarios",
       "description": "Gestiona puntos y roles de la guild",
       "pointsUpdated": "Puntos Actualizados",
-      "pointsUpdatedDesc": "Añadidos {{amount}} puntos al usuario."
+      "pointsUpdatedDesc": "Añadidos {{amount}} puntos al usuario.",
+      "setTsPosition": "Establecer Posición TS",
+      "noTsPosition": "Sin Posición",
+      "tsPositionUpdated": "Posición TS Actualizada",
+      "tsPositionUpdatedDesc": "La posición del usuario ha sido actualizada.",
+      "tsPositionPerServer": "Posición TS por Servidor"
     },
     "points": {
       "add": "Añadir",

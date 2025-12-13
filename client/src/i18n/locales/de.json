@@ -192,7 +192,12 @@
       "title": "Benutzerverwaltung",
       "description": "Verwalte Gildenpunkte und Rollen",
       "pointsUpdated": "Punkte aktualisiert",
-      "pointsUpdatedDesc": "{{amount}} Punkte zum Benutzer hinzugefügt."
+      "pointsUpdatedDesc": "{{amount}} Punkte zum Benutzer hinzugefügt.",
+      "setTsPosition": "TS-Position festlegen",
+      "noTsPosition": "Keine Position",
+      "tsPositionUpdated": "TS-Position aktualisiert",
+      "tsPositionUpdatedDesc": "Die Benutzerposition wurde aktualisiert.",
+      "tsPositionPerServer": "TS-Position pro Server"
     },
     "points": {
       "add": "Hinzufügen",

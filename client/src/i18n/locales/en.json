@@ -221,7 +221,8 @@
       "setTsPosition": "Set TS Position",
       "noTsPosition": "No Position",
       "tsPositionUpdated": "TS Position Updated",
-      "tsPositionUpdatedDesc": "Character position has been updated."
+      "tsPositionUpdatedDesc": "User position has been updated.",
+      "tsPositionPerServer": "TS Position by Server"
     },
     "points": {
       "add": "Add",
