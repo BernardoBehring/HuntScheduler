@@ -28,8 +28,10 @@ import {
   Phone,
   Pencil,
   Save,
-  X
+  X,
+  Headphones
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function ProfilePage() {
   const { t, i18n } = useTranslation();
@@ -41,20 +43,22 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [email, setEmail] = useState(currentUser?.email || '');
   const [whatsapp, setWhatsapp] = useState(currentUser?.whatsapp || '');
+  const [tsDescription, setTsDescription] = useState(currentUser?.tsDescription || '');
 
   useEffect(() => {
     if (currentUser) {
       setEmail(currentUser.email || '');
       setWhatsapp(currentUser.whatsapp || '');
+      setTsDescription(currentUser.tsDescription || '');
     }
   }, [currentUser]);
 
   const updateProfileMutation = useMutation({
-    mutationFn: (data: { email?: string; whatsapp?: string }) =>
+    mutationFn: (data: { email?: string; whatsapp?: string; tsDescription?: string }) =>
       userId ? api.users.updateProfile(userId, data) : Promise.reject(),
     onSuccess: () => {
       if (currentUser) {
-        setCurrentUser({ ...currentUser, email, whatsapp });
+        setCurrentUser({ ...currentUser, email, whatsapp, tsDescription });
       }
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setIsEditing(false);
@@ -73,12 +77,13 @@ export default function ProfilePage() {
   });
 
   const handleSave = () => {
-    updateProfileMutation.mutate({ email: email || undefined, whatsapp: whatsapp || undefined });
+    updateProfileMutation.mutate({ email: email || undefined, whatsapp: whatsapp || undefined, tsDescription: tsDescription || undefined });
   };
 
   const handleCancel = () => {
     setEmail(currentUser?.email || '');
     setWhatsapp(currentUser?.whatsapp || '');
+    setTsDescription(currentUser?.tsDescription || '');
     setIsEditing(false);
   };
 
@@ -248,6 +253,17 @@ export default function ProfilePage() {
                       data-testid="input-whatsapp"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tsDescription">{t('profile.tsDescription')}</Label>
+                    <Textarea
+                      id="tsDescription"
+                      value={tsDescription}
+                      onChange={(e) => setTsDescription(e.target.value)}
+                      placeholder={t('profile.tsDescriptionPlaceholder')}
+                      rows={3}
+                      data-testid="input-ts-description"
+                    />
+                  </div>
                 </>
               ) : (
                 <div className="space-y-3">
@@ -266,6 +282,15 @@ export default function ProfilePage() {
                       <p className="text-xs text-muted-foreground">{t('profile.whatsapp')}</p>
                       <p className="font-medium">
                         {currentUser.whatsapp || <span className="text-muted-foreground italic">{t('profile.notProvided')}</span>}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Headphones className="h-4 w-4 text-muted-foreground mt-0.5" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t('profile.tsDescription')}</p>
+                      <p className="font-medium">
+                        {currentUser.tsDescription || <span className="text-muted-foreground italic">{t('profile.notProvided')}</span>}
                       </p>
                     </div>
                   </div>

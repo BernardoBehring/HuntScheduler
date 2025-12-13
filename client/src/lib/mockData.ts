@@ -37,6 +37,7 @@ export interface User {
   points: number;
   email?: string;
   whatsapp?: string;
+  tsDescription?: string;
   characters?: Character[];
 }
 

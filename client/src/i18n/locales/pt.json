@@ -303,6 +303,8 @@
     "emailPlaceholder": "seu.email@exemplo.com",
     "whatsapp": "WhatsApp",
     "whatsappPlaceholder": "+55 11 98765 4321",
+    "tsDescription": "Descrição do TeamSpeak",
+    "tsDescriptionPlaceholder": "Digite sua descrição do TeamSpeak...",
     "notProvided": "Não informado",
     "profileUpdated": "Perfil Atualizado",
     "profileUpdatedDesc": "Suas informações de contato foram salvas.",

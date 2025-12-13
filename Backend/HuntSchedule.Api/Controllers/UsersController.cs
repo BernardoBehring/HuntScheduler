@@ -74,6 +74,7 @@ public class UsersController : ControllerBase
 
         user.Email = dto.Email;
         user.Whatsapp = dto.Whatsapp;
+        user.TsDescription = dto.TsDescription;
         await _userService.UpdateAsync(user);
         return NoContent();
     }
@@ -83,4 +84,5 @@ public class UpdateProfileDto
 {
     public string? Email { get; set; }
     public string? Whatsapp { get; set; }
+    public string? TsDescription { get; set; }
 }

@@ -280,6 +280,8 @@
     "emailPlaceholder": "twoj.email@przyklad.pl",
     "whatsapp": "WhatsApp",
     "whatsappPlaceholder": "+48 123 456 789",
+    "tsDescription": "Opis TeamSpeak",
+    "tsDescriptionPlaceholder": "Wprowadź swój opis TeamSpeak...",
     "notProvided": "Nie podano",
     "profileUpdated": "Profil Zaktualizowany",
     "profileUpdatedDesc": "Twoje dane kontaktowe zostały zapisane.",

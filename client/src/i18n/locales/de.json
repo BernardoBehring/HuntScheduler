@@ -280,6 +280,8 @@
     "emailPlaceholder": "deine.email@beispiel.de",
     "whatsapp": "WhatsApp",
     "whatsappPlaceholder": "+49 170 1234567",
+    "tsDescription": "TeamSpeak Beschreibung",
+    "tsDescriptionPlaceholder": "Geben Sie Ihre TeamSpeak-Beschreibung ein...",
     "notProvided": "Nicht angegeben",
     "profileUpdated": "Profil Aktualisiert",
     "profileUpdatedDesc": "Deine Kontaktdaten wurden gespeichert.",

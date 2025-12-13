@@ -331,6 +331,8 @@
     "emailPlaceholder": "your.email@example.com",
     "whatsapp": "WhatsApp",
     "whatsappPlaceholder": "+1 234 567 8900",
+    "tsDescription": "TeamSpeak Description",
+    "tsDescriptionPlaceholder": "Enter your TeamSpeak description...",
     "notProvided": "Not provided",
     "profileUpdated": "Profile Updated",
     "profileUpdatedDesc": "Your contact information has been saved.",

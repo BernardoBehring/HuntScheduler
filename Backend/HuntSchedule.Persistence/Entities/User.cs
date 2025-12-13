@@ -38,6 +38,9 @@ public class User
     [Column("preferred_language")]
     public string PreferredLanguage { get; set; } = "en";
 
+    [Column("ts_description")]
+    public string? TsDescription { get; set; }
+
     public ICollection<Request> Requests { get; set; } = new List<Request>();
     
     public ICollection<Character> Characters { get; set; } = new List<Character>();
