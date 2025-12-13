@@ -222,7 +222,19 @@
       "markAvailable": "Marcar como disponível",
       "markUnavailable": "Marcar como indisponível",
       "markedAvailable": "Respawn Disponível",
-      "markedUnavailable": "Respawn Indisponível"
+      "markedUnavailable": "Respawn Indisponível",
+      "copyRespawns": "Copiar Respawns",
+      "copyRespawnsDesc": "Copie todos os respawns de um servidor para outro",
+      "copyFromServer": "Copiar do servidor",
+      "copyToServer": "Copiar para servidor",
+      "overwriteExisting": "Sobrescrever existentes",
+      "overwriteWarning": "Excluir respawns existentes no servidor de destino primeiro",
+      "overwriteConfirm": "Todos os respawns existentes no servidor de destino serão excluídos!",
+      "copying": "Copiando...",
+      "copySuccess": "Respawns Copiados",
+      "copySuccessDesc": "{{count}} respawns copiados com sucesso",
+      "copyError": "Falha ao copiar respawns",
+      "sameServerError": "Os servidores de origem e destino devem ser diferentes"
     },
     "users": {
       "title": "Gerenciamento de Usuários",

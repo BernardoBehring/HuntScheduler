@@ -222,7 +222,19 @@
       "markAvailable": "Mark as available",
       "markUnavailable": "Mark as unavailable",
       "markedAvailable": "Respawn Available",
-      "markedUnavailable": "Respawn Unavailable"
+      "markedUnavailable": "Respawn Unavailable",
+      "copyRespawns": "Copy Respawns",
+      "copyRespawnsDesc": "Copy all respawns from one server to another",
+      "copyFromServer": "Copy from server",
+      "copyToServer": "Copy to server",
+      "overwriteExisting": "Overwrite existing",
+      "overwriteWarning": "Delete existing respawns in target server first",
+      "overwriteConfirm": "All existing respawns in the target server will be deleted!",
+      "copying": "Copying...",
+      "copySuccess": "Respawns Copied",
+      "copySuccessDesc": "Successfully copied {{count}} respawns",
+      "copyError": "Failed to copy respawns",
+      "sameServerError": "Source and target servers must be different"
     },
     "users": {
       "title": "User Management",

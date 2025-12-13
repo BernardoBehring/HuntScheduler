@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Power, PowerOff, Search } from "lucide-react";
+import { Plus, Trash2, Power, PowerOff, Search, Copy } from "lucide-react";
 import { useState, useMemo } from "react";
+import { AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,7 +25,13 @@ export default function AdminRespawns() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isCopyOpen, setIsCopyOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  
+  const [copySourceServer, setCopySourceServer] = useState<string>("");
+  const [copyTargetServer, setCopyTargetServer] = useState<string>("");
+  const [copyOverwrite, setCopyOverwrite] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
   
   const [respawnName, setRespawnName] = useState("");
   const [respawnServer, setRespawnServer] = useState(activeServers[0]?.id || "");
@@ -155,6 +162,59 @@ export default function AdminRespawns() {
     }
   };
 
+  const openCopyDialog = () => {
+    setCopySourceServer(activeServers[0]?.id || "");
+    setCopyTargetServer(activeServers[1]?.id || activeServers[0]?.id || "");
+    setCopyOverwrite(false);
+    setIsCopyOpen(true);
+  };
+
+  const handleCopyRespawns = async () => {
+    if (!copySourceServer || !copyTargetServer) return;
+    if (copySourceServer === copyTargetServer) {
+      toast({ 
+        title: t('common.error'), 
+        description: t('admin.respawns.sameServerError'),
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsCopying(true);
+    try {
+      const response = await fetch('/api/respawns/copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceServerId: parseInt(copySourceServer),
+          targetServerId: parseInt(copyTargetServer),
+          overwriteExisting: copyOverwrite
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to copy respawns');
+      }
+
+      const result = await response.json();
+      toast({ 
+        title: t('admin.respawns.copySuccess'), 
+        description: t('admin.respawns.copySuccessDesc', { count: result.copiedCount })
+      });
+      setIsCopyOpen(false);
+      window.location.reload();
+    } catch (error: any) {
+      toast({ 
+        title: t('common.error'), 
+        description: error.message || t('admin.respawns.copyError'),
+        variant: "destructive"
+      });
+    } finally {
+      setIsCopying(false);
+    }
+  };
+
   return (
     <AdminLayout title={t('admin.tabs.respawns')} description={t('admin.respawns.manageRespawns')}>
       <Card className="bg-card/30 border-border/50">
@@ -198,6 +258,67 @@ export default function AdminRespawns() {
                 <SelectItem value="unavailable">{t('admin.respawns.unavailable')}</SelectItem>
               </SelectContent>
             </Select>
+
+            <Dialog open={isCopyOpen} onOpenChange={setIsCopyOpen}>
+              <DialogTrigger asChild>
+                <Button onClick={openCopyDialog} size="sm" variant="outline" data-testid="button-copy-respawns">
+                  <Copy className="h-4 w-4 mr-1" /> {t('admin.respawns.copyRespawns')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>{t('admin.respawns.copyRespawns')}</DialogTitle>
+                  <DialogDescription>{t('admin.respawns.copyRespawnsDesc')}</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="space-y-2">
+                    <Label>{t('admin.respawns.copyFromServer')}</Label>
+                    <Select value={copySourceServer} onValueChange={setCopySourceServer}>
+                      <SelectTrigger data-testid="select-copy-source-server">
+                        <SelectValue placeholder={t('schedule.selectServer')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {activeServers.map(s => (
+                          <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('admin.respawns.copyToServer')}</Label>
+                    <Select value={copyTargetServer} onValueChange={setCopyTargetServer}>
+                      <SelectTrigger data-testid="select-copy-target-server">
+                        <SelectValue placeholder={t('schedule.selectServer')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {activeServers.map(s => (
+                          <SelectItem key={s.id} value={s.id}>{s.name} ({s.region})</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>{t('admin.respawns.overwriteExisting')}</Label>
+                      <p className="text-xs text-muted-foreground">{t('admin.respawns.overwriteWarning')}</p>
+                    </div>
+                    <Switch checked={copyOverwrite} onCheckedChange={setCopyOverwrite} data-testid="switch-copy-overwrite" />
+                  </div>
+                  {copyOverwrite && (
+                    <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded text-sm text-destructive">
+                      <AlertTriangle className="h-4 w-4 shrink-0" />
+                      <span>{t('admin.respawns.overwriteConfirm')}</span>
+                    </div>
+                  )}
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsCopyOpen(false)}>{t('common.cancel')}</Button>
+                  <Button onClick={handleCopyRespawns} disabled={isCopying || copySourceServer === copyTargetServer} data-testid="button-confirm-copy">
+                    {isCopying ? t('admin.respawns.copying') : t('admin.respawns.copyRespawns')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
               <DialogTrigger asChild>
