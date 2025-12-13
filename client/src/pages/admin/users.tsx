@@ -1,10 +1,10 @@
 import { AdminLayout } from "@/components/admin-layout";
-import { useStore, User } from "@/lib/mockData";
+import { useStore, User, Character } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, TrendingDown, Search } from "lucide-react";
+import { TrendingUp, TrendingDown, Search, Headphones } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -12,9 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function AdminUsers() {
-  const { users, servers, characters, getRoleName, currentUser, loadFromApi } = useStore();
+  const { users, servers, characters, getRoleName, getTsPosition, tsPositions, currentUser, loadFromApi, updateCharacter } = useStore();
   const { t } = useTranslation();
   
   const activeServers = servers.filter(s => s.isActive);
@@ -25,6 +26,23 @@ export default function AdminUsers() {
   const [pointsAmount, setPointsAmount] = useState("");
   const [pointsReason, setPointsReason] = useState("");
   const [pointsOperation, setPointsOperation] = useState<"add" | "remove">("add");
+
+  const handleSetTsPosition = async (characterId: string, tsPositionId: string | null) => {
+    try {
+      const char = characters.find(c => c.id === characterId);
+      if (!char) return;
+      await updateCharacter(characterId, {
+        ...char,
+        tsPositionId: tsPositionId || '',
+      });
+      toast({ 
+        title: t('admin.users.tsPositionUpdated'),
+        description: t('admin.users.tsPositionUpdatedDesc')
+      });
+    } catch (error) {
+      toast({ title: t('errors.saveFailed'), variant: 'destructive' });
+    }
+  };
 
   const filteredUsers = users.filter(u => {
     const matchesServer = filterServer === "all" || characters.some(c => c.userId === u.id && c.serverId === filterServer);
@@ -150,17 +168,61 @@ export default function AdminUsers() {
                       <div className="flex flex-wrap gap-2">
                         {userCharacters.map(char => {
                           const server = servers.find(s => s.id === char.serverId);
+                          const tsPosition = char.tsPositionId ? getTsPosition(char.tsPositionId) : undefined;
+                          const sortedTsPositions = [...tsPositions].sort((a, b) => a.sortOrder - b.sortOrder);
                           return (
-                            <div 
-                              key={char.id} 
-                              className={`text-xs px-2 py-1 rounded-md border ${char.isMain ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-muted/30 border-border/30'}`}
-                              data-testid={`character-badge-${char.id}`}
-                            >
-                              <span className="font-medium">{char.name}</span>
-                              {char.vocation && <span className="text-muted-foreground ml-1">({char.vocation})</span>}
-                              {server && <span className="text-muted-foreground ml-1">• {server.name}</span>}
-                              {char.isMain && <span className="ml-1 text-primary">★</span>}
-                            </div>
+                            <DropdownMenu key={char.id}>
+                              <DropdownMenuTrigger asChild>
+                                <div 
+                                  className={`text-xs px-2 py-1 rounded-md border cursor-pointer hover:opacity-80 transition-opacity ${char.isMain ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-muted/30 border-border/30'}`}
+                                  data-testid={`character-badge-${char.id}`}
+                                >
+                                  <span className="font-medium">{char.name}</span>
+                                  {char.vocation && <span className="text-muted-foreground ml-1">({char.vocation})</span>}
+                                  {server && <span className="text-muted-foreground ml-1">• {server.name}</span>}
+                                  {char.isMain && <span className="ml-1 text-primary">★</span>}
+                                  {tsPosition && (
+                                    <span 
+                                      className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium"
+                                      style={{ backgroundColor: tsPosition.color + '20', color: tsPosition.color, border: `1px solid ${tsPosition.color}40` }}
+                                      data-testid={`ts-position-badge-${char.id}`}
+                                    >
+                                      {tsPosition.name}
+                                    </span>
+                                  )}
+                                </div>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="start">
+                                <DropdownMenuLabel className="flex items-center gap-2">
+                                  <Headphones className="h-3 w-3" />
+                                  {t('admin.users.setTsPosition')}
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {sortedTsPositions.map(pos => (
+                                  <DropdownMenuItem 
+                                    key={pos.id}
+                                    onClick={() => handleSetTsPosition(char.id, pos.id)}
+                                    className="flex items-center gap-2"
+                                    data-testid={`dropdown-ts-position-${pos.id}`}
+                                  >
+                                    <span 
+                                      className="w-3 h-3 rounded-full" 
+                                      style={{ backgroundColor: pos.color }}
+                                    />
+                                    {pos.name}
+                                    {char.tsPositionId === pos.id && <span className="ml-auto">✓</span>}
+                                  </DropdownMenuItem>
+                                ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={() => handleSetTsPosition(char.id, null)}
+                                  className="text-muted-foreground"
+                                  data-testid="dropdown-ts-position-none"
+                                >
+                                  {t('admin.users.noTsPosition')}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           );
                         })}
                       </div>

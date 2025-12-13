@@ -23,6 +23,17 @@ export const servers = pgTable("servers", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   region: text("region").notNull(),
+  guildName: text("guild_name"),
+  tsName: text("ts_name"),
+  tsDescription: text("ts_description"),
+  isActive: boolean("is_active").notNull().default(true),
+});
+
+export const tsPositions = pgTable("ts_positions", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  color: text("color").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
 });
 
 export const difficulties = pgTable("difficulties", {
@@ -50,6 +61,7 @@ export const characters = pgTable("characters", {
   isMain: boolean("is_main").notNull().default(false),
   isExternal: boolean("is_external").notNull().default(false),
   externalVerifiedAt: timestamp("external_verified_at"),
+  tsPositionId: integer("ts_position_id").references(() => tsPositions.id),
 });
 
 export const respawns = pgTable("respawns", {
@@ -100,6 +112,7 @@ export const requestPartyMembers = pgTable("request_party_members", {
 export const insertUserSchema = createInsertSchema(users).omit({ id: true });
 export const insertRoleSchema = createInsertSchema(roles).omit({ id: true });
 export const insertServerSchema = createInsertSchema(servers).omit({ id: true });
+export const insertTsPositionSchema = createInsertSchema(tsPositions).omit({ id: true });
 export const insertDifficultySchema = createInsertSchema(difficulties).omit({ id: true });
 export const insertRequestStatusSchema = createInsertSchema(requestStatuses).omit({ id: true });
 export const insertCharacterSchema = createInsertSchema(characters).omit({ id: true });
@@ -113,6 +126,7 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Role = typeof roles.$inferSelect;
 export type Server = typeof servers.$inferSelect;
+export type TsPosition = typeof tsPositions.$inferSelect;
 export type Difficulty = typeof difficulties.$inferSelect;
 export type RequestStatus = typeof requestStatuses.$inferSelect;
 export type Character = typeof characters.$inferSelect;

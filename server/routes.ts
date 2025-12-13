@@ -174,6 +174,31 @@ export async function registerRoutes(
     res.json(difficulty);
   });
 
+  app.get('/api/ts-positions', async (_req: Request, res: Response) => {
+    res.json(await storage.getTsPositions());
+  });
+
+  app.get('/api/ts-positions/:id', async (req: Request, res: Response) => {
+    const position = await storage.getTsPosition(parseInt(req.params.id));
+    if (!position) return res.status(404).json({ message: 'TS Position not found' });
+    res.json(position);
+  });
+
+  app.post('/api/ts-positions', async (req: Request, res: Response) => {
+    const position = await storage.createTsPosition(req.body);
+    res.status(201).json(position);
+  });
+
+  app.put('/api/ts-positions/:id', async (req: Request, res: Response) => {
+    await storage.updateTsPosition(parseInt(req.params.id), req.body);
+    res.status(204).send();
+  });
+
+  app.delete('/api/ts-positions/:id', async (req: Request, res: Response) => {
+    await storage.deleteTsPosition(parseInt(req.params.id));
+    res.status(204).send();
+  });
+
   app.get('/api/statuses', async (_req: Request, res: Response) => {
     res.json(await storage.getStatuses());
   });

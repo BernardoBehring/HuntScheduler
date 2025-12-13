@@ -17,6 +17,8 @@ export interface Character {
   isMain: boolean;
   isExternal?: boolean;
   externalVerifiedAt?: string;
+  tsPositionId?: number;
+  tsPosition?: TsPosition;
 }
 
 export interface RequestPartyMember {
@@ -45,6 +47,9 @@ export interface Server {
   region: string;
   pvpType?: string;
   isActive: boolean;
+  guildName?: string;
+  tsName?: string;
+  tsDescription?: string;
 }
 
 export interface RequestStatus {
@@ -59,6 +64,13 @@ export interface Difficulty {
   name: string;
   description?: string;
   color?: string;
+  sortOrder: number;
+}
+
+export interface TsPosition {
+  id: number;
+  name: string;
+  color: string;
   sortOrder: number;
 }
 
@@ -262,6 +274,27 @@ export const api = {
       fetch(`${API_BASE}/difficulties`).then(r => handleResponse(r)),
     get: (id: number): Promise<Difficulty> =>
       fetch(`${API_BASE}/difficulties/${id}`).then(r => handleResponse(r)),
+  },
+
+  tsPositions: {
+    getAll: (): Promise<TsPosition[]> =>
+      fetch(`${API_BASE}/ts-positions`).then(r => handleResponse(r)),
+    get: (id: number): Promise<TsPosition> =>
+      fetch(`${API_BASE}/ts-positions/${id}`).then(r => handleResponse(r)),
+    create: (position: Omit<TsPosition, 'id'>): Promise<TsPosition> =>
+      fetch(`${API_BASE}/ts-positions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(position),
+      }).then(r => handleResponse(r)),
+    update: (id: number, position: Partial<TsPosition>): Promise<void> =>
+      fetch(`${API_BASE}/ts-positions/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(position),
+      }).then(r => handleResponse(r)),
+    delete: (id: number): Promise<void> =>
+      fetch(`${API_BASE}/ts-positions/${id}`, { method: 'DELETE' }).then(r => handleResponse(r)),
   },
 
   respawns: {

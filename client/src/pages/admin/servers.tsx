@@ -3,20 +3,59 @@ import { useStore, Server } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { RefreshCw, Globe, Shield } from "lucide-react";
+import { RefreshCw, Globe, Shield, Edit, Users, Headphones } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function AdminServers() {
-  const { servers, syncServers, setServerActive } = useStore();
+  const { servers, syncServers, setServerActive, updateServer, loadFromApi } = useStore();
   const { t } = useTranslation();
   
   const [isSyncing, setIsSyncing] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingServer, setEditingServer] = useState<Server | null>(null);
+  const [editGuildName, setEditGuildName] = useState("");
+  const [editTsName, setEditTsName] = useState("");
+  const [editTsDescription, setEditTsDescription] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const openEditDialog = (server: Server) => {
+    setEditingServer(server);
+    setEditGuildName(server.guildName || "");
+    setEditTsName(server.tsName || "");
+    setEditTsDescription(server.tsDescription || "");
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editingServer) return;
+    setIsSaving(true);
+    try {
+      await updateServer(editingServer.id, {
+        guildName: editGuildName || undefined,
+        tsName: editTsName || undefined,
+        tsDescription: editTsDescription || undefined,
+      });
+      await loadFromApi();
+      setIsEditDialogOpen(false);
+      toast({ 
+        title: t('admin.servers.serverUpdated'),
+        description: editingServer.name 
+      });
+    } catch (error) {
+      toast({ title: t('errors.saveFailed'), variant: 'destructive' });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleSync = async () => {
     setIsSyncing(true);
@@ -145,9 +184,33 @@ export default function AdminServers() {
                         </>
                       )}
                     </div>
+                    {(server.guildName || server.tsName) && (
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                        {server.guildName && (
+                          <span className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            {server.guildName}
+                          </span>
+                        )}
+                        {server.tsName && (
+                          <span className="flex items-center gap-1">
+                            <Headphones className="h-3 w-3" />
+                            {server.tsName}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openEditDialog(server)}
+                    data-testid={`button-edit-server-${server.id}`}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
                   <Switch
                     checked={server.isActive}
                     onCheckedChange={() => handleToggleActive(server)}
@@ -160,6 +223,64 @@ export default function AdminServers() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="h-5 w-5" />
+              {t('admin.servers.editServer')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('admin.servers.editServerDesc', { name: editingServer?.name })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                {t('admin.servers.guildName')}
+              </Label>
+              <Input 
+                value={editGuildName} 
+                onChange={(e) => setEditGuildName(e.target.value)} 
+                placeholder={t('admin.servers.guildNamePlaceholder')}
+                data-testid="input-edit-guild-name" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Headphones className="h-4 w-4" />
+                {t('admin.servers.tsName')}
+              </Label>
+              <Input 
+                value={editTsName} 
+                onChange={(e) => setEditTsName(e.target.value)} 
+                placeholder={t('admin.servers.tsNamePlaceholder')}
+                data-testid="input-edit-ts-name" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('admin.servers.tsDescription')}</Label>
+              <Textarea 
+                value={editTsDescription} 
+                onChange={(e) => setEditTsDescription(e.target.value)} 
+                placeholder={t('admin.servers.tsDescriptionPlaceholder')}
+                rows={3}
+                data-testid="input-edit-ts-description" 
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button onClick={handleEditSubmit} disabled={isSaving} data-testid="button-save-server">
+              {isSaving ? t('common.saving') : t('common.save')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }

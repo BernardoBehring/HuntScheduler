@@ -17,6 +17,7 @@ export interface Character {
   isMain: boolean;
   isExternal?: boolean;
   externalVerifiedAt?: string;
+  tsPositionId?: string;
 }
 
 export interface RequestPartyMember {
@@ -45,6 +46,9 @@ export interface Server {
   region: string;
   pvpType?: string;
   isActive: boolean;
+  guildName?: string;
+  tsName?: string;
+  tsDescription?: string;
 }
 
 export interface RequestStatus {
@@ -59,6 +63,13 @@ export interface Difficulty {
   name: string;
   description?: string;
   color?: string;
+  sortOrder: number;
+}
+
+export interface TsPosition {
+  id: string;
+  name: string;
+  color: string;
   sortOrder: number;
 }
 
@@ -203,6 +214,7 @@ interface AppState {
   servers: Server[];
   statuses: RequestStatus[];
   difficulties: Difficulty[];
+  tsPositions: TsPosition[];
   respawns: Respawn[];
   slots: Slot[];
   periods: SchedulePeriod[];
@@ -234,6 +246,8 @@ interface AppState {
   getStatusName: (statusId: string) => string;
   getDifficultyName: (difficultyId: string) => string;
   getRoleName: (roleId: string) => string;
+  getTsPositionName: (tsPositionId: string) => string;
+  getTsPosition: (tsPositionId: string) => TsPosition | undefined;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -244,6 +258,7 @@ export const useStore = create<AppState>((set, get) => ({
   servers: [],
   statuses: [],
   difficulties: [],
+  tsPositions: [],
   respawns: [],
   slots: [],
   periods: [],
@@ -289,16 +304,28 @@ export const useStore = create<AppState>((set, get) => ({
     return role?.name || 'unknown';
   },
 
+  getTsPositionName: (tsPositionId: string) => {
+    const state = get();
+    const position = state.tsPositions.find(p => p.id === tsPositionId);
+    return position?.name || 'unknown';
+  },
+
+  getTsPosition: (tsPositionId: string) => {
+    const state = get();
+    return state.tsPositions.find(p => p.id === tsPositionId);
+  },
+
   loadFromApi: async () => {
     set({ isLoading: true });
     try {
-      const [users, roles, characters, servers, statuses, difficulties, respawns, slots, periods, requests] = await Promise.all([
+      const [users, roles, characters, servers, statuses, difficulties, tsPositions, respawns, slots, periods, requests] = await Promise.all([
         api.users.getAll(),
         api.roles.getAll(),
         api.characters.getAll(),
         api.servers.getAll(),
         api.statuses.getAll(),
         api.difficulties.getAll(),
+        api.tsPositions.getAll(),
         api.respawns.getAll(),
         api.slots.getAll(),
         api.periods.getAll(),
@@ -323,6 +350,7 @@ export const useStore = create<AppState>((set, get) => ({
         servers: servers.map(s => ({ ...s, id: String(s.id) })),
         statuses: statuses.map(s => ({ ...s, id: String(s.id) })),
         difficulties: difficulties.map(d => ({ ...d, id: String(d.id) })),
+        tsPositions: tsPositions.map(tp => ({ ...tp, id: String(tp.id) })),
         respawns: respawns.map((r: any) => ({ 
           ...r, 
           id: String(r.id), 

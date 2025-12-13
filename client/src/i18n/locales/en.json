@@ -29,6 +29,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
+    "saving": "Saving...",
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
@@ -216,7 +217,11 @@
       "title": "User Management",
       "description": "Manage guild points and roles",
       "pointsUpdated": "Points Updated",
-      "pointsUpdatedDesc": "Added {{amount}} points to user."
+      "pointsUpdatedDesc": "Added {{amount}} points to user.",
+      "setTsPosition": "Set TS Position",
+      "noTsPosition": "No Position",
+      "tsPositionUpdated": "TS Position Updated",
+      "tsPositionUpdatedDesc": "Character position has been updated."
     },
     "points": {
       "add": "Add",
@@ -277,7 +282,14 @@
       "serverUpdatedDesc": "Server details have been updated.",
       "serverDeleted": "Server Deleted",
       "serverDeletedDesc": "Server has been removed.",
-      "confirmDelete": "Are you sure you want to delete this server? This may affect existing respawns and schedules."
+      "confirmDelete": "Are you sure you want to delete this server? This may affect existing respawns and schedules.",
+      "editServerDesc": "Configure guild and TeamSpeak info for {{name}}",
+      "guildName": "Guild Name",
+      "guildNamePlaceholder": "e.g. Dragon Hunters",
+      "tsName": "TeamSpeak Server",
+      "tsNamePlaceholder": "e.g. ts.yourguild.com",
+      "tsDescription": "TeamSpeak Description",
+      "tsDescriptionPlaceholder": "Additional info about your TeamSpeak server..."
     },
     "claims": {
       "title": "Point Claims Review",

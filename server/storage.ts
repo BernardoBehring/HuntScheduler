@@ -48,6 +48,12 @@ export interface IStorage {
   getDifficulties(): Promise<schema.Difficulty[]>;
   getDifficulty(id: number): Promise<schema.Difficulty | undefined>;
 
+  getTsPositions(): Promise<schema.TsPosition[]>;
+  getTsPosition(id: number): Promise<schema.TsPosition | undefined>;
+  createTsPosition(position: Omit<schema.TsPosition, 'id'>): Promise<schema.TsPosition>;
+  updateTsPosition(id: number, position: Partial<schema.TsPosition>): Promise<void>;
+  deleteTsPosition(id: number): Promise<void>;
+
   getStatuses(): Promise<schema.RequestStatus[]>;
   getStatus(id: number): Promise<schema.RequestStatus | undefined>;
 
@@ -153,6 +159,28 @@ class DatabaseStorage implements IStorage {
   async getDifficulty(id: number): Promise<schema.Difficulty | undefined> {
     const [difficulty] = await db.select().from(schema.difficulties).where(eq(schema.difficulties.id, id));
     return difficulty;
+  }
+
+  async getTsPositions(): Promise<schema.TsPosition[]> {
+    return db.select().from(schema.tsPositions);
+  }
+
+  async getTsPosition(id: number): Promise<schema.TsPosition | undefined> {
+    const [position] = await db.select().from(schema.tsPositions).where(eq(schema.tsPositions.id, id));
+    return position;
+  }
+
+  async createTsPosition(position: Omit<schema.TsPosition, 'id'>): Promise<schema.TsPosition> {
+    const [newPosition] = await db.insert(schema.tsPositions).values(position).returning();
+    return newPosition;
+  }
+
+  async updateTsPosition(id: number, position: Partial<schema.TsPosition>): Promise<void> {
+    await db.update(schema.tsPositions).set(position).where(eq(schema.tsPositions.id, id));
+  }
+
+  async deleteTsPosition(id: number): Promise<void> {
+    await db.delete(schema.tsPositions).where(eq(schema.tsPositions.id, id));
   }
 
   async getStatuses(): Promise<schema.RequestStatus[]> {
