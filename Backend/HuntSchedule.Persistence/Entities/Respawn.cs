@@ -34,6 +34,7 @@ public class Respawn
     public string? TsCode { get; set; }
 
     [MaxLength(100)]
+    [Column("city")]
     public string? City { get; set; }
 
     [Column("is_available")]
